@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MAP:Mappings xmlns:MAP="http://www.blow.org/Mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blow.org/Mapping ../../../../../BlowORM/src/com/sales/xmls/Mapping.xsd ">
+ <MAP:Mapping>
+    <MAP:Class>com.sales.pojo.Prodcty</MAP:Class>
+    <MAP:RDBSchema>product</MAP:RDBSchema>
+    <MAP:Map>
+    	<MAP:Property name="id" type="int" colName="id" primary-key="true"/>
+    	<MAP:Property name="name" type="string" colName="name"/>
+    	<MAP:Property name="catId" type="long" colName="cat_id"/> 	
+    	<MAP:one-2-one name="details" ref-class="com.sales.pojo.ProductDetails" foreign-key="ID"/>
+    	<MAP:one-2-one name="stock" ref-class="com.sales.pojo.Stock" foreign-key="ID"/>
+    	<MAP:one-2-one name="epd" ref-class="com.sales.pojo.ElectronicProductDetails" foreign-key="ID"/>
+    	<MAP:one-2-many ref-class="com.sales.pojo.Stock" name="stocks" foreign-key="ID" collectionType="list"/>
+    </MAP:Map>
+  </MAP:Mapping>
+  
+  <MAP:Mapping>
+  	<MAP:Class>com.sales.pojo.ProductDetails</MAP:Class>
+  	<MAP:RDBSchema>product_details</MAP:RDBSchema>
+  	<MAP:Map>
+     	<MAP:Property name="id" type="int" colName="id" primary-key="true"/>
+  		<MAP:Property name="prodId" type="int" colName="PROD_ID"/>
+  		<MAP:Property name="brand" type="string" colName="BRAND"/>
+  		<MAP:Property name="color" type="string" colName="COLOR"/>
+  		<MAP:Property name="productSize" type="string" colName="PROD_SIZE"/>
+  		<MAP:Property name="price" type="int" colName="PRICE"/>
+  		<MAP:Property name="material" type="string" colName="MATERIAL"/>
+  		<MAP:one-2-one name="product" ref-class="com.sales.pojo.Prodcty" foreign-key="PROD_ID"/>
+  	</MAP:Map>
+  </MAP:Mapping>
+  <MAP:Mapping>
+  	<MAP:Class>com.sales.pojo.ElectronicProductDetails</MAP:Class>
+  	<MAP:RDBSchema>ELECTRONIC_PRODUCT_DETAILS</MAP:RDBSchema>
+  	<MAP:Map>
+     	<MAP:Property name="id" type="int" colName="id" primary-key="true"/>
+  		<MAP:Property name="description" type="string" colName="ELE_DESCRIPTION"/>
+  		<MAP:Property name="techDetails" type="string" colName="TECH_DETAILS"/>
+  		<MAP:Property name="prodId" type="int" colName="PROD_ID"/>
+  		<MAP:Property name="brand" type="string" colName="BRAND"/>
+  		<MAP:Property name="color" type="string" colName="COLOR"/>
+  		<MAP:Property name="price" type="int" colName="PRICE"/>
+  		<MAP:Property name="material" type="string" colName="MATERIAL"/>
+  		<MAP:one-2-one name="product" ref-class="com.sales.pojo.Prodcty" foreign-key="PROD_ID"/>
+  	</MAP:Map>
+  </MAP:Mapping>
+  
+</MAP:Mappings>
