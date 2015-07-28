@@ -17,7 +17,7 @@ public class Stock {
 	private double liveStockCount;
 	@BlowProperty(columnName="LOC_ID")
 	private int locId;
-	@One2One(fk="ID")
+	@One2One(fk="PROD_ID")
 	private Prodcty product;
 	@One2One(fk="ID")
 	private StockMappings mappings;

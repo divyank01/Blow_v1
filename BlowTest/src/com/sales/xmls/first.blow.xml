@@ -41,7 +41,6 @@
   		<MAP:Property name="price" type="int" colName="PRICE"/>
   		<MAP:Property name="material" type="string" colName="MATERIAL"/>
   		<MAP:one-2-one name="product" ref-class="com.sales.pojo.Prodcty" foreign-key="PROD_ID"/>
-  		<MAP:one-2-one name="" ref-class="com.sales.pojo.Prodcty" foreign-key="PROD_ID"/>
   	</MAP:Map>
   </MAP:Mapping>
   

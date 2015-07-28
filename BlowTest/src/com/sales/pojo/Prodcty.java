@@ -5,6 +5,7 @@ import java.util.List;
 import com.sales.blow.annotations.BlowId;
 import com.sales.blow.annotations.BlowProperty;
 import com.sales.blow.annotations.BlowSchema;
+import com.sales.blow.annotations.One2Many;
 import com.sales.blow.annotations.One2One;
 
 @BlowSchema(schemaName="PRODUCT")
@@ -23,6 +24,7 @@ public class Prodcty {
 	private ElectronicProductDetails epd;
 	@One2One(fk="ID")
 	private Stock stock;
+	@One2Many(collectionType="java.util.List",fk="ID",type="com.sales.pojo.Stock")
 	private List<Stock> stocks;
 	public int getId() {
 		return id;
