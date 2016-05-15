@@ -2,15 +2,22 @@ package com.sales.core;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.Date;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
+import com.sales.blow.exceptions.BlownException;
+import com.sales.constants.BlowConstatnts;
 import com.sales.constants.BlowParam;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
+import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.MappingObject;
 import com.sales.utils.BlowCoreUtils;
 
 
@@ -79,7 +86,7 @@ public class BlowCoreMapper {
 										}
 									}else{
 										List list=(List)lst;
-										if(!list.contains(ob2) && ob2!=null)
+										if(ob2!=null && !contains(mappings,ob2,list))
 											list.add(ob2);
 									}
 								}	
@@ -92,7 +99,6 @@ public class BlowCoreMapper {
 		}
 		return obj;
 	}
-
 
 
 	private Object mapDependentsToPersistaceObj(ResultSet rs, Maps maps,String m,Object supOb,Object prevObj,boolean reqToSet) throws Exception{
@@ -121,7 +127,6 @@ public class BlowCoreMapper {
 						else{
 
 							//changes starts
-							System.out.println("pappu");
 							Class paramClass=meth.getParameterTypes()[0];
 							if(paramClass.isArray() || paramClass.getCanonicalName().equalsIgnoreCase(List.class.getCanonicalName())){
 								Object lst=dep.getClass().getMethod("get"+BlowCoreUtils._FCFieldName(prop), null).invoke(dep, null);
@@ -139,7 +144,7 @@ public class BlowCoreMapper {
 									}
 								}else{
 									List list=(List)lst;
-									if(!list.contains(ob2) && ob2!=null)
+									if(ob2!=null && !list.contains(ob2))
 										list.add(ob2);
 								}
 							}
@@ -154,7 +159,6 @@ public class BlowCoreMapper {
 							meth.invoke(dep,mapDependentsToPersistaceObj(rs, mappings.getMaps().get(m),temp, dep,null,true));
 						}
 						else{
-							//System.out.println("champa");
 							Class paramClass=meth.getParameterTypes()[0];
 							if(paramClass.isArray() || paramClass.getCanonicalName().equalsIgnoreCase(List.class.getCanonicalName())){
 								Object lst=dep.getClass().getMethod("get"+BlowCoreUtils._FCFieldName(prop), null).invoke(dep, null);
@@ -222,21 +226,208 @@ public class BlowCoreMapper {
 					retval[0]=((BigDecimal)object).doubleValue();
 			}
 		}
-		if(object instanceof String){
+		if(object instanceof String || object instanceof Blob){
 			retval=new Object[1];
 			retval[0]=object;
+		}
+		if(object instanceof Date){
+			retval=new Object[1];
+			retval[0]=new java.util.Date(((Date)object).getTime());
+		}
+		if(object==null){
+			retval=new Object[1];
+			if(cls.isPrimitive()){
+				if(cls.getName().equalsIgnoreCase(int.class.getName()))
+					retval[0]=0;
+				if(cls.getName().equalsIgnoreCase(long.class.getName()))
+					retval[0]=0;
+				if(cls.getName().equalsIgnoreCase(float.class.getName()))
+					retval[0]=0;
+				if(cls.getName().equalsIgnoreCase(double.class.getName()))
+					retval[0]=0;
+			}
+			if(!cls.isPrimitive()){
+				if(cls.getName().equalsIgnoreCase(Integer.class.getName()))
+					retval[0]=0;
+				if(cls.getName().equalsIgnoreCase(Long.class.getName()))
+					retval[0]=0;
+				if(cls.getName().equalsIgnoreCase(Float.class.getName()))
+					retval[0]=0;
+				if(cls.getName().equalsIgnoreCase(Double.class.getName()))
+					retval[0]=0;
+				if(cls.getName().equalsIgnoreCase(String.class.getName())||cls.getName().equalsIgnoreCase(Blob.class.getName())){
+					retval[0]=null;
+				}
+				if(cls.getName().equalsIgnoreCase(Date.class.getName())){
+					retval[0]=null;
+				}
+			}
 		}
 		return retval;
 	}
 
-	protected Object processObjectForCordinality(Object obj,ORM_MAPPINGS mappings,ResultSet rs) throws Exception{
-		Maps map=mappings.getMapForClass(obj.getClass().getCanonicalName());
-		String pkFieldName=map.getPkAttr().getName();
-		Object pkFieldValue=obj.getClass().getMethod("get"+BlowCoreUtils._FCFieldName(pkFieldName), null).invoke(obj, null);
-		if(rs.getObject(map.getqMap().get(map.getSchemaName()+"."+map.getPkAttr().getColName())).toString().equals(pkFieldValue.toString())){		
-			//System.out.println("yoo!!");
-			return obj;
+	private boolean equals(Object obj1, Object obj2){
+		boolean retval=false;
+		if(obj1.getClass().getName().equalsIgnoreCase(int.class.getName()))
+			return ((Integer)obj1).intValue()==((Integer)obj2).intValue();
+		if(obj1.getClass().getName().equalsIgnoreCase(long.class.getName()))
+			return ((Long)obj1).longValue()==((Long)obj2).longValue();
+		if(obj1.getClass().getName().equalsIgnoreCase(float.class.getName()))
+			return ((Float)obj1).floatValue()==((Float)obj2).floatValue();
+		if(obj1.getClass().getName().equalsIgnoreCase(double.class.getName()))
+			return ((Double)obj1).doubleValue()==((Double)obj2).doubleValue();
+
+		if(obj1.getClass().getName().equalsIgnoreCase(Integer.class.getName()))
+			return ((Integer)obj1).intValue()==((Integer)obj2).intValue();
+		if(obj1.getClass().getName().equalsIgnoreCase(Long.class.getName()))
+			return ((Long)obj1).longValue()==((Long)obj2).longValue();
+		if(obj1.getClass().getName().equalsIgnoreCase(Float.class.getName()))
+			return ((Float)obj1).floatValue()==((Float)obj2).floatValue();
+		if(obj1.getClass().getName().equalsIgnoreCase(Double.class.getName()))
+			return ((Double)obj1).doubleValue()==((Double)obj2).doubleValue();
+		if(obj1 instanceof String || obj1 instanceof Blob){
+			return obj1.equals(obj2);
 		}
+		return retval;
+	}
+
+	/**
+	 * this is just a way to bypass contains method It will loop bt
+	 * contains loops anyway so m gonna give it a try.
+	 * And its not easy to reflect .equals and dont wanna enforce user to override
+	 * on the basis on PK
+	 * 
+	 * @return if list contains obj or not
+	 * @throws NoSuchMethodException 
+	 * @throws SecurityException 
+	 */
+	private boolean contains(ORM_MAPPINGS mappings ,Object newObj,List lst) throws Exception{
+		String getter="get"+BlowCoreUtils._FCFieldName(mappings.getMapForClass(newObj.getClass().getCanonicalName()).getPkAttr().getName()).trim();
+		Object obj=newObj.getClass().getMethod(getter, new Class[0]).invoke(newObj, null);		
+		for(Object o:lst){
+			if(equals(newObj.getClass().getMethod(getter, new Class[0]).invoke(newObj, null),o.getClass().getMethod(getter, new Class[0]).invoke(o, null))){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * 
+	 * @param obj
+	 * @param mappings
+	 * @param rs
+	 * @param params
+	 * @return object for further modification or null if no modification is required
+	 * @throws Exception
+	 * 
+	 * Checks if further modification on the object is required it will check in resultset row if the provided
+	 * params for retrival are same with previous rows.
+	 * 
+	 */
+	protected Object processObjectForCordinality(Object obj,ORM_MAPPINGS mappings,ResultSet rs, Map<String, Object> params) throws Exception{
+		Maps map=mappings.getMapForClass(obj.getClass().getCanonicalName());
+		Iterator<String> itr=params.keySet().iterator();
+		boolean isAllPropEqual=true;
+		while(itr.hasNext()){
+			String param=itr.next();
+			if(param.contains(BlowConstatnts.DOT)){
+				StringTokenizer tokens=new StringTokenizer(param, BlowConstatnts.DOT);
+				StringBuffer buff=new StringBuffer();
+				String columnName=getColNameForRSfromParam(mappings, map, buff, tokens);
+				/*
+				 * find better solution for this array
+				 */
+				String[] className=new String[1];
+				Object val=getValueForParamFromObject(obj, mappings, map, new StringTokenizer(param, BlowConstatnts.DOT),className);
+				if(!rs.getObject(mappings.getMapForClass(className[0]).getqMap().get(columnName)).toString().equals(val.toString())){
+					isAllPropEqual=false;
+				}
+			}else{
+				String columnName=map.getSchemaName()+BlowConstatnts.DOT+map.getAttributeMap().get(param).getColName();
+				Object val=obj.getClass().getMethod(BlowConstatnts.GET+BlowCoreUtils._FCFieldName(param), null).invoke(obj, null);
+				if(!rs.getObject(map.getqMap().get(columnName)).toString().equals(val.toString())){
+					isAllPropEqual=false;
+				}
+			}
+		}
+		if(isAllPropEqual)
+			return obj;
 		return null;
+	}
+
+	public String getColNameForRSfromParam(ORM_MAPPINGS mappings,Maps map,StringBuffer buff,StringTokenizer tokens){
+		String token=tokens.nextToken();		
+		/*
+		 * check if token is a dependent complex type
+		 */
+		if(map.getAttributeMap().get(token).isFk()){
+			if(tokens.countTokens()==1)
+				buff.append(map.getDependentClassMap().get(map.getAttributeMap().get(token).getClassName()).getSchemaName());
+			map=mappings.getMapForClass(map.getAttributeMap().get(token).getClassName());
+			if(tokens.hasMoreTokens())
+				getColNameForRSfromParam(mappings, map, buff, tokens);
+		}else{
+			buff.append(BlowConstatnts.DOT+map.getAttributeMap().get(token).getColName());
+		}
+		return buff.toString();
+	}
+	
+	public Object getValueForParamFromObject(Object obj,ORM_MAPPINGS mappings,Maps map,StringTokenizer tokens,String[] className)throws Exception{		
+		Object retVal=null;
+		String token=tokens.nextToken();		
+		/*
+		 * check if token is a dependent complex type
+		 */
+		if(map.getAttributeMap().get(token).isFk()){
+			obj=obj.getClass().getMethod(BlowConstatnts.GET+BlowCoreUtils._FCFieldName(token), null).invoke(obj, null);
+			className[0]=map.getAttributeMap().get(token).getClassName();
+			map=mappings.getMapForClass(map.getAttributeMap().get(token).getClassName());
+			if(tokens.hasMoreTokens())
+				retVal=getValueForParamFromObject(obj,mappings, map,tokens,className);
+		}else{
+			return obj.getClass().getMethod(BlowConstatnts.GET+BlowCoreUtils._FCFieldName(token), null).invoke(obj, null);
+		}
+		return retVal;
+	}
+	
+	public Object mapPersistanceObject(ResultSet rs,MappingObject mappingObject) throws Exception{
+		if(rs!=null){
+			int count=0;
+			Object temp=null;
+			Object list=null;
+			boolean isList=false;
+			while(rs.next()){
+				Object obj=Class.forName(mappingObject.getClassName()).newInstance();
+				Iterator<String> itr=mappingObject.getProperties().keySet().iterator();
+				while(itr.hasNext()){
+					String s=itr.next().trim();
+					for(Method m:obj.getClass().getMethods()){
+						if(m.getName().equals(BlowConstatnts.SET+BlowCoreUtils._FCFieldName(s))){
+							m.invoke(obj, mapTypes(rs.getObject(mappingObject.getProperties().get(s)),m.getParameterTypes()[0]));
+							break;
+						}
+					}
+				}
+				if(temp==null)
+					temp=obj;
+				if(count>0){
+					if(list==null){
+						isList=true;
+						list = new ArrayList<Object>();
+						((List)list).add(temp);
+					}
+					((List)list).add(obj);
+				}
+				count++;
+			}
+			if(isList)
+				return list;
+			else
+				return temp;
+		}else{
+			throw new BlownException();
+		}
 	}
 }

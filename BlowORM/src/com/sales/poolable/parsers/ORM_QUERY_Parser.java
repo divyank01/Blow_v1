@@ -1,0 +1,216 @@
+package com.sales.poolable.parsers;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import com.sales.blow.exceptions.BlownException;
+import com.sales.constants.ConfigConstants;
+import com.sales.pools.OrmConfigParserPool;
+
+public class ORM_QUERY_Parser {
+	
+	private ORM_QUERY_Parser(){}
+	
+	private static ORM_QUERY_Parser parser;
+	
+	private ORM_QUERY_Parser.Queries queries=new Queries();
+	
+	static{
+		parser=new ORM_QUERY_Parser();
+		try {
+			parser.load();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static ORM_QUERY_Parser getInstance(){
+		if(parser==null)
+			parser=new ORM_QUERY_Parser();
+		return parser;
+	}
+	
+	private void load() throws Exception{
+		ORM_CONFIG_Parser config_Parser=OrmConfigParserPool.getInstance().borrowObject();
+		List<String> qList = config_Parser.getOrm_config().getQueries();
+		for (int i = 0; i < qList.size(); i++) {
+			_load(qList.get(i));
+		}
+		queries.shuffle();
+	}
+	
+	
+	private void _load(String string) throws Exception {
+		Document document=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(Thread.currentThread().
+				getContextClassLoader()
+				.getResourceAsStream(string));
+		Node node=document.getFirstChild();
+		NodeList nodeList=node.getChildNodes();
+		for(int i=0;i<nodeList.getLength();i++){
+			Node nodes=nodeList.item(i);
+			if(nodes.getNodeName().equalsIgnoreCase(ConfigConstants.Q_INCLUDE)){
+				queries.getIncludes().put(nodes.getAttributes().getNamedItem("name").getNodeValue(), nodes.getTextContent());
+			}
+			if(nodes.getNodeName().equalsIgnoreCase(ConfigConstants.QUERY)){
+				NodeList nList=nodes.getChildNodes();
+				StringBuilder builder=new StringBuilder();
+				Queries.Query qry=queries.new Query();
+				for(int j=0;j<nList.getLength();j++){
+					Node nod=nList.item(j);
+					if(nod.getNodeType()==3){
+						builder.append(nod.getTextContent().trim());
+					}
+					if(nod.getNodeType()==1){
+						builder.append("#@#").append(nod.getAttributes().getNamedItem("ref").getNodeValue()).append("#@#");
+						qry.getIncludes().add(nod.getAttributes().getNamedItem("ref").getNodeValue());
+					}
+				}
+				qry.setContent(builder.toString());
+				qry.setClassName(nodes.getAttributes().getNamedItem("class").getNodeValue());
+				qry.setMappingObjName(nodes.getAttributes().getNamedItem("mapping-object").getNodeValue());
+				queries.getQueries().put(nodes.getAttributes().getNamedItem("name").getNodeValue(), qry);
+			}
+			if(nodes.getNodeName().equalsIgnoreCase(ConfigConstants.Q_OBJECT)){
+				NodeList nList=nodes.getChildNodes();
+				Queries.MappingObject object=queries.new MappingObject();
+				object.setProperties(new HashMap<String, String>());
+				String classname=nodes.getAttributes().getNamedItem("className").getNodeValue();
+				if(classname.isEmpty())
+					throw new BlownException("Class name is not mapped for mapping objects.");
+				object.setClassName(classname);
+				for(int j=0;j<nList.getLength();j++){
+					if(nList.item(j).getNodeName().equalsIgnoreCase(ConfigConstants.Q_PROP)){						
+						object.getProperties().put(nList.item(j).getAttributes().getNamedItem("attr").getNodeValue(),
+								nList.item(j).getAttributes().getNamedItem("column").getNodeValue());
+					}
+				}
+				queries.getMappingObjects().put(nodes.getAttributes().getNamedItem("name").getNodeValue(), object);
+			}
+		}
+	}
+
+
+	public final class Queries{
+		private Map<String, String> includes=new HashMap<String, String>();
+		private Map<String, Query> queries=new HashMap<String, Query>();
+		private Map<String, MappingObject> mappingObjects=new HashMap<String, MappingObject>();
+		public class MappingObject{
+			private Map<String,String> properties=new HashMap<String, String>();
+			private String className;
+			public Map<String, String> getProperties() {
+				return properties;
+			}
+
+			public void setProperties(Map<String, String> properties) {
+				this.properties = properties;
+			}
+
+			public String getClassName() {
+				return className;
+			}
+
+			public void setClassName(String className) {
+				this.className = className;
+			}
+			
+		}
+		
+		public class Query{
+			private List<String> includes=new ArrayList<String>();
+			private String content;
+			private String className;
+			private MappingObject mappingObject;
+			private String mappingObjName;
+			public List<String> getIncludes() {
+				return includes;
+			}
+			public void setIncludes(List<String> includes) {
+				this.includes = includes;
+			}
+			public String getContent() {
+				return content;
+			}
+			public void setContent(String content) {
+				this.content = content;
+			}
+			public String getClassName() {
+				return className;
+			}
+			public void setClassName(String className) {
+				this.className = className;
+			}
+			public MappingObject getMappingObject() {
+				return mappingObject;
+			}
+			public void setMappingObject(MappingObject mappingObject) {
+				this.mappingObject = mappingObject;
+			}
+			public String getMappingObjName() {
+				return mappingObjName;
+			}
+			public void setMappingObjName(String mappingObjName) {
+				this.mappingObjName = mappingObjName;
+			}
+		}
+		
+		public Map<String, String> getIncludes() {
+			return includes;
+		}
+		public Map<String, Query> getQueries() {
+			return queries;
+		}
+		protected void shuffle(){
+			Iterator<String> itr=queries.keySet().iterator();
+			while(itr.hasNext()){
+				String qName=itr.next();
+				Query qry=queries.get(qName);
+				qry.setMappingObject(parser.queries.getMappingObjects().get(qry.getMappingObjName()));
+				List<String> inclds= qry.getIncludes();
+				for(int i=0;i<inclds.size();i++){
+					if(qry.getContent()!=null && qry.getContent().indexOf("#@#")>=0){
+						qry.setContent(processQuery(qry.getContent()));
+					}
+				}
+			}
+		}
+		
+		private String processQuery(String input){
+			StringBuilder builder=new StringBuilder();			
+			int startIndex =input.indexOf("#@#");
+			String start=input.substring(0,startIndex);
+			int lastIndex=startIndex+3+input.substring(startIndex+3).indexOf("#@#")+3;
+			String retVal=builder.append(start)
+								 .append(" ")
+								 .append(includes.get(input.substring(startIndex, lastIndex).replaceAll("#@#", "")))
+								 .append(" ")
+								 .append(input.substring(lastIndex,input.length())).toString();
+			if(retVal.indexOf("#@#")>=0)
+				processQuery(retVal);
+			return retVal;
+		}
+		public Map<String, MappingObject> getMappingObjects() {
+			return mappingObjects;
+		}
+		public void setMappingObjects(Map<String, MappingObject> mappingObjects) {
+			this.mappingObjects = mappingObjects;
+		}
+	}
+
+
+	public ORM_QUERY_Parser.Queries.Query getQueries(String id) {
+		return queries.getQueries().get(id);
+	}
+	
+}

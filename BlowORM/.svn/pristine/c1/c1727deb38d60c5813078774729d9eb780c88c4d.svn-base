@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.blow.org/Mapping"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:MAP="http://www.blow.org/Mapping">
+
+	<complexType name="Mapping">
+		<sequence>
+			<element name="Class" type="string" minOccurs="1" maxOccurs="1"></element>
+			<element name="RDBSchema" type="string" minOccurs="1"
+				maxOccurs="1"></element>
+			<element name="Map" type="MAP:Map" minOccurs="1" maxOccurs="1"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Map">
+        <sequence>
+			<element name="Property" type="MAP:Property" minOccurs="0" maxOccurs="unbounded">
+			</element>
+			<element name="one-2-one" type="MAP:one-2-one" maxOccurs="unbounded" minOccurs="0">
+			</element>
+			<element name="one-2-many" type="MAP:one-2-many" maxOccurs="unbounded" minOccurs="0">
+			</element>
+			<element name="complexPrimaryKey" type="MAP:ComplexPrimaryKey" maxOccurs="unbounded" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Mappings">
+		<sequence>
+			<element name="Mapping" type="MAP:Mapping" minOccurs="1"
+				maxOccurs="unbounded"></element>
+		</sequence>
+	</complexType>
+
+	<element name="Mappings" type="MAP:Mappings"></element>
+
+	<complexType name="Property">
+		<attribute name="type" type="string" use="required"></attribute>
+		<attribute name="colName" type="string" use="required"></attribute>
+		<attribute name="name" type="string" use="required"></attribute>
+		<attribute name="primary-key" type="boolean"></attribute>
+		<attribute name="generated" type="boolean" use="optional"></attribute>
+		<attribute name="seq" type="string" use="optional"></attribute>
+	</complexType>
+
+	<complexType name="one-2-one">
+        <annotation>
+        	<documentation>this attribute can handle one to one as well as many to one relationships.</documentation>
+        </annotation>
+        <attribute name="name" type="string" use="required"></attribute>
+		<attribute name="ref-class" type="string" use="required"></attribute>
+		<attribute name="foreign-key" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="one-2-many">
+        <annotation>
+        	<documentation>this attribute can handle one to many relationship.</documentation>
+        </annotation>
+        <attribute name="ref-class" type="string" use="required"></attribute>
+		<attribute name="foreign-key" type="string" use="required"></attribute>
+		<attribute name="collectionType" use="required">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="list"></enumeration>
+					<enumeration value="set"></enumeration>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attribute name="name" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="ComplexPrimaryKey">
+		<sequence>
+			<element name="property" type="MAP:Property" maxOccurs="unbounded" minOccurs="1"></element>
+		</sequence>
+	</complexType>
+</schema>

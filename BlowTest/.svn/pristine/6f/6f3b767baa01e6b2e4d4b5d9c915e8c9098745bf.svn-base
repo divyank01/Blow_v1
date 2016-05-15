@@ -1,0 +1,77 @@
+package com.customer.pojo;
+
+import com.sales.blow.annotations.BlowId;
+import com.sales.blow.annotations.BlowProperty;
+import com.sales.blow.annotations.BlowSchema;
+import com.sales.blow.annotations.One2One;
+
+@BlowSchema(schemaName="ADDRESS")
+public class Address {
+
+	
+	private Contact contact;
+	@BlowId
+	@BlowProperty(columnName="ID",length=5)
+	private int id;
+	@BlowProperty(columnName="street",length=50)
+	private String street;
+	@BlowProperty(columnName="city",length=50)
+	private String city;
+	@BlowProperty(columnName="state",length=50)
+	private String state;
+	@BlowProperty(columnName="house_number",length=50)
+	private String houseNumber;
+	@BlowProperty(columnName="cust_id",length=5)
+	private int custId;
+	@One2One(fk="ID",isReferenced=true)
+	private Customer customer;
+	public Contact getContact() {
+		return contact;
+	}
+	public void setContact(Contact contact) {
+		this.contact = contact;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getStreet() {
+		return street;
+	}
+	public void setStreet(String street) {
+		this.street = street;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+	public Customer getCustomer() {
+		return customer;
+	}
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	public int getCustId() {
+		return custId;
+	}
+	public void setCustId(int custId) {
+		this.custId = custId;
+	}
+	
+}

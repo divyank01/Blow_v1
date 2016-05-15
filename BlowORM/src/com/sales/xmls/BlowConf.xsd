@@ -14,10 +14,25 @@
 			<element name="USER" type="BLOW:USER" minOccurs="1"
 				maxOccurs="1" nillable="false">
 			</element>
+			<element name="QUERIES" type="BLOW:QUERIES"
+				maxOccurs="1" minOccurs="0">
+			</element>
 			<element name="MAPPINGS" type="BLOW:MAPPINGS" minOccurs="0"
 				maxOccurs="unbounded">
 			</element>
-			<element name="ANNOTATIONS" type="BLOW:ANNOTIONS" maxOccurs="1" minOccurs="0"></element>
+			<element name="ANNOTATIONS" type="BLOW:ANNOTIONS"
+				maxOccurs="1" minOccurs="0">
+			</element>
+			<element name="Schema" type="string" maxOccurs="1"
+				minOccurs="1">
+				<annotation>
+					<documentation>
+						multiple schema can be mentioned for loading
+						tables separated by comma.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="GenerateSchema" type="boolean" maxOccurs="1" minOccurs="1"></element>
 		</sequence>
 	</complexType>
 
@@ -46,10 +61,19 @@
 
 	</complexType>
 
-
+	<complexType name="QUERY">
+		<attribute name="file" use="required">
+			<simpleType>
+				<restriction base="string">
+					<pattern value=".*.blow.query.xml"></pattern>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</complexType>
+	
 	<complexType name="ANNOTIONS">
 		<sequence>
-			<element name="package-scan" maxOccurs="1" minOccurs="0">
+			<element name="package-scan" maxOccurs="unbounded" minOccurs="1">
 				<simpleType>
 					<restriction base="string">
 						<whiteSpace value="collapse"></whiteSpace>
@@ -65,4 +89,10 @@
 			<enumeration value="oracle"></enumeration>
 			<enumeration value="mysql"></enumeration>
 		</restriction></simpleType>
+
+	<complexType name="QUERIES">
+		<sequence>
+			<element name="Query" type="BLOW:QUERY"></element>
+		</sequence>
+	</complexType>
 </schema>

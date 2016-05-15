@@ -1,0 +1,151 @@
+package com.sales.core;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import com.sales.blow.exceptions.BlownException;
+import com.sales.constants.BlowParam;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
+import com.sales.pools.ConnectionPool;
+import com.sales.pools.OrmMappingPool;
+
+
+/**
+ * 
+ * 
+ * @author divyank
+ *
+ * As name suggests this class will perform querry execution for insert or update
+ *
+ *
+ *
+ */
+
+
+public class QuerryExecutor {
+
+	private QuerryBuilder querryBuilder;
+	private BlowCoreMapper coreMapper;
+	private QuerryExecutor(){
+		coreMapper=BlowCoreMapper.getInstance();
+	}
+	protected static QuerryExecutor getExecutor(){
+		return new QuerryExecutor();
+	}
+	
+	protected boolean executeInsertOrUpdate(Object obj,ORM_MAPPINGS mappings,Map m) throws Exception{
+		m.put(obj, null);
+		Connection con=null;
+		con=ConnectionPool.newInstance().borrowObject();
+		querryBuilder=QuerryBuilder.newInstance();
+		PreparedStatement stmt=null;
+		if(countOfRecord(con, mappings, obj)==0){
+			/*
+			 * insert code will go here
+			 */
+			stmt=querryBuilder.createInsertQuerry(mappings, obj,con);
+		}else{
+			/*
+			 * update code will go here
+			 */
+			stmt=querryBuilder.createUpadteQuerry(mappings, obj,con);		
+		}
+		stmt.execute();
+		stmt.close();
+		
+		
+		Map<String, Attributes> aMap=mappings.getMapForClass(obj.getClass().getCanonicalName()).getAttributeMap();
+		Iterator<String> iter=aMap.keySet().iterator();
+		while (iter.hasNext()) {
+			String attr=iter.next();
+			if(aMap.get(attr).isFk()){
+				Object ob1=obj.getClass().getMethod(getterForField(aMap.get(attr).getName()), null).invoke(obj, null);
+				if (ob1 instanceof Collection<?>){
+					Iterator it=((Collection)ob1).iterator();
+					while(it.hasNext()){
+						executeInsertOrUpdate(it.next(), mappings, m);
+					}
+				}
+				else{
+					if(ob1!=null && !m.containsKey(ob1))
+						executeInsertOrUpdate(ob1, mappings, m);
+				}
+			}
+		}
+		
+		
+		ConnectionPool.newInstance().returnObject(con);
+		return false;
+	}
+	
+	private int countOfRecord(Connection con,ORM_MAPPINGS mappings,Object obj) throws Exception{
+		ResultSet rs=querryBuilder.getCountForPk(mappings, obj, con).executeQuery();
+		int retVal=0;
+		while(rs.next()){
+			retVal=rs.getInt(1);
+		}
+		rs.close();
+		return retVal;
+	}
+	
+	private String getterForField(String field) {
+		String retVal=(String.valueOf(field.charAt(0)).toUpperCase())+field.substring(1);
+		return "get"+retVal;
+	}
+
+	protected Object retriveSingleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t) throws Exception{
+		Connection con=null;
+		Object retval=null;
+			con=ConnectionPool.newInstance().borrowObject();
+			System.out.println(sql.toString());
+			ResultSet rs=con
+			.prepareStatement(sql.toString())
+			.executeQuery();
+			int counter=0;
+			while(rs.next()){
+				if(counter>0 && retval!=null){
+					retval=coreMapper.processObjectForCordinality(retval, mappings, rs);
+				}if(retval==null)
+					retval=extractResltSet(rs,true,null,blowParam,mappings,t);
+				else
+					retval=extractResltSet(rs,false,retval,blowParam,mappings,t);
+				counter++;
+			}
+			if(counter>1){
+				rs.close();
+				ConnectionPool.newInstance().returnObject(con);
+				//throw new BlownException("multiple records found");
+			}
+			rs.close();
+			ConnectionPool.newInstance().returnObject(con);
+		return retval;
+	}
+	
+	protected List<Object> retriveMultipleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t) throws Exception{
+		Connection con=null;
+		List<Object> retval=new ArrayList<Object>();
+		con=ConnectionPool.newInstance().borrowObject();
+		System.out.println(sql.toString());
+		ResultSet rs=con.prepareStatement(sql.toString()).executeQuery();
+		while(rs.next()){
+			Object ob=extractResltSet(rs,true,null,blowParam,mappings,t);
+			if(!retval.contains(ob))
+				retval.add(ob);
+		}
+		rs.close();
+		ConnectionPool.newInstance().returnObject(con);
+		return retval;
+	}
+		
+	private Object extractResltSet(ResultSet rs,boolean flag,Object preObject,BlowParam blowParam,ORM_MAPPINGS mappings,Object t) throws Exception {
+		return coreMapper.mapPersistaceToObj(rs,mappings.getMaps().get(t),mappings,blowParam,preObject,flag);
+	}
+	
+}

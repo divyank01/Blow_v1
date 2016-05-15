@@ -1,14 +1,29 @@
 package com.customer.pojo;
 
+import com.sales.blow.annotations.BlowId;
+import com.sales.blow.annotations.BlowProperty;
+import com.sales.blow.annotations.BlowSchema;
+import com.sales.blow.annotations.One2One;
+
+@BlowSchema(schemaName="ADDRESS")
 public class Address {
 
 	
 	private Contact contact;
+	@BlowId
+	@BlowProperty(columnName="ID",length=5)
 	private int id;
+	@BlowProperty(columnName="street",length=50)
 	private String street;
+	@BlowProperty(columnName="city",length=50)
 	private String city;
+	@BlowProperty(columnName="state",length=50)
 	private String state;
+	@BlowProperty(columnName="house_number",length=50)
 	private String houseNumber;
+	@BlowProperty(columnName="cust_id",length=5)
+	private int custId;
+	@One2One(fk="ID",isReferenced=false)
 	private Customer customer;
 	public Contact getContact() {
 		return contact;
@@ -51,6 +66,12 @@ public class Address {
 	}
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+	public int getCustId() {
+		return custId;
+	}
+	public void setCustId(int custId) {
+		this.custId = custId;
 	}
 	
 }

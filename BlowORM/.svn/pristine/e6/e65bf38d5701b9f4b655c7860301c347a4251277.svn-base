@@ -1,0 +1,12 @@
+package com.sales.constants;
+
+public class SQLTypes {
+
+	public static String get(String javaType){
+		if(javaType.equals("string"))
+			return "VARCHAR2";
+		if(javaType.equals("int") || javaType.equals("double"))
+			return "NUMBER";
+		return null;
+	}
+}

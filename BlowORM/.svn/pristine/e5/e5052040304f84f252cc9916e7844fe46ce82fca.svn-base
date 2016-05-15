@@ -1,0 +1,536 @@
+package com.sales.poolable.parsers;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.text.StyledEditorKit.BoldAction;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.sales.blow.annotations.BlowId;
+import com.sales.blow.annotations.BlowProperty;
+import com.sales.blow.annotations.BlowSchema;
+import com.sales.blow.annotations.One2Many;
+import com.sales.blow.annotations.One2One;
+import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.MappingsException;
+import com.sales.constants.ConfigConstants;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
+
+/**
+ * 
+ * @author black
+ * 
+ * Its a poolable parser for the mappings
+ *
+ */
+@SuppressWarnings("unchecked")
+public class ORM_MAPPINGS_Parser {
+
+	private static final String CONFIG_FILE_NAME = "BLOW-ORM-CONFIG.xml";
+
+	private ORM_MAPPINGS_Parser(){}
+
+	private ORM_MAPPINGS orm_mapping;
+
+	private int mappingIndex;
+
+	private boolean useAnnotaion;
+
+	private static ORM_MAPPINGS_Parser config;
+
+	public static ORM_MAPPINGS_Parser getInstance(){
+		return config;
+	}
+
+	static{
+		if(config==null){
+			config=new ORM_MAPPINGS_Parser();
+			try {
+				config.loadConfig();
+			} catch (Exception e) {
+				BlownException ex=new BlownException("failed to initailize Blow  :"+e.getMessage());
+				ex.setStackTrace(e.getStackTrace());
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	private void loadConfig() throws Exception{
+		Document doc=DocumentBuilderFactory.
+		newInstance().
+		newDocumentBuilder().
+		parse(Thread.currentThread().
+				getContextClassLoader()
+				.getResourceAsStream(CONFIG_FILE_NAME));
+		NodeList nl=doc.getChildNodes().item(0).getChildNodes();
+		Node annotaionNode=null;
+
+		if(doc.getElementsByTagName(ConfigConstants.ANNOTATIONS)!=null){
+			annotaionNode=doc.getElementsByTagName(ConfigConstants.ANNOTATIONS).item(0);
+			useAnnotaion=new Boolean(annotaionNode.getAttributes().getNamedItem("use").getNodeValue());
+		}
+		if(useAnnotaion){
+			NodeList annotaionChilds=annotaionNode.getChildNodes();
+			for(int i=0;i<annotaionChilds.getLength();i++){
+				Node node=annotaionChilds.item(i);
+				if(node.getNodeType()==Node.ELEMENT_NODE){
+					if(node.getNodeName().equalsIgnoreCase(ConfigConstants.PACKAGE_SCAN)){
+						File packageFile=new File(Thread.currentThread().
+								getContextClassLoader().getResource(node.getTextContent().replaceAll("\\.", "/").trim()).getFile());
+						loadAnnotations(packageFile,node.getTextContent().trim());
+					}
+				}
+			}
+		}else{
+			for(int i=0;i<nl.getLength();i++){
+				Node node=nl.item(i);
+				if(node.getNodeType()==Node.ELEMENT_NODE){
+					if(node.getNodeName().equalsIgnoreCase(ConfigConstants.MAPPINGS)){
+						loadMappings(node.getAttributes().getNamedItem(ConfigConstants.MAPPINGS_FILE).getNodeValue());
+					}
+				}
+			}
+		}
+		loadDependancies();
+	}
+
+	private void loadAnnotations(File file,String packageName) throws MappingsException {
+		for(File f:file.listFiles()){
+			if(!f.isHidden() && f.getName().endsWith(".class")){
+				try {
+					Class clzz=Class.forName(packageName+"."+(f.getName().replaceAll("\\.class", "")));
+					_loadAnnotations(clzz);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
+	
+	private void _loadAnnotations(Class clzz) throws MappingsException {
+		if(orm_mapping==null)
+			orm_mapping=new ORM_MAPPINGS();	
+		mappingIndex++;
+		ORM_MAPPINGS.Maps orm_maps=orm_mapping.new Maps();
+		if(clzz.isAnnotationPresent(BlowSchema.class)){
+			BlowSchema ob=(BlowSchema) clzz.getAnnotation(BlowSchema.class);
+			orm_maps.setClassName(clzz.getCanonicalName());
+			orm_maps.setSchemaName(ob.schemaName());
+		}
+		doMapFieldsForAnnotations(clzz,orm_maps);
+		if(clzz.getSuperclass()!=null)
+			doMapFieldsForAnnotations(clzz.getSuperclass(),orm_maps);
+		if(orm_maps.getPkAttr()==null)
+			throw new MappingsException("PK Required for "+orm_maps.className);
+
+		orm_maps.setIndex(mappingIndex);
+		orm_mapping.getMaps().put(orm_maps.getClassName(), orm_maps);
+	}
+
+
+
+
+	private void doMapFieldsForAnnotations(Class clzz, Maps orm_maps) throws MappingsException {
+		for(Field field:clzz.getDeclaredFields()){//iteratings mapping 
+			if(field.isAnnotationPresent(BlowProperty.class)){
+				BlowProperty blowProp=(BlowProperty)field.getAnnotation(BlowProperty.class);				
+				Maps.Attributes attr =  orm_maps.new Attributes();
+				orm_maps.getAttributeMap().put(field.getName(),attr);
+				attr.setColName(blowProp.columnName());
+				attr.setName(field.getName());
+				attr.setType(field.getType().getCanonicalName());
+				if(field.isAnnotationPresent(BlowId.class)){
+					attr.setPk(true);
+					orm_maps.setPkAttr(attr);
+				}
+				orm_maps.qMap.put(orm_maps.getSchemaName()+"."+blowProp.columnName(), 
+						(field.getName().length()<10?
+								field.getName():
+									(field.getName().substring(0, 10)))+"_"+mappingIndex);
+				/*orm_maps.qMap.put(attr.getName(), 
+						(field.getName().length()<10?
+								field.getName():
+									(field.getName().substring(0, 10)))+"_"+mappingIndex);*/
+				
+			}
+			if(field.isAnnotationPresent(One2One.class)){
+				One2One one2OneProp=(One2One)field.getAnnotation(One2One.class);
+				Maps.Attributes attr =  orm_maps.new Attributes();
+				attr.setColName(one2OneProp.fk());
+				String propName=field.getName();
+				attr.setName(propName);
+				attr.setAlias(propName.length()<10?propName+"_"+mappingIndex:propName.substring(0, 10)+"_"+mappingIndex);
+				attr.setFk(true);
+				attr.setClassName(field.getType().getCanonicalName());
+				attr.setSupplimentryClass(orm_maps.getClassName());
+				if(one2OneProp.fk()==null){
+					throw new MappingsException("Fk required for one-2-one mappings in class "+orm_maps.className);
+				}
+
+				orm_maps.getAttributeMap().put(propName,attr);
+				orm_maps.getFkAttr().put(field.getType().getCanonicalName(), attr);
+				orm_maps.getDependentClasses().add(field.getType().getCanonicalName());
+			}
+			if(field.isAnnotationPresent(One2Many.class)){
+				//do one to many for annotations
+				Maps.Attributes attr =  orm_maps.new Attributes();
+				One2Many one2Many=(One2Many)field.getAnnotation(One2Many.class);
+				attr.setColName(one2Many.fk());
+				attr.setCollectionType(one2Many.collectionType());
+				String propName=field.getName();
+				attr.setName(propName);
+				attr.setAlias(propName.length()<10?propName+"_"+mappingIndex:propName.substring(0, 10)+"_"+mappingIndex);
+				attr.setFk(true);
+				attr.setClassName(one2Many.type());
+				attr.setSupplimentryClass(orm_maps.getClassName());
+				attr.setRelation('M');
+				if(one2Many.fk()==null){
+					throw new MappingsException("Fk required for one-2-one mappings in class "+orm_maps.className);
+				}
+
+				orm_maps.getAttributeMap().put(propName,attr);
+				orm_maps.getFkAttr().put(attr.getClassName(), attr);
+				if(!orm_maps.getDependentClasses().contains(one2Many.type()))
+					orm_maps.getDependentClasses().add(one2Many.type());
+			}
+		}
+	}
+
+	private void loadMappings(String fileLoc) throws Exception{
+		Document doc=DocumentBuilderFactory.
+		newInstance().
+		newDocumentBuilder().
+		parse(Thread.currentThread().
+				getContextClassLoader()
+				.getResourceAsStream(fileLoc));
+		NodeList mappings=doc.getChildNodes().item(0).getChildNodes();//main node
+		if(orm_mapping==null)
+			orm_mapping=new ORM_MAPPINGS();	
+		for(int i=0;i<mappings.getLength();i++){//iteratings mapping 			
+			if(mappings.item(i).getNodeType()==Node.ELEMENT_NODE){
+				mappingIndex++;
+				ORM_MAPPINGS.Maps orm_maps=orm_mapping.new Maps();
+				NodeList mapping=mappings.item(i).getChildNodes();
+				for(int j=0;j<mapping.getLength();j++){
+					if(mapping.item(j).getNodeType()==Node.ELEMENT_NODE){
+						if(mapping.item(j).getNodeName().equalsIgnoreCase("MAP:Class"))
+							if(orm_mapping.maps.containsKey(mapping.item(j).getTextContent())){
+								throw new MappingsException("Duplicate mappings found for"+mapping.item(j).getTextContent());
+							}else
+								orm_maps.setClassName(mapping.item(j).getTextContent());
+						if(mapping.item(j).getNodeName().equalsIgnoreCase("MAP:RDBSchema"))
+							orm_maps.setSchemaName(mapping.item(j).getTextContent());
+						if(mapping.item(j).getNodeName().equalsIgnoreCase("MAP:Map")){
+							mapAttributes(mapping.item(j),orm_maps,mappingIndex);
+						}
+
+					}
+				}
+				orm_maps.setIndex(mappingIndex);
+				orm_mapping.getMaps().put(orm_maps.getClassName(), orm_maps);
+			}
+		}
+	}
+
+	private void loadDependancies() throws Exception {
+		Iterator<String> iter=orm_mapping.getMaps().keySet().iterator();
+		while(iter.hasNext()){
+			String clsToCheck=iter.next();
+			Maps mapOfClass=orm_mapping.getMaps().get(clsToCheck);
+			for(String s:mapOfClass.getDependentClasses())
+				mapOfClass.getDependentClassMap().put(s, orm_mapping.getMaps().get(s));
+		}
+	}
+
+	private void mapAttributes(Node item, Maps ormMaps,int indexCount) throws Exception {
+		NodeList mapEntries=item.getChildNodes();
+		boolean isPkSet=false;
+		for(int i=0;i<mapEntries.getLength();i++){
+
+			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase("MAP:Property")){
+				Maps.Attributes attr =  ormMaps.new Attributes();
+				ormMaps.getAttributeMap().put(mapEntries.item(i).getAttributes().getNamedItem("name").getNodeValue(),
+						attr);
+				attr.setColName(mapEntries.item(i).getAttributes().getNamedItem("colName").getNodeValue());
+				attr.setName(mapEntries.item(i).getAttributes().getNamedItem("name").getNodeValue());
+				attr.setType(mapEntries.item(i).getAttributes().getNamedItem("type").getNodeValue());
+				attr.setRelation('N');
+				if(mapEntries.item(i).getAttributes().getNamedItem("primary-key")!=null){
+					attr.setPk(true);
+					ormMaps.setPkAttr(attr);
+					isPkSet=true;
+				}
+				String nameVal=mapEntries.item(i).getAttributes().getNamedItem("name").getNodeValue();
+				ormMaps.qMap.put(ormMaps.getSchemaName()+"."+mapEntries.item(i).getAttributes().getNamedItem("colName").getNodeValue(), 
+						(nameVal.length()<10?nameVal:nameVal.substring(0, 10))+"_"+indexCount);
+				/*ormMaps.qMap.put(attr.getName(), 
+						(nameVal.length()<10?nameVal:nameVal.substring(0, 10))+"_"+indexCount);*/
+			}
+			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase("MAP:one-2-one")){
+				Maps.Attributes attr =  ormMaps.new Attributes();
+				attr.setColName(mapEntries.item(i).getAttributes().getNamedItem("foreign-key").getNodeValue());
+				String propName=mapEntries.item(i).getAttributes().getNamedItem("name").getNodeValue();
+				attr.setName(propName);
+				attr.setAlias(propName.length()<10?propName+"_"+indexCount:propName.substring(0, 10)+"_"+indexCount);
+				attr.setFk(true);
+				attr.setClassName(mapEntries.item(i).getAttributes().getNamedItem("ref-class").getNodeValue());
+				attr.setSupplimentryClass(ormMaps.getClassName());
+				if(mapEntries.item(i).getAttributes().getNamedItem("foreign-key")==null){
+					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
+				}
+				attr.setRelation('O');
+				ormMaps.getAttributeMap().put(mapEntries.item(i).getAttributes().getNamedItem("name").getNodeValue(),attr);
+				ormMaps.getFkAttr().put(mapEntries.item(i).getAttributes().getNamedItem("ref-class").getNodeValue(), attr);
+				ormMaps.getDependentClasses().add(mapEntries.item(i).getAttributes().getNamedItem("ref-class").getNodeValue());
+			}
+			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase("MAP:one-2-many")){
+				Maps.Attributes attr =  ormMaps.new Attributes();
+				attr.setColName(mapEntries.item(i).getAttributes().getNamedItem("foreign-key").getNodeValue());
+				attr.setCollectionType(mapEntries.item(i).getAttributes().getNamedItem("collectionType").getNodeValue());
+				String propName=mapEntries.item(i).getAttributes().getNamedItem("name").getNodeValue();
+				attr.setName(propName);
+				attr.setAlias(propName.length()<10?propName+"_"+indexCount:propName.substring(0, 10)+"_"+indexCount);
+				attr.setFk(true);
+				attr.setClassName(mapEntries.item(i).getAttributes().getNamedItem("ref-class").getNodeValue());
+				attr.setSupplimentryClass(ormMaps.getClassName());
+				attr.setRelation('M');
+				if(mapEntries.item(i).getAttributes().getNamedItem("foreign-key")==null){
+					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
+				}
+
+				ormMaps.getAttributeMap().put(mapEntries.item(i).getAttributes().getNamedItem("name").getNodeValue(),attr);
+				ormMaps.getFkAttr().put(mapEntries.item(i).getAttributes().getNamedItem("ref-class").getNodeValue(), attr);
+				if(!ormMaps.getDependentClasses().contains(mapEntries.item(i).getAttributes().getNamedItem("ref-class").getNodeValue()))
+					ormMaps.getDependentClasses().add(mapEntries.item(i).getAttributes().getNamedItem("ref-class").getNodeValue());
+			}
+		}
+		if(!isPkSet)
+			throw new MappingsException("PK Required for "+ormMaps.className);
+	}
+
+	/**
+	 * @param
+	 * @author black
+	 * @throws
+	 * @return
+	 */
+	@Deprecated
+	public static final void excute(){
+		try {
+			config.loadConfig();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * 
+	 * @author black
+	 *
+	 */
+	public final class ORM_MAPPINGS{
+		private Map<String, Maps> maps=new HashMap<String, Maps>();
+		public Map<String, Maps> getMaps() {
+			return maps;
+		}
+		public ORM_MAPPINGS(){
+
+		}
+
+		public Maps getMapForClass(String canonicalName){
+			return maps.get(canonicalName);
+		}
+
+		public Maps getMapForSchemaName(String schemaName){
+			Iterator<String> itr=maps.keySet().iterator();
+			Maps map=null;
+			while(itr.hasNext()){
+				String classNames=itr.next();
+				if(maps.get(classNames).getSchemaName().equalsIgnoreCase(schemaName)){
+					map=maps.get(classNames);
+					break;
+				}
+			}
+			return map;
+		}
+		/**
+		 * 
+		 * @author black
+		 * 
+		 * PS its not a racist thing its just my PC's name as its black
+		 *
+		 */
+		public final class Maps{
+			private String className;
+			private String schemaName;
+			private int index;
+			private Map<String, Attributes> attributeMap=new HashMap<String, Attributes>();
+			private Map<String,Maps> dependentClassMap=new HashMap<String,Maps>();
+			private List<String> dependentClasses=new ArrayList<String>();
+			private boolean dependenciesSatisfied;
+			private Map<String, String> qMap=new HashMap<String, String>();
+			private Attributes pkAttr;
+			private Map<String, Attributes> fkAttr=new HashMap<String, Attributes>();
+
+			public boolean haveDependents(){
+				if(!fkAttr.isEmpty())
+					return true;
+				return false;
+			}
+
+			public String getClassName() {
+				return className;
+			}
+			public String getSchemaName() {
+				return schemaName;
+			}
+			public Map<String, Attributes> getAttributeMap() {
+				return attributeMap;
+			}
+			protected void setClassName(String className) {
+				this.className = className;
+			}
+			protected void setSchemaName(String schemaName) {
+				this.schemaName = schemaName;
+			}
+			protected void setAttributeMap(Map<String, Attributes> attributeMap) {
+				this.attributeMap = attributeMap;
+			}
+			public Map<String, Maps> getDependentClassMap() {
+				return dependentClassMap;
+			}
+			protected void setDependentClassMap(Map<String, Maps> dependentClassMap) {
+				this.dependentClassMap = dependentClassMap;
+			}
+			public boolean isDependenciesSatisfied() {
+				return dependenciesSatisfied;
+			}
+			protected void setDependenciesSatisfied(boolean dependenciesSatisfied) {
+				this.dependenciesSatisfied = dependenciesSatisfied;
+			}
+			public List<String> getDependentClasses() {
+				return dependentClasses;
+			}
+			protected void setDependentClasses(List<String> dependentClasses) {
+				this.dependentClasses = dependentClasses;
+			}
+			public class Attributes{
+				private String name;
+				private String colName;
+				private boolean isPk;
+				private boolean isFk;
+				private String alias;
+				private String className;
+				private String supplimentryClass;
+				private String type;
+				private String collectionType;
+				private char relation;
+				public String getName() {
+					return name;
+				}
+				public void setName(String name) {
+					this.name = name;
+				}
+				public String getColName() {
+					return colName;
+				}
+				public void setColName(String colName) {
+					this.colName = colName;
+				}
+				public boolean isPk() {
+					return isPk;
+				}
+				public void setPk(boolean isPk) {
+					this.isPk = isPk;
+				}
+				public boolean isFk() {
+					return isFk;
+				}
+				public void setFk(boolean isFk) {
+					this.isFk = isFk;
+				}
+				public String getAlias() {
+					return alias;
+				}
+				public void setAlias(String alias) {
+					this.alias = alias;
+				}
+				public String getClassName() {
+					return className;
+				}
+				public void setClassName(String className) {
+					this.className = className;
+				}
+				public String getSupplimentryClass() {
+					return supplimentryClass;
+				}
+				public void setSupplimentryClass(String supplimentryClass) {
+					this.supplimentryClass = supplimentryClass;
+				}
+				public String getType() {
+					return type;
+				}
+				public void setType(String type) {
+					this.type = type;
+				}
+				public void setCollectionType(String collectionType) {
+					this.collectionType = collectionType;
+				}
+				public String getCollectionType() {
+					return collectionType;
+				}
+				public char getRelation() {
+					return relation;
+				}
+				public void setRelation(char relation) {
+					this.relation = relation;
+				}
+			}
+			public Attributes getPkAttr() {
+				return pkAttr;
+			}
+			public void setPkAttr(Attributes pkAttr) {
+				this.pkAttr = pkAttr;
+			}
+			public Map<String,Attributes> getFkAttr() {
+				return fkAttr;
+			}
+			public void setFkAttr(Map<String,Attributes> fkAttr) {
+				this.fkAttr = fkAttr;
+			}
+
+			public Map<String, String> getqMap() {
+				return qMap;
+			}
+
+			public void setqMap(Map<String, String> qMap) {
+				this.qMap = qMap;
+			}
+
+			public int getIndex() {
+				return index;
+			}
+
+			public void setIndex(int index) {
+				this.index = index;
+			}
+
+		}
+	}
+	public ORM_MAPPINGS getOrm_Mappings() {
+		return orm_mapping;
+	}
+}

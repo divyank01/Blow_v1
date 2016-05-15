@@ -1,5 +1,9 @@
 package com.sales.poolable.parsers;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
@@ -8,8 +12,18 @@ import org.w3c.dom.NodeList;
 
 import com.sales.constants.ConfigConstants;
 
+
+
+/**
+ * 
+ * @author Divyank Sharma
+ * Parser for orm configurations.
+ *
+ */
 public final class ORM_CONFIG_Parser {
 	
+	private static final String CONFIG_FILE_NAME = "BLOW-ORM-CONFIG.xml";
+
 	private ORM_CONFIG_Parser(){}
 	
 	private ORM_CONFIG orm_config;
@@ -35,13 +49,18 @@ public final class ORM_CONFIG_Parser {
 		String pwd = null;
 		String userName = null;
 		String url = null;
-		
+		boolean genSchema=false;
+		List<String> mappings=new ArrayList<String>();
+		List<String> packagesToScan=new ArrayList<String>();
+		List<String> schemas=new ArrayList<String>();
+		List<String> queries=new ArrayList<String>();
+		boolean useAnnotations=false;
 		Document doc=DocumentBuilderFactory.
 						newInstance().
 						newDocumentBuilder().
 						parse(Thread.currentThread().
 								getContextClassLoader()
-						        .getResourceAsStream("BLOW-ORM-CONFIG.xml"));
+						        .getResourceAsStream(CONFIG_FILE_NAME));
 		NodeList nl=doc.getChildNodes().item(0).getChildNodes();
 
 		for(int i=0;i<nl.getLength();i++){
@@ -54,27 +73,48 @@ public final class ORM_CONFIG_Parser {
 				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.USERNAME))
 					userName=node.getTextContent();
 				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.MAPPINGS)){
-					loadMappings(node.getAttributes().getNamedItem(ConfigConstants.MAPPINGS_FILE).getNodeValue());
+					mappings.add(node.getAttributes().getNamedItem(ConfigConstants.MAPPINGS_FILE).getNodeValue());
 				}
-					
+				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.SCHEMAS)){
+					StringTokenizer tokens=new StringTokenizer(node.getTextContent(), ",");
+					while(tokens.hasMoreElements())
+						schemas.add(tokens.nextToken());
+				}
+				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.ANNOTATIONS)){
+					useAnnotations=Boolean.valueOf(node.getAttributes().getNamedItem(ConfigConstants.ANNOTATION_USE).getNodeValue());
+					if(useAnnotations){
+						getAnnotations(packagesToScan,node);
+					}
+				}
+				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.GEN_SCHEMA)){
+					genSchema=Boolean.valueOf(node.getTextContent());
+				}
+				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.QUERIES)){
+					NodeList nodeList=node.getChildNodes();
+					for(int j=0;j<nodeList.getLength();j++){
+						if(nodeList.item(j).getNodeName().equalsIgnoreCase(ConfigConstants.QUERY)){
+							queries.add(nodeList.item(j).getAttributes().getNamedItem(ConfigConstants.Q_FILE).getNodeValue());
+						}
+					}
+				}
 			}
 		}
-		orm_config=new ORM_CONFIG(userName, pwd, url);
+		orm_config=new ORM_CONFIG(userName, pwd, url,useAnnotations,packagesToScan,mappings,schemas,queries);
+		orm_config.setGenSchema(genSchema);
 	}
 	
-	private void loadMappings(String fileLoc) throws Exception{
-		Document doc=DocumentBuilderFactory.
-		newInstance().
-		newDocumentBuilder().
-		parse(Thread.currentThread().
-				getContextClassLoader()
-		        .getResourceAsStream(fileLoc));
-		NodeList mappings=doc.getChildNodes().item(0).getChildNodes();
-		for(int i=0;i<mappings.getLength();i++){
-			
+	private void getAnnotations(List<String> packagesToScan,Node nod) {
+		NodeList nl=nod.getChildNodes();
+		for(int i=0;i<nl.getLength();i++){
+			Node node=nl.item(i);
+			if(node.getNodeType()==Node.ELEMENT_NODE){
+				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.PACKAGE_SCAN)){
+					packagesToScan.add(node.getTextContent().trim());
+				}
+			}
 		}
 	}
-	
+
 	@Deprecated
 	public static final void excute(){
 		try {
@@ -88,13 +128,22 @@ public final class ORM_CONFIG_Parser {
 		private String userName;
 		private String pwd;
 		private String url;
-		
-		
-		public ORM_CONFIG(String userName, String pwd, String url) {
+		private boolean genSchema;
+		private boolean useAnnotations;
+		private List<String> packagesToScan;
+		private List<String> mappingFiles;
+		private List<String> schemas;
+		private List<String> queries;
+		public ORM_CONFIG(String userName, String pwd, String url,boolean useAnnotations, List<String> packagesToScan,List<String> mappingFiles,List<String> schemas,List<String> queries) {
 			super();
 			this.userName = userName;
 			this.pwd = pwd;
 			this.url = url;
+			this.useAnnotations = useAnnotations;
+			this.packagesToScan = packagesToScan;
+			this.mappingFiles = mappingFiles;
+			this.schemas = schemas;
+			this.queries = queries;
 		}
 		public String getUserName() {
 			return userName;
@@ -106,6 +155,30 @@ public final class ORM_CONFIG_Parser {
 			return url;
 		}
 		private ORM_CONFIG(){}
+		public boolean isUseAnnotations() {
+			return useAnnotations;
+		}
+		public List<String> getPackagesToScan() {
+			return packagesToScan;
+		}
+		public List<String> getMappingFiles() {
+			return mappingFiles;
+		}
+		public List<String> getSchemas() {
+			return schemas;
+		}
+		public void setSchemas(List<String> schemas) {
+			this.schemas = schemas;
+		}
+		public boolean isGenSchema() {
+			return genSchema;
+		}
+		public void setGenSchema(boolean genSchema) {
+			this.genSchema = genSchema;
+		}
+		public List<String> getQueries() {
+			return queries;
+		}
 		
 		
 	}

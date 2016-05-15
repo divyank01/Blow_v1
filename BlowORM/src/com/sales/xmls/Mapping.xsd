@@ -38,22 +38,31 @@
 		<attribute name="colName" type="string" use="required"></attribute>
 		<attribute name="name" type="string" use="required"></attribute>
 		<attribute name="primary-key" type="boolean"></attribute>
+		<attribute name="generated" type="boolean" use="optional"></attribute>
+		<attribute name="seq" type="string" use="optional"></attribute>
+		<attribute name="length" type="int" use="optional"></attribute>
 	</complexType>
 
 	<complexType name="one-2-one">
-        <annotation>
-        	<documentation>this attribute can handle one to one as well as many to one relationships.</documentation>
-        </annotation>
-        <attribute name="name" type="string" use="required"></attribute>
+		<annotation>
+			<documentation>
+				this attribute can handle one to one as well as many to
+				one relationships.
+			</documentation>
+		</annotation>
+		<attribute name="name" type="string" use="required"></attribute>
 		<attribute name="ref-class" type="string" use="required"></attribute>
-		<attribute name="foreign-key" type="string" use="required"></attribute>
+		<attribute name="foreign-key" type="string" use="optional"></attribute>
+		<attribute name="foreign-key-ref" type="boolean" use="optional"></attribute>
 	</complexType>
 
 	<complexType name="one-2-many">
-        <annotation>
-        	<documentation>this attribute can handle one to many relationship.</documentation>
-        </annotation>
-        <attribute name="ref-class" type="string" use="required"></attribute>
+		<annotation>
+			<documentation>
+				this attribute can handle one to many relationship.
+			</documentation>
+		</annotation>
+		<attribute name="ref-class" type="string" use="required"></attribute>
 		<attribute name="foreign-key" type="string" use="required"></attribute>
 		<attribute name="collectionType" use="required">
 			<simpleType>
@@ -64,6 +73,7 @@
 			</simpleType>
 		</attribute>
 		<attribute name="name" type="string" use="required"></attribute>
+		<attribute name="foreign-key-ref" type="boolean"></attribute>
 	</complexType>
 
 	<complexType name="ComplexPrimaryKey">

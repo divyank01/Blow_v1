@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MAP:Mappings xmlns:MAP="http://www.blow.org/Mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blow.org/Mapping ../../../../../BlowORM/src/com/sales/xmls/Mapping.xsd ">
+  <MAP:Mapping>
+    <MAP:Class>com.sales.pojo.Stock</MAP:Class>
+    <MAP:RDBSchema>STOCK</MAP:RDBSchema>
+    <MAP:Map>
+    	<MAP:Property name="id" type="int" colName="id" primary-key="true" generated="true" seq="STOCK_SEQ"/>
+    	<MAP:Property name="productId" type="int" colName="prod_id" length="6"/>
+    	<MAP:Property name="liveStockCount" type="double" colName="live_stock" length="5"/>
+    	<MAP:Property name="locId" type="int" colName="loc_id" length="5"/>
+    	<MAP:one-2-one name="product" ref-class="com.sales.pojo.Prodcty" foreign-key="PROD_ID"/>
+    	<MAP:one-2-one name="mappings" ref-class="com.sales.pojo.StockMappings" foreign-key="ID" foreign-key-ref="true"/>
+    </MAP:Map>
+  </MAP:Mapping>
+  <MAP:Mapping>
+    <MAP:Class>com.sales.pojo.StockMappings</MAP:Class>
+    <MAP:RDBSchema>STOCK_MAPPINGS</MAP:RDBSchema>
+    <MAP:Map>
+    	<MAP:Property name="id" type="int" colName="id" primary-key="true" length="5" generated="true" seq="STOCK_MAPPING_SEQ"/>
+    	<MAP:Property name="generatedProductId" type="double" length="4" colName="GEN_PROD_ID"/>
+    	<MAP:Property name="stockId" type="int" length="5" colName="STOCK_ID"/>
+    	<MAP:Property name="locId" type="int" length="5" colName="loc_id"/>
+    	<MAP:one-2-one name="stock" ref-class="com.sales.pojo.Stock" foreign-key="STOCK_ID"/>
+    </MAP:Map>
+  </MAP:Mapping>
+</MAP:Mappings>

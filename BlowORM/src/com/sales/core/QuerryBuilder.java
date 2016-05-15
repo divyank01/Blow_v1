@@ -2,13 +2,16 @@ package com.sales.core;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.BlowConstatnts;
 import com.sales.constants.BlowParam;
+import com.sales.constants.SQLTypes;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
@@ -24,7 +27,9 @@ public class QuerryBuilder {
 		bildr=new QuerryBuilder();
 		return bildr;
 	}
-
+	/*
+	 * changes required for complex primary key
+	 */
 	protected PreparedStatement getCountForPk(ORM_MAPPINGS mappings,Object obj,Connection con) throws Exception{
 		StringBuffer buffer=new StringBuffer();
 		buffer.append("SELECT COUNT(*) AS count FROM ");
@@ -39,8 +44,47 @@ public class QuerryBuilder {
 		return smt;
 	}
 
-
-	protected PreparedStatement createInsertQuerry(ORM_MAPPINGS mappings,Object obj,Connection con) throws Exception{
+	protected String getOracleImplForBatchInsertQuery(ORM_MAPPINGS mappings,Object obj,StringBuilder sql){
+		if(sql==null){
+			sql=new StringBuilder();
+			sql.append("INSERT ALL ");
+		}
+		StringBuilder qMarks=new StringBuilder();
+		Maps dMap=mappings.getMapForClass(obj.getClass().getCanonicalName());
+		Map<String, Attributes> aMap=dMap.getAttributeMap();
+		Iterator<String> itr=aMap.keySet().iterator();
+		sql.append("INTO "+dMap.getSchemaName()+" (");
+		qMarks.append(" (");
+		while(itr.hasNext()){
+			String key=itr.next();
+			if(!aMap.get(key).isFk()){
+				//its normal for this object not foreign.
+				sql.append(aMap.get(key).getColName());
+				if(aMap.get(key).isGenerated()){
+					qMarks.append(aMap.get(key).getSeqName()+".nextval");
+				}else{
+					qMarks.append("?");
+				}
+				if(itr.hasNext()){
+					qMarks.append(",");
+					sql.append(",");
+				}
+			}else{
+				//map the nextval here
+				if(!aMap.get(key).isReferenced()){
+					String seqName =mappings.getMapForClass(aMap.get(key).getClassName()).getPkAttr().getSeqName();
+					if(itr.hasNext())
+						qMarks.append(seqName+".nextval,");
+					else
+						qMarks.append(seqName+".nextval");
+				}
+			}
+		}
+		return sql.append(")"+qMarks.toString()).toString();
+	}
+	
+	
+	protected String getInsertQuerry(ORM_MAPPINGS mappings,Object obj,int valueCount){
 		Maps dMap=mappings.getMapForClass(obj.getClass().getCanonicalName());
 		StringBuilder sql=new StringBuilder();
 		StringBuilder qMarks=new StringBuilder();
@@ -53,9 +97,12 @@ public class QuerryBuilder {
 		while(iter.hasNext()){
 			String attr=iter.next();
 			if(!aMap.get(attr).isFk()){
-				System.out.println(attr);
 				sql.append(aMap.get(attr).getColName());
-				qMarks.append("?");
+				if(aMap.get(attr).isGenerated()){
+					qMarks.append(aMap.get(attr).getSeqName()+".nextval");
+				}else{
+					qMarks.append("?");
+				}
 				if(iter.hasNext()){
 					qMarks.append(",");
 					sql.append(",");
@@ -71,24 +118,30 @@ public class QuerryBuilder {
 		qMarks.append(")");
 		sql.append(")");
 		sql.append(" VALUES ");
-		sql.append(qMarks.toString());
-		PreparedStatement stmt=con.prepareStatement(sql.toString());
-		Iterator<String> itr=aMap.keySet().iterator();
-		int count=1;
-		while(itr.hasNext()){
-			String attr=itr.next();
-			if(!aMap.get(attr).isFk()){
-				Object ob1=obj.getClass().getMethod(getterForField(aMap.get(attr).getName()), null).invoke(obj, null);
-				stmt.setObject(count, ob1);
-				count++;
-			}
+		/*
+		 * this is only valid for mysql
+		 * 
+		 * for oracle insert all should be used
+		 * 
+		 * ************IMP*************
+		 * It might not be the right place to mention this comment
+		 * Following is really interesting
+		 * Only inster all is not goin to cut it we need
+		 * batch of insert allcheck out following link
+		 * http://brianbontrager.blogspot.in/2013/05/of-sequences-insert-all-and-prepared.html
+		 * 
+		 */
+		for(int i=0;i<valueCount;i++){
+			sql.append(qMarks.toString());
+			if(valueCount-1!=i)
+				sql.append(",");
 		}
-		//map.put(dMap.getIndex(), sql.toString());
-		System.out.println(sql.toString());
-		return stmt;
+		return sql.append("").toString();
 	}
-
-	protected PreparedStatement createUpadteQuerry(ORM_MAPPINGS mappings,Object obj,Connection con) throws Exception{
+	/*
+	 * changes required for complex primary key
+	 */
+	protected String getUpdateQuerry(Object obj,ORM_MAPPINGS mappings,int valueCount){
 		Maps dMap=mappings.getMapForClass(obj.getClass().getCanonicalName());
 		StringBuilder sql=new StringBuilder();
 		StringBuilder qMarks=new StringBuilder();
@@ -114,7 +167,72 @@ public class QuerryBuilder {
 		}
 		qMarks.append(")");
 		sql.append(" WHERE ");
-		sql.append(dMap.getPkAttr().getColName()+"="+"?");
+		return sql.append(dMap.getPkAttr().getColName()+"="+"?").toString();
+	}
+
+	private String getQuerry(Object obj,ORM_MAPPINGS mappings,int type) throws Exception{
+		String retval=null;
+		switch(type){
+		case 1:
+			retval= getInsertQuerry(mappings, obj,1);
+			break;
+		case 2:
+			retval= getUpdateQuerry(obj, mappings,1);
+			break;
+		default:
+			throw new BlownException("invalid querry type");
+		}
+		return retval;
+	}
+
+	protected PreparedStatement createInsertQuerry(ORM_MAPPINGS mappings,Object obj,Connection con) throws Exception{
+		PreparedStatement stmt=null;
+		String sql=null;
+		if(obj instanceof List){
+			List items=(List)obj;
+			Object dummy=items.get(0);
+			sql=getQuerry(obj, mappings, 1);
+			stmt=con.prepareStatement(sql);
+			for(Object ob:items){
+				Maps dMap=mappings.getMapForClass(obj.getClass().getCanonicalName());
+				Map<String, Attributes> aMap=dMap.getAttributeMap();
+				Iterator<String> itr=aMap.keySet().iterator();
+				int count=1;
+				while(itr.hasNext()){
+					String attr=itr.next();
+					if(!aMap.get(attr).isFk() && !aMap.get(attr).isGenerated()){
+						Object ob1=ob.getClass().getMethod(getterForField(aMap.get(attr).getName()), null).invoke(ob, null);
+						stmt.setObject(count, ob1);
+						stmt.addBatch();
+						count++;
+					}
+				}
+			}
+			System.out.println(sql);
+		}else{
+			Maps dMap=mappings.getMapForClass(obj.getClass().getCanonicalName());
+			Map<String, Attributes> aMap=dMap.getAttributeMap();
+			sql=getQuerry(obj, mappings, 1);
+			stmt=con.prepareStatement(sql);
+			Iterator<String> itr=aMap.keySet().iterator();
+			int count=1;
+			while(itr.hasNext()){
+				String attr=itr.next();
+				if(!aMap.get(attr).isFk() && !aMap.get(attr).isGenerated()){
+					Object ob1=obj.getClass().getMethod(getterForField(aMap.get(attr).getName()), null).invoke(obj, null);
+					stmt.setObject(count, ob1);
+					count++;
+				}
+			}
+			System.out.println(sql);
+		}
+		return stmt;
+	}
+
+	protected PreparedStatement createUpadteQuerry(ORM_MAPPINGS mappings,Object obj,Connection con) throws Exception{
+		Maps dMap=mappings.getMapForClass(obj.getClass().getCanonicalName());
+		Map<String, Attributes> aMap=dMap.getAttributeMap();
+		String sql=getQuerry(obj, mappings, 2);
 		PreparedStatement stmt=con.prepareStatement(sql.toString());
 		Iterator<String> itr=aMap.keySet().iterator();
 		int count=1;
@@ -179,7 +297,7 @@ public class QuerryBuilder {
 							if(dMap.containsKey(token)){
 								if(dMap.get(token).isFk()){
 									finalSchema=mappings.getMapForClass(dMap.get(token).getClassName())
-									.getSchemaName();
+											.getSchemaName();
 									dMap=mappings.getMapForClass(dMap.get(token).getClassName()).getAttributeMap();
 								}else{
 									if(count>0)
@@ -236,34 +354,31 @@ public class QuerryBuilder {
 		}
 	}
 
-	private void makeLOJs(ORM_MAPPINGS mappings, String oldClass, String newClass,StringBuffer sql,boolean idDone) {
-		sql.append(BlowConstatnts.LOJ);
-		sql.append(mappings.getMapForClass(newClass).getSchemaName());
-		sql.append(BlowConstatnts.ON+mappings.getMaps().get(oldClass).getSchemaName());
-		sql.append(BlowConstatnts.DOT);
-		sql.append(mappings.getMapForClass(oldClass).getFkAttr().get(newClass).getColName());
-		sql.append(BlowConstatnts.EQ);
-		sql.append(mappings.getMapForClass(newClass).getSchemaName());
-		sql.append(BlowConstatnts.DOT);
-		sql.append(mappings.getMaps().get(newClass).getFkAttr().get(oldClass).getColName());
-		/*sql.append(BlowConstatnts.LOJ);
-		sql.append(mappings.getMapForClass(newClass).getSchemaName());
-		sql.append(BlowConstatnts.ON+mappings.getMaps().get(oldClass).getSchemaName());
-		sql.append(BlowConstatnts.DOT);
-		sql.append(mappings.getMapForClass(oldClass).getFkAttr().get(newClass).getColName());
-		sql.append(BlowConstatnts.EQ);
-		sql.append(mappings.getMapForClass(newClass).getSchemaName());
-		sql.append(BlowConstatnts.DOT);
-		sql.append(mappings.getMaps().get(newClass).getPkAttr().getColName());*/
-		/*sql.append(BlowConstatnts.LOJ);
-		sql.append(mappings.getMapForClass(newClass).getSchemaName());
-		sql.append(BlowConstatnts.ON+mappings.getMaps().get(oldClass).getSchemaName());
-		sql.append(BlowConstatnts.DOT);
-		sql.append(mappings.getMapForClass(newClass).getPkAttr().getColName());
-		sql.append(BlowConstatnts.EQ);
-		sql.append(mappings.getMapForClass(newClass).getSchemaName());
-		sql.append(BlowConstatnts.DOT);
-		sql.append(mappings.getMaps().get(newClass).getFkAttr().get(oldClass).getColName());*/
+	private void makeLOJs(ORM_MAPPINGS mappings, String oldClass, String newClass,StringBuffer sql,boolean flag) {
+		if(mappings.getMapForClass(newClass).getFkAttr().get(oldClass)!=null 
+				&& mappings.getMapForClass(newClass).getFkAttr().get(oldClass).isReferenced() 
+				&& !mappings.getMapForClass(oldClass).getFkAttr().get(newClass).isReferenced()){
+			//reverse one to one mapping
+			sql.append(BlowConstatnts.LOJ);
+			sql.append(mappings.getMapForClass(newClass).getSchemaName());
+			sql.append(BlowConstatnts.ON+mappings.getMaps().get(oldClass).getSchemaName());
+			sql.append(BlowConstatnts.DOT);
+			sql.append(mappings.getMapForClass(newClass).getFkAttr().get(oldClass).getColName());
+			sql.append(BlowConstatnts.EQ);
+			sql.append(mappings.getMapForClass(newClass).getSchemaName());
+			sql.append(BlowConstatnts.DOT);
+			sql.append(mappings.getMaps().get(newClass).getPkAttr().getColName());
+		}else{
+			sql.append(BlowConstatnts.LOJ);
+			sql.append(mappings.getMapForClass(newClass).getSchemaName());
+			sql.append(BlowConstatnts.ON+mappings.getMaps().get(oldClass).getSchemaName());
+			sql.append(BlowConstatnts.DOT);
+			sql.append(mappings.getMapForClass(oldClass).getPkAttr().getColName());
+			sql.append(BlowConstatnts.EQ);
+			sql.append(mappings.getMapForClass(newClass).getSchemaName());
+			sql.append(BlowConstatnts.DOT);
+			sql.append(mappings.getMaps().get(oldClass).getFkAttr().get(newClass).getColName());
+		}
 		if(mappings.getMapForClass(newClass).haveDependents()){
 			for(String clz:mappings.getMapForClass(newClass).getDependentClasses()){
 				if(!clz.equalsIgnoreCase(oldClass)){
@@ -271,7 +386,6 @@ public class QuerryBuilder {
 				}
 			}
 		}
-
 	}
 	private StringBuilder makeMapForAlieses(Map m,StringBuilder build,boolean isDone,ORM_MAPPINGS mappings,String t,String prevClass) throws BlownException {
 		Iterator<String> itr=m.keySet().iterator();
@@ -296,5 +410,66 @@ public class QuerryBuilder {
 			}
 		}
 		return build;
+	}
+	
+	protected String createTableForClass(Maps maps){
+		StringBuilder sql=new StringBuilder("CREATE TABLE ");
+		sql.append(maps.getSchemaName());
+		sql.append(BlowConstatnts.SPACE).append(BlowConstatnts.L_BRCKT);
+		Iterator<String> itr=maps.getAttributeMap().keySet().iterator();
+		while (itr.hasNext()) {
+			String prop = itr.next();
+			Attributes attr=maps.getAttributeMap().get(prop);
+			if(!attr.isFk() && !attr.isReferenced()){
+				sql.append(attr.getColName())
+				.append(BlowConstatnts.SPACE)
+				.append(SQLTypes.get(attr.getType()))
+				.append(BlowConstatnts.L_BRCKT)
+				.append(attr.getLength())
+				.append(BlowConstatnts.R_BRCKT)
+				.append(BlowConstatnts.SPACE)
+				.append(BlowConstatnts.COMMA);
+			}else if(attr.isReferenced()){
+				//do nothing
+			}else{
+				
+			}
+		}
+		sql.append(BlowConstatnts.PK)
+			.append(BlowConstatnts.L_BRCKT)
+			.append(maps.getPkAttr().getColName())
+			.append(BlowConstatnts.R_BRCKT)
+			.append(BlowConstatnts.R_BRCKT);
+		return sql.toString();
+	}
+	
+	protected String alterAddColumn(Attributes attr, String tableName){
+		StringBuilder sql=new StringBuilder("ALTER TABLE ");
+		sql.append(tableName)
+			.append(BlowConstatnts.SPACE)
+			.append(BlowConstatnts.ADD)
+			.append(BlowConstatnts.SPACE)
+			.append(attr.getColName())
+			.append(BlowConstatnts.SPACE)
+			.append(SQLTypes.get(attr.getType()))
+			.append(BlowConstatnts.L_BRCKT)
+			.append(attr.getLength())
+			.append(BlowConstatnts.R_BRCKT);
+		return sql.toString();
+	}
+	
+	protected String modifyColumn(Attributes attr, String tableName){
+		StringBuilder sql=new StringBuilder("ALTER TABLE ");
+		sql.append(tableName)
+			.append(BlowConstatnts.SPACE)
+			.append(BlowConstatnts.MODIFY)
+			.append(BlowConstatnts.SPACE)
+			.append(attr.getColName())
+			.append(BlowConstatnts.SPACE)
+			.append(SQLTypes.get(attr.getType()))
+			.append(BlowConstatnts.L_BRCKT)
+			.append(attr.getLength())
+			.append(BlowConstatnts.R_BRCKT);
+		return sql.toString();
 	}
 }

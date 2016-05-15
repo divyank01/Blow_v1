@@ -11,20 +11,20 @@ import com.sales.blow.annotations.One2One;
 @BlowSchema(schemaName="PRODUCT")
 public class Prodcty {
 	
-	@BlowId
+	@BlowId(generataed=false,seq="product_seq")
 	@BlowProperty(columnName="ID")
-	private int id;
+	public int id;
 	@BlowProperty(columnName="NAME")
 	private String name;
 	@BlowProperty(columnName="CAT_ID")
 	private long catId;
-	@One2One(fk="ID")
+	@One2One(fk="PROD_ID",isReferenced=true)
 	private ProductDetails details;
-	@One2One(fk="ID")
+	@One2One(fk="PROD_ID",isReferenced=true)
 	private ElectronicProductDetails epd;
-	@One2One(fk="ID")
+	@One2One(fk="PROD_ID",isReferenced=true)
 	private Stock stock;
-	@One2Many(collectionType="java.util.List",fk="ID",type="com.sales.pojo.Stock")
+	@One2Many(collectionType="java.util.List",fk="PROD_ID",type="com.sales.pojo.Stock")
 	private List<Stock> stocks;
 	public int getId() {
 		return id;

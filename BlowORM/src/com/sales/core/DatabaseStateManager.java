@@ -1,0 +1,78 @@
+package com.sales.core;
+
+import java.util.Iterator;
+
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.DataBaseInfo;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.DataBaseInfo.Table;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.DataBaseInfo.Table.Column;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
+
+public class DatabaseStateManager {
+
+	private static DatabaseStateManager manager;
+	
+	private QuerryBuilder builder;
+	private QuerryExecutor executor;
+	private DatabaseStateManager(){}
+	
+	public static DatabaseStateManager getInstance(){
+		if(manager==null)
+			manager=new DatabaseStateManager();
+		return manager;
+	}
+	
+	public void syncSchema(ORM_MAPPINGS mappings,DataBaseInfo info) throws Exception {
+		Iterator<String> itr=mappings.getMaps().keySet().iterator();
+		builder=QuerryBuilder.newInstance();
+		executor=QuerryExecutor.getExecutor();
+		String className;
+		String schema;
+		String query;
+		Maps map;
+		while(itr.hasNext()){
+			className=itr.next();
+			map=mappings.getMapForClass(className);
+			schema=map.getSchemaName();
+			Table table=info.getTables().get(schema.toUpperCase());
+			if(table==null){
+				//create table-----full-------
+				query=builder.createTableForClass(map);
+				System.out.println(query);
+				executor.executeStatment(query);
+			}else if(table!=null){
+				//check if all all column are present
+				//create function maps r better then for loop
+				performTablesForModification(table, map);
+			}
+		}
+		
+	}
+	
+	private void performTablesForModification(Table table,Maps maps) throws Exception{
+		Iterator<String> itr=maps.getAttributeMap().keySet().iterator();
+		String query;
+		while (itr.hasNext()) {
+			String prop = itr.next();
+			Attributes attr=maps.getAttributeMap().get(prop);
+			if(!attr.isFk() && !attr.isReferenced()){
+				Column col=table.getColumns().get(attr.getColName().toUpperCase());
+				if(col==null){
+					//alter table
+					query=builder.alterAddColumn(attr,maps.getSchemaName());
+					System.out.println(query);
+					executor.executeStatment(query);
+				}else{
+					if(attr.getLength()>0 && attr.getLength()!=col.getLength()){
+						//modify column
+						query=builder.modifyColumn(attr,maps.getSchemaName());
+						System.out.println(query);
+						executor.executeStatment(query);
+					}
+				}
+			}
+		}
+	}
+	
+}

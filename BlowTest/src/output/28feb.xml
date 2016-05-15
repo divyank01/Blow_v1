@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<com.sales.pojo.Prodcty>
+  <id>121</id>
+  <name>some</name>
+  <catId>1</catId>
+  <details>
+    <id>254</id>
+    <prodId>121</prodId>
+    <brand>lavi</brand>
+    <productSize>dfgg</productSize>
+    <color>hch</color>
+    <material>ghdhg</material>
+    <price>400</price>
+    <product reference="../.."/>
+  </details>
+  <epd>
+    <id>84</id>
+    <prodId>121</prodId>
+    <brand>hfch</brand>
+    <color>dhfgh</color>
+    <material>ghdfh</material>
+    <price>342</price>
+    <product reference="../.."/>
+    <description>xchxth</description>
+  </epd>
+  <stock>
+    <id>234</id>
+    <productId>121</productId>
+    <liveStockCount>243.0</liveStockCount>
+    <locId>0</locId>
+    <product reference="../.."/>
+    <mappings>
+      <id>6334</id>
+      <generatedProductId>365.0</generatedProductId>
+      <stockId>234</stockId>
+      <locId>123</locId>
+      <stock reference="../.."/>
+    </mappings>
+  </stock>
+  <stocks>
+    <com.sales.pojo.Stock>
+      <id>234</id>
+      <productId>121</productId>
+      <liveStockCount>243.0</liveStockCount>
+      <locId>0</locId>
+      <product reference="../../.."/>
+      <mappings>
+        <id>6334</id>
+        <generatedProductId>365.0</generatedProductId>
+        <stockId>234</stockId>
+        <locId>123</locId>
+        <stock reference="../.."/>
+      </mappings>
+    </com.sales.pojo.Stock>
+    <com.sales.pojo.Stock>
+      <id>234</id>
+      <productId>121</productId>
+      <liveStockCount>243.0</liveStockCount>
+      <locId>0</locId>
+      <product reference="../../.."/>
+      <mappings>
+        <id>355</id>
+        <generatedProductId>123.0</generatedProductId>
+        <stockId>234</stockId>
+        <locId>8678</locId>
+        <stock reference="../.."/>
+      </mappings>
+    </com.sales.pojo.Stock>
+  </stocks>
+</com.sales.pojo.Prodcty>

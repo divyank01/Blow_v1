@@ -1,0 +1,89 @@
+package main;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.sales.pojo.Prodcty;
+import com.sales.pojo.ProductDetails;
+import com.sales.poolable.parsers.ORM_CONFIG_Parser;
+import com.sales.poolable.parsers.ORM_MAPPINGS_Parser;
+import com.thoughtworks.xstream.XStream;
+
+public class TestMain {
+
+	public static void main(String[] args) {
+		Connection con=null;
+		ResultSet rs=null;
+		ResultSet rs1=null;
+		PreparedStatement ps=null;
+		try{
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			con=DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe","divyank","divyank99");
+			String[] t={"TABLE"};
+			//rs=con.getMetaData().getTables(null, null, null, t);
+			StringBuilder sql=new StringBuilder("INSERT ALL ");
+			sql.append("WHEN var_1=0 THEN");
+			sql.append(" INTO PRODUCT (ID,NAME,CAT_ID) VALUES (product_seq.nextval,?,?) ");
+			sql.append("WHEN var_1=0 THEN");
+			sql.append(" INTO STOCK (ID,PROD_ID,LIVE_STOCK,LOC_ID) VALUES (stock_seq.nextval,product_seq.nextval,?,?)");
+			sql.append(" INTO STOCK_MAPPINGS (ID,GEN_PROD_ID,STOCK_ID,LOC_ID) VALUES (STOCK_MAPPING_SEQ.nextval,stock_seq.nextval,?,?)");
+			sql.append(" SELECT COUNT(*) as var_1 FROM STOCK WHERE ID=a");
+			String s=sql.toString();
+			//System.out.println(s);
+			/*rs=con.getMetaData().getColumns("User", "DIVYANK", null, null);
+			while(rs.next())
+				System.out.println(rs.getString(3)+"\t\t\t"+rs.getInt(17)+"\t\t"+rs.getString(1)+"\t\t\t\t\t"+rs.getString(4));*/
+			ps=con.prepareStatement(s);
+			System.out.println(s);
+			for(int j=0;j<4;j++){
+				ps.setObject(1,j+1);
+				ps.setObject(2, j+2);
+				ps.setObject(3, j+3);
+				ps.setObject(4, j+4);
+				ps.setObject(5, j+5);
+				ps.setObject(6, 20+j);
+				ps.addBatch();
+			}
+			System.out.println(s);
+			int[] b=ps.executeBatch();
+			System.out.println(b);
+			//System.out.println(ps.executeUpdate());
+			//rs=ps.getGeneratedKeys();
+			/*while(rs.next()){
+				System.out.println(rs.getObject(1));
+			}
+*/			con.commit();
+		}catch(Exception e){
+			e.printStackTrace();
+			
+		}finally{
+			try {
+				//rs.close();
+				ps.close();
+				con.close();
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				try {
+					ps.close();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					con.close();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+		
+		//System.out.println(new XStream().toXML(ORM_MAPPINGS_Parser.getInstance()));
+	}
+
+}

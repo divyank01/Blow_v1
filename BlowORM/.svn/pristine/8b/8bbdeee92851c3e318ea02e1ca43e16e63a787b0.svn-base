@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.BlowORM.org/BlowConf"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:BLOW="http://www.BlowORM.org/BlowConf">
+
+	<complexType name="JDBCConnection">
+		<sequence>
+			<element name="URL" type="BLOW:URL" minOccurs="1"
+				maxOccurs="1" nillable="false">
+			</element>
+			<element name="PASSWORD" type="BLOW:PASSWORD" minOccurs="1"
+				maxOccurs="1" nillable="false">
+			</element>
+			<element name="USER" type="BLOW:USER" minOccurs="1"
+				maxOccurs="1" nillable="false">
+			</element>
+			<element name="MAPPINGS" type="BLOW:MAPPINGS" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+			<element name="ANNOTATIONS" type="BLOW:ANNOTIONS" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<simpleType name="URL">
+		<restriction base="string"></restriction>
+	</simpleType>
+
+	<simpleType name="USER">
+		<restriction base="string"></restriction>
+	</simpleType>
+
+	<simpleType name="PASSWORD">
+		<restriction base="string"></restriction>
+	</simpleType>
+
+	<element name="JDBCConnection" type="BLOW:JDBCConnection"></element>
+
+	<complexType name="MAPPINGS">
+		<attribute name="file" use="required">
+			<simpleType>
+				<restriction base="string">
+					<pattern value=".*.blow.xml"></pattern>
+				</restriction>
+			</simpleType>
+		</attribute>
+
+	</complexType>
+
+
+	<complexType name="ANNOTIONS">
+		<sequence>
+			<element name="package-scan" maxOccurs="unbounded" minOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<whiteSpace value="collapse"></whiteSpace>
+					</restriction>
+				</simpleType>
+			</element>
+		</sequence>
+		<attribute name="use" type="boolean" use="required"></attribute>
+	</complexType>
+
+	<simpleType name="DATABASE">
+		<restriction base="string">
+			<enumeration value="oracle"></enumeration>
+			<enumeration value="mysql"></enumeration>
+		</restriction></simpleType>
+</schema>

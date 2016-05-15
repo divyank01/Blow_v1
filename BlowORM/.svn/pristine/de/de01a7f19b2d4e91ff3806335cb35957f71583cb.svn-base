@@ -1,0 +1,5 @@
+1) 	generated id			Done
+1a)	feeding generated id to dependents(hint sql logic)
+2) 	generate schema
+3) 	compound keys
+4)	support for mysql,mangodb

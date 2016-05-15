@@ -1,0 +1,12 @@
+create table product (ID number(10),NAME varchar2(50),CAT_ID number(10));
+create table stock (ID number(10),PROD_ID number(10),LIVE_STOCK number(10));
+create table discounts (ID number(10),PROD_ID number(10),IS_AVAILABLE char(1),DISCOUNT number(3),START_DATE date,END_DATE date);
+create table product_details (ID number(10),PROD_ID number(10),BRAND varchar2(50),PROD_SIZE varchar2(10),COLOR varchar2(20),PRICE number(10),MATERIAL varchar2(10));
+alter table product_details modify( PROD_SIZE varchar2(100),COLOR varchar2(100));
+create table stock (ID number(10),PROD_ID number(10),LIVE_STOCK number(10),LOC_ID number(10));
+create table stock_mappings (ID number(10),GEN_PROD_ID number(10),STOCK_ID number(10),LOC_ID number(10));
+create table Login_Details (ID number(10),USER_NAME varchar2(30),PWD varchar2(30),ROLE varchar2(30));
+create table ELECTRONIC_PRODUCT_DETAILS(ID number(10),PROD_ID number(10),BRAND varchar2(50),COLOR varchar2(20),PRICE number(10),MATERIAL varchar2(10),ELE_DESCRIPTION varchar2(1000),TECH_DETAILS varchar2(1000));
+create table CUSTOMER_DETAILS(ID number(10),F_NAME varchar2(20),M_NAME varchar2(20),L_NAME varchar2(20),DOB date,SEX varchar2(1),MOBILE number(12),OTHER_CONTACT number(20));
+create table ADDRESS_DETAILS(ID number(10),CUD_ID number(10),ADD_1 varchar2(30),ADD_2 varchar2(30),ADD_3 varchar2(30),ADD_4 varchar2(30),CITY varchar2(20),STATE varchar2(20),PIN number(6));
+CREATE TABLE CLOTHING_PRODUCT_DETAILS(ID NUMBER(10,0),PROD_ID NUMBER(10,0),STYLE_TYPE VARCHAR2(50),BRAND_DETAIL VARCHAR2(500),IDEAL_FOR VARCHAR2(30),FIT VARCHAR2(50),FABRIC_CARE VARCHAR2(150));

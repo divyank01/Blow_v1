@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BLOW:Queries xmlns:BLOW="http://www.blocore.org/BlowQuery"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blocore.org/BlowQuery ../../../../../BlowORM/src/com/sales/xmls/BlowQuery.xsd ">
+	
+	<BLOW:Object className="com.sales.pojo.Prodcty" name="product1">
+		<BLOW:property attr="name" column="name"/>
+		<BLOW:property attr="id" column="id"/>
+	</BLOW:Object>
+	
+	<BLOW:Object className="com.sales.pojo.Product" name="product2">
+		<BLOW:property attr="fhj" column="gd"/>
+	</BLOW:Object>
+	
+	
+	<BLOW:Include name="product_details">
+		select prod_id from product_details
+	</BLOW:Include>
+
+	<BLOW:Include name="product">
+		select * from product
+	</BLOW:Include>
+	
+
+	<BLOW:Query name="getAllProducts" type="select" class="" mapping-object="product">
+		select * from product
+	</BLOW:Query>
+	
+	<BLOW:Query name="getProducts" type="select" class="" mapping-object="product">
+		select * from product where id in(
+		<BLOW:Include ref="product_details"/>)
+	</BLOW:Query>
+	
+	
+	<BLOW:Object className="com.sales.pojo.Prodcty" name="product">
+		<BLOW:property attr="id" column="id"/>
+		<BLOW:property attr="name" column="name"/>
+		<BLOW:property attr="catId" column="cat_id"/>
+	</BLOW:Object>
+	
+
+</BLOW:Queries>

@@ -15,7 +15,7 @@ public class ProductDetails {
 	private Integer prodId;
 	@BlowProperty(columnName="BRAND")
 	private String brand;
-	//@BlowProperty(columnName="PROD_SIZE")
+	@BlowProperty(columnName="PROD_SIZE" ,length=20)
 	private String productSize;
 	@BlowProperty(columnName="COLOR")
 	private String color;
@@ -23,7 +23,7 @@ public class ProductDetails {
 	private String material;
 	@BlowProperty(columnName="PRICE")
 	private Integer price;
-	@One2One(fk="PROD_ID")
+	@One2One(fk="ID",isReferenced=false)
 	private Prodcty product;
 	public Integer getId() {
 		return id;
