@@ -83,3 +83,36 @@ select product.name as name_1,product.cat_id as catId_1,product.id as id_1,STOCK
     </com.sales.pojo.Stock>
   </stocks>
 </com.sales.pojo.Prodcty>
+
+select * from product
+<list>
+  <com.sales.pojo.Prodcty>
+    <id>121</id>
+    <name>some</name>
+    <catId>1</catId>
+  </com.sales.pojo.Prodcty>
+  <com.sales.pojo.Prodcty>
+    <id>122</id>
+    <name>yo yo beba singh</name>
+    <catId>3</catId>
+  </com.sales.pojo.Prodcty>
+  <com.sales.pojo.Prodcty>
+    <id>0</id>
+    <catId>0</catId>
+  </com.sales.pojo.Prodcty>
+</list>
+select * from product where id in( 
+		select prod_id from product_details
+	 )
+<list>
+  <com.sales.pojo.Prodcty>
+    <id>121</id>
+    <name>some</name>
+    <catId>1</catId>
+  </com.sales.pojo.Prodcty>
+  <com.sales.pojo.Prodcty>
+    <id>122</id>
+    <name>yo yo beba singh</name>
+    <catId>3</catId>
+  </com.sales.pojo.Prodcty>
+</list>
