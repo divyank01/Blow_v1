@@ -11,7 +11,7 @@ import com.sales.blow.annotations.One2One;
 @BlowSchema(schemaName="PRODUCT")
 public class Prodcty {
 	
-	@BlowId(generataed=false,seq="product_seq")
+	@BlowId(generated=false,seq="product_seq")
 	@BlowProperty(columnName="ID")
 	public int id;
 	@BlowProperty(columnName="NAME")

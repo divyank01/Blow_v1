@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 @Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BlowId {
-	boolean generataed() default false;
+	boolean generated() default false;
 	String seq() default "";
 }

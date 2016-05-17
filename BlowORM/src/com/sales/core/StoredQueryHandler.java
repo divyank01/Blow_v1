@@ -35,5 +35,5 @@ public class StoredQueryHandler {
 			throw new BlownException(e.getLocalizedMessage());
 		}
 	}
-	
+	 
 }

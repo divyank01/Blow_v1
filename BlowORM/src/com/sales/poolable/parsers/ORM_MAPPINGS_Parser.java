@@ -156,7 +156,7 @@ public class ORM_MAPPINGS_Parser {
 					BlowId prop=(BlowId)field.getAnnotation(BlowId.class);
 					attr.setPk(true);
 					orm_maps.setPkAttr(attr);
-					attr.setGenerated(prop.generataed());
+					attr.setGenerated(prop.generated());
 					attr.setSeqName(prop.seq());
 				}
 				orm_maps.qMap.put(orm_maps.getSchemaName()+"."+blowProp.columnName(), 
