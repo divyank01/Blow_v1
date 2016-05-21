@@ -26,6 +26,7 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 	public void closeSession() {
 		
 	}
+	
 	@Override
 	public boolean saveOrUpdateEntity(T t)throws Exception {
 		if(t instanceof Collection){

@@ -1,7 +1,5 @@
 package com.sales.poolables.factories;
 
-import java.sql.Connection;
-
 import org.apache.commons.pool.BasePoolableObjectFactory;
 
 import com.sales.poolable.parsers.ORM_CONFIG_Parser;
@@ -14,4 +12,5 @@ public final class OrmConfigParserFactory extends BasePoolableObjectFactory<ORM_
 		
 		return ORM_CONFIG_Parser.getInstance();
 	}
+	
 }

@@ -10,6 +10,7 @@ import com.customer.pojo.Customer;
 import com.sale.util.BlowUtils;
 import com.sales.constants.BlowParam;
 import com.sales.constants.SQLTypes;
+import com.sales.core.BlowCore;
 import com.sales.pojo.ElectronicProductDetails;
 import com.sales.pojo.Prodcty;
 import com.sales.pojo.ProductDetails;
@@ -58,7 +59,7 @@ public class MainClass {
 							//.propEquals("catId", 2)
 							.retrieveOne();*/
 
-			Object p4= BlowUtils
+			/*Object p4= BlowUtils
 					.getBasis(Customer.class)
 					//.propEquals("stock.mappings.locId","10")
 					.propEquals("id", 1234)
@@ -66,7 +67,7 @@ public class MainClass {
 					.retrieveOne();
 			
 			//System.out.println(new XStream().toXML(p3));
-			System.out.println(new XStream().toXML(p4));
+			System.out.println(new XStream().toXML(p4));*/
 			
 			
 			
@@ -158,6 +159,12 @@ public class MainClass {
 					//.propEquals("stock.mappings.id", 124)
 					.fetchMode(BlowParam.EAGER)
 					.retrieveMany(null)));*///check params==null
+			System.out.println(new Date().getTime()-l);
+			BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null);
+			BlowCore.getInstance().getContext().getSQLResult("getProducts", null);
+			System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null)));
+			System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getProducts", null)));
+
 			System.out.println(new Date().getTime()-l);
 		}catch (Exception e) {
 			e.printStackTrace();

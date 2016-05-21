@@ -20,7 +20,13 @@ import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attribut
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.MappingObject;
 import com.sales.utils.BlowCoreUtils;
 
-
+/**
+ * This class will handle mapping process for different scenarios.
+ * 
+ * 
+ * @author Divyank Sharma
+ *
+ */
 public class BlowCoreMapper {
 
 	private BlowCoreMapper(){}
@@ -36,6 +42,7 @@ public class BlowCoreMapper {
 	}
 
 	/**
+	 * It will map objects from resultsets.
 	 * 
 	 * @param rs
 	 * @param maps ORM_MAPPINGS.Maps
@@ -99,7 +106,19 @@ public class BlowCoreMapper {
 		}
 		return obj;
 	}
-
+	
+	/**
+	 * It will map associated objects to class. 
+	 * 
+	 * @param rs
+	 * @param maps
+	 * @param m
+	 * @param supOb
+	 * @param prevObj
+	 * @param reqToSet
+	 * @return
+	 * @throws Exception
+	 */
 
 	private Object mapDependentsToPersistaceObj(ResultSet rs, Maps maps,String m,Object supOb,Object prevObj,boolean reqToSet) throws Exception{
 		Iterator<String> it=maps.getDependentClassMap().get(m).getAttributeMap()
@@ -200,6 +219,13 @@ public class BlowCoreMapper {
 			dep=null;
 		return dep;
 	}
+	
+	/**
+	 * Lets map sql types to java types. After this they will be set in POJOs.
+	 * @param object
+	 * @param cls
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private Object[] mapTypes(Object object, Class cls){
 		Object[] retval=null;
@@ -392,6 +418,15 @@ public class BlowCoreMapper {
 		return retVal;
 	}
 	
+	/**
+	 * 
+	 * It maps result set to into object based on mappingObject for saved queries.
+	 * 
+	 * @param rs
+	 * @param mappingObject
+	 * @return
+	 * @throws Exception
+	 */
 	public Object mapPersistanceObject(ResultSet rs,MappingObject mappingObject) throws Exception{
 		if(rs!=null){
 			int count=0;
