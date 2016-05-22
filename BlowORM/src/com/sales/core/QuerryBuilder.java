@@ -83,7 +83,13 @@ public class QuerryBuilder {
 		return sql.append(")"+qMarks.toString()).toString();
 	}
 	
-	
+	/**
+	 * Generates insert query for mapping
+	 * @param mappings
+	 * @param obj
+	 * @param valueCount
+	 * @return
+	 */
 	protected String getInsertQuerry(ORM_MAPPINGS mappings,Object obj,int valueCount){
 		Maps dMap=mappings.getMapForClass(obj.getClass().getCanonicalName());
 		StringBuilder sql=new StringBuilder();
@@ -354,6 +360,15 @@ public class QuerryBuilder {
 		}
 	}
 
+	/**
+	 * Makes left outer join for associative attribute.
+	 * P.S.:think twice before changing this function.
+	 * @param mappings
+	 * @param oldClass
+	 * @param newClass
+	 * @param sql
+	 * @param flag
+	 */
 	private void makeLOJs(ORM_MAPPINGS mappings, String oldClass, String newClass,StringBuffer sql,boolean flag) {
 		if(mappings.getMapForClass(newClass).getFkAttr().get(oldClass)!=null 
 				&& mappings.getMapForClass(newClass).getFkAttr().get(oldClass).isReferenced() 
@@ -412,6 +427,11 @@ public class QuerryBuilder {
 		return build;
 	}
 	
+	/**
+	 * Creates a table for given map
+	 * @param maps
+	 * @return
+	 */
 	protected String createTableForClass(Maps maps){
 		StringBuilder sql=new StringBuilder("CREATE TABLE ");
 		sql.append(maps.getSchemaName());
@@ -443,6 +463,12 @@ public class QuerryBuilder {
 		return sql.toString();
 	}
 	
+	/**
+	 * Alter the given table and add provided attribute.
+	 * @param attr
+	 * @param tableName
+	 * @return
+	 */
 	protected String alterAddColumn(Attributes attr, String tableName){
 		StringBuilder sql=new StringBuilder("ALTER TABLE ");
 		sql.append(tableName)
@@ -458,6 +484,12 @@ public class QuerryBuilder {
 		return sql.toString();
 	}
 	
+	/**
+	 * Modify column in given table
+	 * @param attr
+	 * @param tableName
+	 * @return
+	 */
 	protected String modifyColumn(Attributes attr, String tableName){
 		StringBuilder sql=new StringBuilder("ALTER TABLE ");
 		sql.append(tableName)

@@ -49,6 +49,7 @@ public class ORM_QUERY_Parser {
 			_load(qList.get(i));
 		}
 		queries.shuffle();
+		OrmConfigParserPool.getInstance().returnObject(config_Parser);
 	}
 	
 	

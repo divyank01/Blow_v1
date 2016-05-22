@@ -102,6 +102,7 @@ public class ORM_MAPPINGS_Parser {
 			stateManager=DatabaseStateManager.getInstance();
 			stateManager.syncSchema(orm_mapping, dataBaseInfo);
 		}
+		OrmConfigParserPool.getInstance().returnObject(configParser);
 	}
 
 	private void loadAnnotations(File file,String packageName) throws MappingsException {
