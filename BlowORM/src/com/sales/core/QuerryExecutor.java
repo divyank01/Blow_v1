@@ -240,7 +240,7 @@ public class QuerryExecutor {
 			if(counter>1){
 				rs.close();
 				ConnectionPool.getInstance().returnObject(con);
-				//throw new BlownException("multiple records found");
+				throw new BlownException("multiple records found");
 			}
 			rs.close();
 			ConnectionPool.getInstance().returnObject(con);
