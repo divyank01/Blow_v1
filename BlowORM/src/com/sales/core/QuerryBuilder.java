@@ -519,8 +519,13 @@ public class QuerryBuilder {
 			for(String s:getTokens(sql)){
 				if(s.contains(".")){
 					StringTokenizer splits=new StringTokenizer(s,".");
-					sql=sql.replace("#"+s+"#", getValueForToken(splits,input.get(splits.nextToken()),false));
+					String tkn=splits.nextToken();
+					if(input.get(tkn)==null)
+						throw new BlownException("Invalid input in query map '"+tkn+"' is not valid input.");
+					sql=sql.replace("#"+s+"#", getValueForToken(splits,input.get(tkn),false));
 				}else{
+					if(input.get(s)==null)
+						throw new BlownException("Invalid input in query map '"+s+"' is not valid input.");
 					sql=sql.replace("#"+s+"#", input.get(s).toString());
 				}
 			}

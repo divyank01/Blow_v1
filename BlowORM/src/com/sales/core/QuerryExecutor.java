@@ -293,14 +293,25 @@ public class QuerryExecutor {
 	protected Object runSql(String sql,MappingObject mappingObject,Map input) throws Exception{
 		Connection con=null;
 		Object retval=null;
-		querryBuilder=QuerryBuilder.newInstance();
-		con=ConnectionPool.getInstance().borrowObject();
-		System.out.println(sql.toString());
-		sql=querryBuilder.processQuery(sql, input);
-		ResultSet rs=con.prepareStatement(sql.toString()).executeQuery();
-		retval=coreMapper.mapPersistanceObject(rs, mappingObject);
-		rs.close();
-		ConnectionPool.getInstance().returnObject(con);
+		ResultSet rs=null;
+		try{
+			querryBuilder=QuerryBuilder.newInstance();
+			con=ConnectionPool.getInstance().borrowObject();
+			System.out.println(sql.toString());
+			sql=querryBuilder.processQuery(sql, input);
+			rs=con.prepareStatement(sql.toString()).executeQuery();
+			retval=coreMapper.mapPersistanceObject(rs, mappingObject);
+		}catch(Exception e){
+			if(rs!=null)
+				rs.close();
+			e.printStackTrace();
+			ConnectionPool.getInstance().returnObject(con);
+			throw new BlownException(e.getMessage());
+		}finally{
+			if(rs!=null)
+				rs.close();
+			ConnectionPool.getInstance().returnObject(con);
+		}
 		return retval;
 	}
 }
