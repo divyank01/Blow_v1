@@ -11,10 +11,10 @@ import com.sales.blow.annotations.One2One;
 @BlowSchema(schemaName="PRODUCT")
 public class Prodcty {
 	
-	@BlowId(generated=false,seq="product_seq")
+	@BlowId(generated=true,seq="product_seq")
 	@BlowProperty(columnName="ID")
 	public int id;
-	@BlowProperty(columnName="NAME")
+	@BlowProperty(columnName="NAME",length=50)
 	private String name;
 	@BlowProperty(columnName="CAT_ID")
 	private long catId;

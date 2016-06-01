@@ -29,19 +29,18 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 	
 	@Override
 	public boolean saveOrUpdateEntity(T t)throws Exception {
-		if(t instanceof Collection){
-			if(t instanceof List){
-				List entities =(List)t;
-				if(!entities.isEmpty()){
-					return new BLowBasisImpl(entities.get(0).getClass()).saveEntity(t);
+			if(t instanceof Collection){
+				if(t instanceof List){
+					List entities =(List)t;
+					if(!entities.isEmpty()){
+						return new BLowBasisImpl(entities.get(0).getClass()).saveEntity(t);
+					}else
+						throw new BlownException("Unable to save collection: collection size "+entities.size());
 				}else
-					throw new BlownException("Unable to save collection: collection size "+entities.size());
-			}else
-				throw new BlownException("Unable to save collection. Collection type: "+t.getClass());
-		}else{
-			return new BLowBasisImpl(t.getClass()).saveEntity(t);
-		}
-		
+					throw new BlownException("Unable to save collection. Collection type: "+t.getClass());
+			}else{
+				return new BLowBasisImpl(t.getClass()).saveEntity(t);
+			}
 	}
 	
 	@Override

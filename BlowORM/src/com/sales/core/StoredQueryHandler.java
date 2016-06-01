@@ -27,7 +27,7 @@ public class StoredQueryHandler {
 			String s=null;
 			if(q!=null){
 				s=q.getContent();
-				return executor.runSql(s.trim(), q.getMappingObject(), q.getClassName());
+				return executor.runSql(s.trim(), q.getMappingObject(), input);
 			}else
 				throw new BlownException("Query id not found in the mappings");
 		}catch(Exception e){

@@ -14,7 +14,7 @@ public class BlowPool<T> {
 	
 	private Map<T,Long> unLocked=new Hashtable<T, Long>();
 	
-	protected BlowPool(BlowFactory factory){
+	protected BlowPool(BlowFactory<T> factory){
 		this.factory=factory;
 	}
 	

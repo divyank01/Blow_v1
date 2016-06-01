@@ -38,6 +38,7 @@ import com.sales.pools.OrmMappingPool;
  */
 
 
+
 public class QuerryExecutor {
 
 	private QuerryBuilder querryBuilder;
@@ -240,12 +241,13 @@ public class QuerryExecutor {
 			if(counter>1){
 				rs.close();
 				ConnectionPool.getInstance().returnObject(con);
-				throw new BlownException("multiple records found");
+				//throw new BlownException("multiple records found");
 			}
 			rs.close();
 			ConnectionPool.getInstance().returnObject(con);
 		return retval;
 	}
+	
 	
 	protected List<Object> retriveMultipleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t) throws Exception{
 		Connection con=null;
@@ -253,11 +255,31 @@ public class QuerryExecutor {
 		con=ConnectionPool.getInstance().borrowObject();
 		System.out.println(sql.toString());
 		ResultSet rs=con.prepareStatement(sql.toString()).executeQuery();
+		int counter=0;
+		int pos=-1;
+		Object ob=null;
 		while(rs.next()){
-			Object ob=null;
-			ob=extractResltSet(rs,true,null,blowParam,mappings,t);
-			if(!retval.contains(ob))
+			/*ob=extractResltSet(rs,true,null,blowParam,mappings,t);
+			if(!retval.contains(ob)){
 				retval.add(ob);
+			}*/
+			boolean flag=coreMapper.newObjectFromRS(rs, mappings.getMaps().get(t), ob);
+			if(counter>0 && ob!=null){
+				ob=coreMapper.processObjectForCordinality(ob, mappings, rs,params);
+			}
+			if(ob==null)
+				ob=extractResltSet(rs,flag,null,blowParam,mappings,t);
+			else
+				ob=extractResltSet(rs,flag,ob,blowParam,mappings,t);
+			counter++;
+			if(!coreMapper.contains(mappings,ob,retval)){
+				retval.add(ob);
+			}
+			if(coreMapper.contains(mappings,ob,retval)){
+				pos=coreMapper.getPostionFromList(mappings,ob,retval);
+				retval.remove(pos);
+				retval.add(ob);
+			}
 		}
 		rs.close();
 		ConnectionPool.getInstance().returnObject(con);
@@ -268,11 +290,13 @@ public class QuerryExecutor {
 		return coreMapper.mapPersistaceToObj(rs,mappings.getMaps().get(t),mappings,blowParam,preObject,flag);
 	}
 	
-	protected Object runSql(String sql,MappingObject mappingObject,String type) throws Exception{
+	protected Object runSql(String sql,MappingObject mappingObject,Map input) throws Exception{
 		Connection con=null;
 		Object retval=null;
+		querryBuilder=QuerryBuilder.newInstance();
 		con=ConnectionPool.getInstance().borrowObject();
 		System.out.println(sql.toString());
+		sql=querryBuilder.processQuery(sql, input);
 		ResultSet rs=con.prepareStatement(sql.toString()).executeQuery();
 		retval=coreMapper.mapPersistanceObject(rs, mappingObject);
 		rs.close();

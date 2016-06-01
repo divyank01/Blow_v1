@@ -69,8 +69,16 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 		T retval=null;
 		if(params.isEmpty())
 			throw new BlownException("parameters not set for retriving one record");
-		querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
-		retval=(T)getExecutor().retriveSingleRecord(sql.toString(), blowParam, mappings, t,params);
+		String qId=calculateQryId();
+		String querry=null;
+		if(QuerryBuilder.getQuerryCache().containsKey(qId)){
+			querry=(String)QuerryBuilder.getQuerryCache().get(qId);
+		}else{
+			querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
+			QuerryBuilder.getQuerryCache().put(qId, sql.toString());
+			querry=sql.toString();
+		}	
+		retval=(T)getExecutor().retriveSingleRecord(querry, blowParam, mappings, t,params);
 		return retval;
 	}
 
@@ -83,7 +91,7 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 			else
 				executor.executeInsertOrUpdate(t, mappings,new HashMap());
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new BlownException(e.getMessage());
 		}
 		return false;
 	}
@@ -151,6 +159,22 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	
 	private QuerryExecutor getExecutor(){
 		return QuerryExecutor.getExecutor();
+	}
+	
+	private String calculateQryId(){
+		StringBuilder id=null;
+		if(params!=null){
+			id=new StringBuilder();
+			Iterator<String> itr=params.keySet().iterator();
+			id.append(t+"+");
+			id.append(blowParam!=null?(blowParam.toString()+"+"):"");
+			while(itr.hasNext()){
+				String key=itr.next();
+				id.append(key+"+");
+			}
+			return id.toString();
+		}
+		return null;
 	}
 
 }

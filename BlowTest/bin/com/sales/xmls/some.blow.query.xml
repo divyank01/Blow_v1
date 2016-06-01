@@ -14,7 +14,7 @@
 	
 	
 	<BLOW:Include name="product_details">
-		select prod_id from product_details
+		select prod_id from product_details where id=#product.details.id#
 	</BLOW:Include>
 
 	<BLOW:Include name="product">

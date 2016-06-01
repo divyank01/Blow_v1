@@ -4,7 +4,9 @@ import java.sql.SQLData;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.customer.pojo.Customer;
 import com.sale.util.BlowUtils;
@@ -29,10 +31,17 @@ public class MainClass {
 			Date d=new Date();
 			long l=d.getTime();
 			
-			Prodcty p=(Prodcty) BlowUtils
+			Object p=(Object) BlowUtils
 			.getBasis(Prodcty.class)
 			.propEquals("id",121)
 			.retrieveOne();
+			//.retrieveMany(null);
+			
+			/*p.setId(126);
+			p.getEpd().setId(125);
+			p.getEpd().setProdId(124);*/
+			
+			//BlowUtils.getContext().saveOrUpdateEntity(p);
 			System.out.println(new XStream().toXML(p));
 
 
@@ -159,14 +168,29 @@ public class MainClass {
 					//.propEquals("stock.mappings.id", 124)
 					.fetchMode(BlowParam.EAGER)
 					.retrieveMany(null)));*///check params==null
-			System.out.println(new Date().getTime()-l);
-			BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null);
-			BlowCore.getInstance().getContext().getSQLResult("getProducts", null);
-			System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null)));
-			System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getProducts", null)));
+			/*long temp=new Date().getTime()-l;
+			System.out.println(temp);
+			//BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null);
+			//BlowCore.getInstance().getContext().getSQLResult("getProducts", null);
+			for (int i = 0; i < 100; i++) {*/
+				
+				//System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null)));
+			Map m= new HashMap();
+			m.put("product", p);
+				System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getProducts", m)));
 
-			System.out.println(new Date().getTime()-l);
-		}catch (Exception e) {
+				/*Prodcty p1=(Prodcty) BlowUtils
+				.getBasis(Prodcty.class)
+				.propEquals("epd.id",121)
+				.propEquals("id", 123)
+				.fetchMode(BlowParam.EAGER)
+				.retrieveOne();
+				//System.out.println(new XStream().toXML(p1));
+
+				System.out.println(new Date().getTime()-l-temp+"         "+i);
+
+			}*/
+					}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

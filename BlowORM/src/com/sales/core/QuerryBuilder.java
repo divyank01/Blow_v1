@@ -2,7 +2,9 @@ package com.sales.core;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ public class QuerryBuilder {
 	protected String propBasis;
 	protected BlowParam param;
 	private int counter=0;
+	private static Map<String,Object> querryCache=new HashMap<String, Object>();
 	protected static QuerryBuilder newInstance(){
 		bildr=new QuerryBuilder();
 		return bildr;
@@ -322,6 +325,8 @@ public class QuerryBuilder {
 						Attributes attr=mappings.getMaps().get(t).getAttributeMap().get(prop);
 						if(attr==null)
 							throw new BlownException("Property "+prop+" not present/mapped in class: "+t);
+						if(attr.isFk())
+							throw new BlownException("Property "+prop+" is complex type in class: "+t);
 						if(count>0)
 							sql.append(BlowConstatnts.AND);
 						sql.append(BlowConstatnts.SPACE);
@@ -503,5 +508,45 @@ public class QuerryBuilder {
 			.append(attr.getLength())
 			.append(BlowConstatnts.R_BRCKT);
 		return sql.toString();
+	}
+	
+	protected static Map<String, Object> getQuerryCache(){
+		return querryCache;
+	}
+	
+	protected String processQuery(String sql,Map input) throws Exception{
+		if(sql.indexOf("#")>0){
+			for(String s:getTokens(sql)){
+				if(s.contains(".")){
+					StringTokenizer splits=new StringTokenizer(s,".");
+					sql=sql.replace("#"+s+"#", getValueForToken(splits,input.get(splits.nextToken()),false));
+				}else{
+					sql=sql.replace("#"+s+"#", input.get(s).toString());
+				}
+			}
+		}
+		System.out.println(sql);
+		return sql;
+	}
+	
+	private String getValueForToken(StringTokenizer splits,Object obj,boolean isComplete) throws Exception {
+		while(splits.hasMoreElements()){
+				obj=obj.getClass().getMethod(getterForField(splits.nextToken()), null).invoke(obj, null);
+		}
+		return obj.toString();
+	}
+	
+	private boolean hasMoreTokens(int currentPos, String[] tokens){
+		return currentPos<tokens.length; 
+	}
+	
+	private List<String> getTokens(String input){
+		String[] arr=input.split("#");
+		List<String> tokens=new ArrayList<String>();
+		for(int i=0;i<arr.length;i++){
+			if(i%2!=0)
+				tokens.add(arr[i]);
+		}
+		return tokens;
 	}
 }

@@ -40,7 +40,23 @@ public class BlowCoreMapper {
 			mapper=new BlowCoreMapper();
 		return mapper;
 	}
-
+	
+	
+	
+	protected boolean newObjectFromRS(ResultSet rs, Maps maps,Object prevObj)throws Exception{
+		boolean isNewObject=true;
+		if(prevObj!=null){
+			Attributes attr=mappings.getMapForClass(prevObj.getClass().getCanonicalName()).getPkAttr();
+			String val=attr.getName();
+			String s=(val.length()<10?val:val.substring(0, 10))+"_"+maps.getIndex();
+			Method m=prevObj.getClass().getMethod("get"+BlowCoreUtils._FCFieldName(attr.getName()), null);
+			if(mapTypes(rs.getObject(s), m.invoke(prevObj, null).getClass())[0].equals(m.invoke(prevObj, null))){
+				isNewObject=false;
+			}
+		}
+		return isNewObject;
+	}
+	
 	/**
 	 * It will map objects from resultsets.
 	 * 
@@ -51,7 +67,8 @@ public class BlowCoreMapper {
 	 */
 	protected Object mapPersistaceToObj(ResultSet rs, Maps maps,ORM_MAPPINGS mappings,BlowParam blowParam,Object prevObj,boolean reqToSet) throws Exception{
 		Object obj=null;
-		if(prevObj!=null)
+		boolean isNewObject=newObjectFromRS(rs, maps, prevObj);
+		if(prevObj!=null && !isNewObject)
 			obj=prevObj;
 		else
 			obj=Class.forName(maps.getClassName()).newInstance();
@@ -132,6 +149,16 @@ public class BlowCoreMapper {
 		int counter=0;
 		while(it.hasNext()){
 			String prop=it.next();
+			/*
+			 * check if pk of dependent is null if yes return null;
+			 */
+			if(maps.getDependentClassMap().get(m).getAttributeMap().get(prop).isPk()){
+				String val=maps.getDependentClassMap().get(m).getAttributeMap().get(prop).getName();
+				String s=(val.length()<10?val:val.substring(0, 10))+"_"+maps.getDependentClassMap().get(m).getIndex();
+				if(rs.getObject(s)==null){
+					return null;
+				}
+			}
 			for(Method meth:depMeths){						
 				if(meth.getName().startsWith("set") && meth.getName().equalsIgnoreCase("set"+prop)){
 					if(!maps.getClassName().equalsIgnoreCase(maps.getDependentClassMap().get(m).getAttributeMap().get(prop).getClassName())){
@@ -327,7 +354,7 @@ public class BlowCoreMapper {
 	 * @throws NoSuchMethodException 
 	 * @throws SecurityException 
 	 */
-	private boolean contains(ORM_MAPPINGS mappings ,Object newObj,List lst) throws Exception{
+	protected boolean contains(ORM_MAPPINGS mappings ,Object newObj,List lst) throws Exception{
 		String getter="get"+BlowCoreUtils._FCFieldName(mappings.getMapForClass(newObj.getClass().getCanonicalName()).getPkAttr().getName()).trim();
 		Object obj=newObj.getClass().getMethod(getter, new Class[0]).invoke(newObj, null);		
 		for(Object o:lst){
@@ -336,6 +363,21 @@ public class BlowCoreMapper {
 			}
 		}
 		return false;
+	}
+	
+	
+	
+	protected int getPostionFromList(ORM_MAPPINGS mappings ,Object newObj,List lst) throws Exception{
+		String getter="get"+BlowCoreUtils._FCFieldName(mappings.getMapForClass(newObj.getClass().getCanonicalName()).getPkAttr().getName()).trim();
+		Object obj=newObj.getClass().getMethod(getter, new Class[0]).invoke(newObj, null);		
+		int i=0;
+		for(Object o:lst){
+			if(equals(newObj.getClass().getMethod(getter, new Class[0]).invoke(newObj, null),o.getClass().getMethod(getter, new Class[0]).invoke(o, null))){
+				return i;
+			}
+			i++;
+		}
+		throw new BlownException("Failed to map list properly");
 	}
 	
 	
