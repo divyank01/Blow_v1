@@ -64,7 +64,7 @@ public class BlowPool<T> {
 		}
 		T t=factory.spawn();
 		locked.put(t, current);
-		printPools(2);
+		//printPools(2);
 		return t;
 	}
 	
@@ -77,7 +77,7 @@ public class BlowPool<T> {
 			if(locked.containsKey(t))
 				locked.remove(t);		
 		}
-		printPools(3);
+		//printPools(3);
 	}
 	
 	public synchronized void invalidateObject(T t) throws Exception {
