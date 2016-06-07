@@ -1,0 +1,118 @@
+select product.name as name_1,product.cat_id as catId_1,product.id as id_1,STOCK.live_stock as liveStockC_4,STOCK.prod_id as productId_4,STOCK.loc_id as locId_4,STOCK.id as id_4,STOCK_MAPPINGS.GEN_PROD_ID as generatedP_5,STOCK_MAPPINGS.loc_id as locId_5,STOCK_MAPPINGS.STOCK_ID as stockId_5,STOCK_MAPPINGS.id as id_5,product_details.PRICE as price_2,product_details.id as id_2,product_details.PROD_ID as prodId_2,product_details.PROD_SIZE as productSiz_2,product_details.MATERIAL as material_2,product_details.COLOR as color_2,product_details.BRAND as brand_2,ELECTRONIC_PRODUCT_DETAILS.PROD_ID as prodId_3,ELECTRONIC_PRODUCT_DETAILS.ELE_DESCRIPTION as descriptio_3,ELECTRONIC_PRODUCT_DETAILS.MATERIAL as material_3,ELECTRONIC_PRODUCT_DETAILS.id as id_3,ELECTRONIC_PRODUCT_DETAILS.PRICE as price_3,ELECTRONIC_PRODUCT_DETAILS.COLOR as color_3,ELECTRONIC_PRODUCT_DETAILS.TECH_DETAILS as techDetail_3,ELECTRONIC_PRODUCT_DETAILS.BRAND as brand_3 from product left outer join product_details on product.ID=product_details.PROD_ID left outer join STOCK on product.ID=STOCK.PROD_ID left outer join STOCK_MAPPINGS on STOCK.ID=STOCK_MAPPINGS.STOCK_ID left outer join ELECTRONIC_PRODUCT_DETAILS on product.ID=ELECTRONIC_PRODUCT_DETAILS.PROD_ID where  product.id='122'
+<com.sales.pojo.Prodcty>
+  <id>122</id>
+  <name>testy</name>
+  <catId>2000</catId>
+  <details>
+    <id>125</id>
+    <prodId>122</prodId>
+    <brand>fgsdg</brand>
+    <productSize>XXL</productSize>
+    <color>sdgsdfg</color>
+    <material>afxbvx</material>
+    <price>123213</price>
+    <product reference="../.."/>
+  </details>
+  <epd>
+    <id>124</id>
+    <prodId>122</prodId>
+    <brand>levis</brand>
+    <color>RED</color>
+    <material>COTTON</material>
+    <price>1230</price>
+    <product reference="../.."/>
+    <description>hello world welcome to BLOW!!</description>
+    <techDetails>shfgsjhgdjhsdkjgksdjhfgkjhsdfkgjhksdjfgh</techDetails>
+  </epd>
+  <stock>
+    <id>123</id>
+    <productId>122</productId>
+    <liveStockCount>3164724.0</liveStockCount>
+    <locId>0</locId>
+    <product reference="../.."/>
+    <mappings>
+      <id>122</id>
+      <generatedProductId>25347.0</generatedProductId>
+      <stockId>123</stockId>
+      <locId>121</locId>
+      <stock reference="../.."/>
+    </mappings>
+  </stock>
+  <stocks>
+    <com.sales.pojo.Stock>
+      <id>123</id>
+      <productId>122</productId>
+      <liveStockCount>3164724.0</liveStockCount>
+      <locId>0</locId>
+      <product reference="../../.."/>
+      <mappings>
+        <id>122</id>
+        <generatedProductId>25347.0</generatedProductId>
+        <stockId>123</stockId>
+        <locId>121</locId>
+        <stock reference="../.."/>
+      </mappings>
+    </com.sales.pojo.Stock>
+    <com.sales.pojo.Stock>
+      <id>124</id>
+      <productId>122</productId>
+      <liveStockCount>3164724.0</liveStockCount>
+      <locId>0</locId>
+      <product reference="../../.."/>
+      <mappings>
+        <id>123</id>
+        <generatedProductId>25347.0</generatedProductId>
+        <stockId>124</stockId>
+        <locId>121</locId>
+        <stock reference="../.."/>
+      </mappings>
+    </com.sales.pojo.Stock>
+    <com.sales.pojo.Stock>
+      <id>125</id>
+      <productId>122</productId>
+      <liveStockCount>3164724.0</liveStockCount>
+      <locId>0</locId>
+      <product reference="../../.."/>
+      <mappings>
+        <id>124</id>
+        <generatedProductId>25347.0</generatedProductId>
+        <stockId>125</stockId>
+        <locId>121</locId>
+        <stock reference="../.."/>
+      </mappings>
+    </com.sales.pojo.Stock>
+  </stocks>
+</com.sales.pojo.Prodcty>
+
+select * from product
+<list>
+  <com.sales.pojo.Prodcty>
+    <id>121</id>
+    <name>some</name>
+    <catId>1</catId>
+  </com.sales.pojo.Prodcty>
+  <com.sales.pojo.Prodcty>
+    <id>122</id>
+    <name>yo yo beba singh</name>
+    <catId>3</catId>
+  </com.sales.pojo.Prodcty>
+  <com.sales.pojo.Prodcty>
+    <id>0</id>
+    <catId>0</catId>
+  </com.sales.pojo.Prodcty>
+</list>
+select * from product where id in( 
+		select prod_id from product_details
+	 )
+<list>
+  <com.sales.pojo.Prodcty>
+    <id>121</id>
+    <name>some</name>
+    <catId>1</catId>
+  </com.sales.pojo.Prodcty>
+  <com.sales.pojo.Prodcty>
+    <id>122</id>
+    <name>yo yo beba singh</name>
+    <catId>3</catId>
+  </com.sales.pojo.Prodcty>
+</list>

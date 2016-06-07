@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.blocore.org/BlowQuery" elementFormDefault="qualified" xmlns:BLOW="http://www.blocore.org/BlowQuery">
+
+    <complexType name="Query" mixed="true">
+    	<sequence>
+    		<element name="Include" type="BLOW:Include" minOccurs="0"
+    			maxOccurs="unbounded">
+    		</element>
+    	</sequence>
+    	<attribute name="type" use="required">
+    		<simpleType>
+    			<restriction base="string">
+    				<enumeration value="insert"></enumeration>
+    				<enumeration value="update"></enumeration>
+    				<enumeration value="delete"></enumeration>
+    				<enumeration value="select"></enumeration>
+    			</restriction>
+    		</simpleType>
+    	</attribute>
+    	<attribute name="name" type="string" use="required"></attribute>
+    	<attribute name="class" type="string" use="required"></attribute>
+    	<attribute name="mapping-object" type="string" use="required"></attribute>
+    </complexType>
+
+    <complexType name="Include">
+    	<attribute name="ref" type="string" use="required"></attribute>
+    </complexType>
+
+    <element name="Queries" type="BLOW:Queries"></element>
+    
+    <complexType name="Queries">
+    	<sequence maxOccurs="unbounded" minOccurs="0">
+    		<element name="Include" type="BLOW:SubQuery" minOccurs="0"
+    			maxOccurs="unbounded">
+    		</element>
+    		<element name="Query" type="BLOW:Query" minOccurs="0"
+    			maxOccurs="unbounded">
+    		</element>
+    		<element name="Object" type="BLOW:Object" minOccurs="0" maxOccurs="unbounded"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="SubQuery" mixed="true">
+    	<attribute name="name" type="string" use="required"></attribute>
+    </complexType>
+
+    <complexType name="Object" mixed="true">
+    	<sequence>
+    		<element name="property" type="BLOW:Property" minOccurs="1"
+    			maxOccurs="unbounded">
+    		</element>
+    	</sequence>
+    	<attribute name="className" type="string" use="required"></attribute>
+    	<attribute name="name" type="string" use="required"></attribute>
+    </complexType>
+
+    <complexType name="Property" mixed="true">
+    	<attribute name="attr" type="string" use="required"></attribute>
+    	<attribute name="column" type="string" use="required"></attribute>
+    </complexType>
+</schema>
