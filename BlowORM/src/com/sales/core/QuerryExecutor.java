@@ -1,3 +1,26 @@
+/**
+  *  BLOW-ORM is an open source ORM for java and its currently under development.
+  *
+  *  Copyright (C) 2016  @author Divyank Sharma
+  *
+  *  This program is free software: you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+  *  the Free Software Foundation, either version 3 of the License, or
+  *  (at your option) any later version.
+  *
+  *  This program is distributed in the hope that it will be useful,
+  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *  GNU General Public License for more details.
+  *
+  *  You should have received a copy of the GNU General Public License
+  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  *  
+  *  
+  *  In Addition to it if you find any bugs or encounter any issue you need to notify me.
+  *  I appreciate any suggestions to improve it.
+  *  @mailto: divyank01@gmail.com
+  */
 package com.sales.core;
 
 import java.sql.Connection;
@@ -18,6 +41,7 @@ import com.sales.blow.comparator.DependencyMapComparator;
 import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.BlowConstatnts;
 import com.sales.constants.BlowParam;
+import com.sales.core.helper.SessionContainer;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
@@ -45,6 +69,7 @@ public class QuerryExecutor {
 	private BlowCoreMapper coreMapper;
 	private Map<String, Object> params=new HashMap<String, Object>();
 	private static final String LIST_SIZE="incomingListSize";
+	
 	private QuerryExecutor(){
 		coreMapper=BlowCoreMapper.getInstance();
 	}
@@ -220,11 +245,12 @@ public class QuerryExecutor {
 		return BlowConstatnts.GET+retVal;
 	}
 
-	protected Object retriveSingleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t, Map<String, Object> params) throws Exception{
+	protected Object retriveSingleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t, Map<String, Object> params,SessionContainer session) throws Exception{
 		Connection con=null;
 		Object retval=null;
-			con=ConnectionPool.getInstance().borrowObject();
+			con=session.getConnection();
 			System.out.println(sql.toString());
+			session.getQueries().put(sql, session.getSessionId());
 			ResultSet rs=con
 			.prepareStatement(sql.toString())
 			.executeQuery();
@@ -240,20 +266,18 @@ public class QuerryExecutor {
 			}
 			if(counter>1){
 				rs.close();
-				ConnectionPool.getInstance().returnObject(con);
 				//throw new BlownException("multiple records found");
 			}
 			rs.close();
-			ConnectionPool.getInstance().returnObject(con);
 		return retval;
 	}
 	
 	
-	protected List<Object> retriveMultipleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t) throws Exception{
-		Connection con=null;
+	protected List<Object> retriveMultipleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t,SessionContainer session) throws Exception{
+		Connection con=session.getConnection();;
 		List<Object> retval=new ArrayList<Object>();
-		con=ConnectionPool.getInstance().borrowObject();
 		System.out.println(sql.toString());
+		session.getQueries().put(sql, session.getSessionId());
 		ResultSet rs=con.prepareStatement(sql.toString()).executeQuery();
 		int counter=0;
 		int pos=-1;
@@ -282,7 +306,6 @@ public class QuerryExecutor {
 			}
 		}
 		rs.close();
-		ConnectionPool.getInstance().returnObject(con);
 		return retval;
 	}
 		
@@ -290,14 +313,15 @@ public class QuerryExecutor {
 		return coreMapper.mapPersistaceToObj(rs,mappings.getMaps().get(t),mappings,blowParam,preObject,flag);
 	}
 	
-	protected Object runSql(String sql,MappingObject mappingObject,Map input) throws Exception{
+	protected Object runSql(String sql,MappingObject mappingObject,Map input,SessionContainer session) throws Exception{
 		Connection con=null;
 		Object retval=null;
 		ResultSet rs=null;
 		try{
 			querryBuilder=QuerryBuilder.newInstance();
-			con=ConnectionPool.getInstance().borrowObject();
+			con=session.getConnection();
 			System.out.println(sql.toString());
+			session.getQueries().put(sql, session.getSessionId());
 			sql=querryBuilder.processQuery(sql, input);
 			rs=con.prepareStatement(sql.toString()).executeQuery();
 			retval=coreMapper.mapPersistanceObject(rs, mappingObject);
@@ -305,12 +329,10 @@ public class QuerryExecutor {
 			if(rs!=null)
 				rs.close();
 			e.printStackTrace();
-			ConnectionPool.getInstance().returnObject(con);
 			throw new BlownException(e.getMessage());
 		}finally{
 			if(rs!=null)
 				rs.close();
-			ConnectionPool.getInstance().returnObject(con);
 		}
 		return retval;
 	}

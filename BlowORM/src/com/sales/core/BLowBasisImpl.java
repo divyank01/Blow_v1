@@ -1,3 +1,26 @@
+/**
+  *  BLOW-ORM is an open source ORM for java and its currently under development.
+  *
+  *  Copyright (C) 2016  @author Divyank Sharma
+  *
+  *  This program is free software: you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+  *  the Free Software Foundation, either version 3 of the License, or
+  *  (at your option) any later version.
+  *
+  *  This program is distributed in the hope that it will be useful,
+  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *  GNU General Public License for more details.
+  *
+  *  You should have received a copy of the GNU General Public License
+  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  *  
+  *  
+  *  In Addition to it if you find any bugs or encounter any issue you need to notify me.
+  *  I appreciate any suggestions to improve it.
+  *  @mailto: divyank01@gmail.com
+  */
 package com.sales.core;
 
 
@@ -8,6 +31,8 @@ import java.util.Map;
 
 import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.BlowParam;
+import com.sales.core.helper.PropParam;
+import com.sales.core.helper.SessionContainer;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.pools.OrmMappingPool;
@@ -23,9 +48,11 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	private boolean useJoin;
 	private QuerryBuilder querryBuilder;
 	private BlowParam blowParam;
+	private SessionContainer container;
 	
-	protected BLowBasisImpl(T claz)throws Exception{
+	protected BLowBasisImpl(T claz,SessionContainer container)throws Exception{
 		t=claz;
+		this.container=container;
 		sql=new StringBuffer();
 		querryBuilder=QuerryBuilder.newInstance();
 		parser=OrmMappingPool.getInstance().borrowObject();
@@ -33,13 +60,6 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 		OrmMappingPool.getInstance().returnObject(parser);
 		if(mappings.getMaps().get(t)!=null && mappings.getMaps().get(t).haveDependents());
 			useJoin=true;
-	}
-
-
-	@Override
-	public Basis<T, U> asc(String prop) throws Exception{
-		// TODO Auto-generated method stub
-		return this;
 	}
 
 	@Override
@@ -51,8 +71,7 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	@Override
 	public Basis<T, U> propEquals(String prop, Object value) throws Exception{
 		if(prop!=null&&!prop.equals(""))
-			params.put(prop, value);
-		querryBuilder.param=BlowParam.EQ;
+			params.put(prop, new PropParam(prop, BlowParam.EQ, value));
 		return this;
 	}
 
@@ -60,7 +79,7 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	public List<T> retrieveMany(U u) throws Exception{
 		List<T> retval=null;
 		querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
-		retval=(List<T>)getExecutor().retriveMultipleRecord(sql.toString(), blowParam, mappings, t);
+		retval=(List<T>)getExecutor().retriveMultipleRecord(sql.toString(), blowParam, mappings, t,this.container);
 		return retval;
 	}
 
@@ -72,13 +91,14 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 		String qId=calculateQryId();
 		String querry=null;
 		if(QuerryBuilder.getQuerryCache().containsKey(qId)){
+			System.out.println("found cached query with qId:"+qId);
 			querry=(String)QuerryBuilder.getQuerryCache().get(qId);
 		}else{
 			querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
 			QuerryBuilder.getQuerryCache().put(qId, sql.toString());
 			querry=sql.toString();
 		}	
-		retval=(T)getExecutor().retriveSingleRecord(querry, blowParam, mappings, t,params);
+		retval=(T)getExecutor().retriveSingleRecord(querry, blowParam, mappings, t,params,this.container);
 		return retval;
 	}
 
@@ -97,12 +117,12 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	}
 
 	@Override
-	public boolean updateEntity() throws Exception{
+	public boolean updateEntity(long sessionId) throws Exception{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
+	/*@Override
 	public Basis<T, U> whereClause(String prop, String value)throws Exception {
 		// TODO Auto-generated method stub
 		return null;
@@ -113,38 +133,12 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	public Basis<T, U> setAlias(String prop) throws Exception{
 		// TODO Auto-generated method stub
 		return this;
-	}
+	}*/
 
 
 	@Override
 	public Basis<T, U> prop(BlowParam param,String prop, Object value) {
-		switch(param){
-		case ALL:
-
-			break;
-
-		case EQ:
-
-			break;
-
-		case GT:
-
-			break;
-
-		case GT_EQ:
-
-			break;
-
-		case LT:
-
-			break;
-
-		case LT_EQ:
-
-			break;
-		default:
-			break;
-		}
+		this.params.put(prop, new PropParam(prop, param, value));
 		return this;
 	}
 
@@ -171,9 +165,30 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 			while(itr.hasNext()){
 				String key=itr.next();
 				id.append(key+"+");
+				id.append(((PropParam)params.get(key)).getParam().toString()+"+");
 			}
 			return id.toString();
 		}
+		return null;
+	}
+
+	@Override
+	public Basis<T, U> order(String prop, BlowParam blowParam) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Basis<T, U> groupBy(String prop, BlowParam blowParam)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Basis<T, U> having(String prop, BlowParam blowParam)
+			throws Exception {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

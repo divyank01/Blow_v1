@@ -1,3 +1,26 @@
+/**
+  *  BLOW-ORM is an open source ORM for java and its currently under development.
+  *
+  *  Copyright (C) 2016  @author Divyank Sharma
+  *
+  *  This program is free software: you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+  *  the Free Software Foundation, either version 3 of the License, or
+  *  (at your option) any later version.
+  *
+  *  This program is distributed in the hope that it will be useful,
+  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *  GNU General Public License for more details.
+  *
+  *  You should have received a copy of the GNU General Public License
+  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  *  
+  *  
+  *  In Addition to it if you find any bugs or encounter any issue you need to notify me.
+  *  I appreciate any suggestions to improve it.
+  *  @mailto: divyank01@gmail.com
+  */
 package com.sales.core;
 
 import java.sql.Connection;
@@ -14,6 +37,7 @@ import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.BlowConstatnts;
 import com.sales.constants.BlowParam;
 import com.sales.constants.SQLTypes;
+import com.sales.core.helper.PropParam;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
@@ -23,7 +47,7 @@ public class QuerryBuilder {
 	private QuerryBuilder(){}
 	private static QuerryBuilder bildr;
 	protected String propBasis;
-	protected BlowParam param;
+	//protected BlowParam param;
 	private int counter=0;
 	private static Map<String,Object> querryCache=new HashMap<String, Object>();
 	protected static QuerryBuilder newInstance(){
@@ -296,6 +320,7 @@ public class QuerryBuilder {
 			int count=0;
 			while(iter.hasNext()){
 				String prop=iter.next();
+				PropParam propParam=(PropParam)params2.get(prop);
 				if(useJoin && check){				
 					if(prop.contains(BlowConstatnts.DOT)){
 						StringTokenizer tokens=new StringTokenizer(prop, BlowConstatnts.DOT);
@@ -312,10 +337,7 @@ public class QuerryBuilder {
 									if(count>0)
 										sql.append(BlowConstatnts.AND);
 									sql.append(finalSchema+BlowConstatnts.DOT+dMap.get(token).getColName());
-									sql.append(BlowConstatnts.EQ);
-									sql.append(BlowConstatnts.S_QT);
-									sql.append(params2.get(prop));
-									sql.append(BlowConstatnts.S_QT);
+									processParam(propParam, sql);
 								}
 							}else{
 								throw new BlownException("Either propety not present or not complex type");
@@ -333,10 +355,7 @@ public class QuerryBuilder {
 						sql.append(mappings.getMaps().get(t).getSchemaName());
 						sql.append(BlowConstatnts.DOT);
 						sql.append(attr.getColName());
-						sql.append(BlowConstatnts.EQ);
-						sql.append(BlowConstatnts.S_QT);
-						sql.append(params2.get(prop));
-						sql.append(BlowConstatnts.S_QT);
+						processParam(propParam, sql);
 					}
 				}
 				else{
@@ -345,10 +364,7 @@ public class QuerryBuilder {
 					sql.append(mappings.getMaps().get(t).getSchemaName());
 					sql.append(BlowConstatnts.DOT);
 					sql.append(mappings.getMaps().get(t).getAttributeMap().get(prop).getColName());
-					sql.append(BlowConstatnts.EQ);
-					sql.append(BlowConstatnts.S_QT);
-					sql.append(params2.get(prop));
-					sql.append(BlowConstatnts.S_QT);
+					processParam(propParam, sql);
 				}
 				count++;
 			}
@@ -365,6 +381,62 @@ public class QuerryBuilder {
 		}
 	}
 
+	private void processParam(PropParam param,StringBuffer sql){
+		if(param.getParam().equals(BlowParam.EQ)){
+			sql.append(BlowConstatnts.EQ);
+			sql.append(BlowConstatnts.S_QT);
+			sql.append(param.getValue());
+			sql.append(BlowConstatnts.S_QT);
+		}
+		if(param.getParam().equals(BlowParam.GT)){
+			sql.append(BlowConstatnts.GT);
+			sql.append(BlowConstatnts.S_QT);
+			sql.append(param.getValue());
+			sql.append(BlowConstatnts.S_QT);
+		}
+		if(param.getParam().equals(BlowParam.GT_EQ)){
+			sql.append(BlowConstatnts.GT_EQ);
+			sql.append(BlowConstatnts.S_QT);
+			sql.append(param.getValue());
+			sql.append(BlowConstatnts.S_QT);
+		}
+		if(param.getParam().equals(BlowParam.LT)){
+			sql.append(BlowConstatnts.LT);
+			sql.append(BlowConstatnts.S_QT);
+			sql.append(param.getValue());
+			sql.append(BlowConstatnts.S_QT);
+		}
+		if(param.getParam().equals(BlowParam.LT_EQ)){
+			sql.append(BlowConstatnts.LT_EQ);
+			sql.append(BlowConstatnts.S_QT);
+			sql.append(param.getValue());
+			sql.append(BlowConstatnts.S_QT);
+		}
+		if(param.getParam().equals(BlowParam.LIKE_AROUND)){
+			sql.append(BlowConstatnts._LIKE);
+			sql.append(BlowConstatnts.S_QT);
+			sql.append(BlowConstatnts.LIKE);
+			sql.append(param.getValue());
+			sql.append(BlowConstatnts.LIKE);
+			sql.append(BlowConstatnts.S_QT);
+		}
+		if(param.getParam().equals(BlowParam.LIKE_FRONT)){
+			sql.append(BlowConstatnts._LIKE);
+			sql.append(BlowConstatnts.S_QT);
+			sql.append(BlowConstatnts.LIKE);
+			sql.append(param.getValue());
+			sql.append(BlowConstatnts.S_QT);
+		}
+		if(param.getParam().equals(BlowParam.LIKE_END)){
+			sql.append(BlowConstatnts._LIKE);
+			sql.append(BlowConstatnts.S_QT);
+			sql.append(param.getValue());
+			sql.append(BlowConstatnts.LIKE);
+			sql.append(BlowConstatnts.S_QT);
+		}
+	}
+	
+	
 	/**
 	 * Makes left outer join for associative attribute.
 	 * P.S.:think twice before changing this function.
@@ -536,7 +608,9 @@ public class QuerryBuilder {
 	
 	private String getValueForToken(StringTokenizer splits,Object obj,boolean isComplete) throws Exception {
 		while(splits.hasMoreElements()){
-				obj=obj.getClass().getMethod(getterForField(splits.nextToken()), null).invoke(obj, null);
+			if(obj==null)
+				return " NULL";
+			obj=obj.getClass().getMethod(getterForField(splits.nextToken()), null).invoke(obj, null);
 		}
 		return obj.toString();
 	}

@@ -12,6 +12,7 @@ import com.customer.pojo.Customer;
 import com.sale.util.BlowUtils;
 import com.sales.constants.BlowParam;
 import com.sales.constants.SQLTypes;
+import com.sales.core.BlowContextImpl;
 import com.sales.core.BlowCore;
 import com.sales.pojo.ElectronicProductDetails;
 import com.sales.pojo.Prodcty;
@@ -30,11 +31,27 @@ public class MainClass {
 
 			Date d=new Date();
 			long l=d.getTime();
-			
+			BlowUtils.getContext().openSession();
 			Object p=(Object) BlowUtils
+			.getBasis(Prodcty.class)
+			.prop(BlowParam.LIKE_AROUND, "id", 121)
+			.retrieveOne();
+			
+			Object p1=(Object) BlowUtils
 			.getBasis(Prodcty.class)
 			.propEquals("id",121)
 			.retrieveOne();
+			
+			Object p2=(Object) BlowUtils
+			.getBasis(Prodcty.class)
+			.propEquals("id",121)
+			.retrieveOne();
+			
+			Object p3=(Object) BlowUtils
+			.getBasis(Prodcty.class)
+			.propEquals("id",121)
+			.retrieveOne();
+			BlowUtils.getContext().closeSession();
 			//.retrieveMany(null);
 			
 			/*p.setId(126);
@@ -177,8 +194,9 @@ public class MainClass {
 				//System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null)));
 			Map m= new HashMap();
 			m.put("product", p);
+			BlowUtils.getContext().openSession();
 				System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getProducts", m)));
-
+				BlowUtils.getContext().closeSession();
 				/*Prodcty p1=(Prodcty) BlowUtils
 				.getBasis(Prodcty.class)
 				.propEquals("epd.id",121)
