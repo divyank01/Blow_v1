@@ -88,7 +88,7 @@ public class QuerryExecutor {
 		for(int i=0;i<list.size();i++){
 			retVal.add(list.get(i).getClassName());
 		}
-		System.out.println(retVal);
+		//System.out.println(retVal);
 		return retVal;
 	}
 	
@@ -225,18 +225,20 @@ public class QuerryExecutor {
 			}
 		}
 		
-		con.commit();
+		//con.commit();		 do it on session commit
 		ConnectionPool.getInstance().returnObject(con);
 		return false;
 	}
 	
 	private int countOfRecord(Connection con,ORM_MAPPINGS mappings,Object obj) throws Exception{
-		ResultSet rs=querryBuilder.getCountForPk(mappings, obj, con).executeQuery();
+		PreparedStatement ps=querryBuilder.getCountForPk(mappings, obj, con);
+		ResultSet rs=ps.executeQuery();
 		int retVal=0;
 		while(rs.next()){
 			retVal=rs.getInt(1);
 		}
 		rs.close();
+		ps.close();
 		return retVal;
 	}
 	
@@ -251,8 +253,9 @@ public class QuerryExecutor {
 			con=session.getConnection();
 			System.out.println(sql.toString());
 			session.getQueries().put(sql, session.getSessionId());
-			ResultSet rs=con
-			.prepareStatement(sql.toString())
+			PreparedStatement ps=con
+					.prepareStatement(sql.toString());
+			ResultSet rs=ps
 			.executeQuery();
 			int counter=0;
 			while(rs.next()){
@@ -268,6 +271,7 @@ public class QuerryExecutor {
 				rs.close();
 				//throw new BlownException("multiple records found");
 			}
+			ps.close();
 			rs.close();
 		return retval;
 	}
@@ -278,7 +282,8 @@ public class QuerryExecutor {
 		List<Object> retval=new ArrayList<Object>();
 		System.out.println(sql.toString());
 		session.getQueries().put(sql, session.getSessionId());
-		ResultSet rs=con.prepareStatement(sql.toString()).executeQuery();
+		PreparedStatement ps=con.prepareStatement(sql.toString());
+		ResultSet rs=ps.executeQuery();
 		int counter=0;
 		int pos=-1;
 		Object ob=null;
@@ -305,6 +310,8 @@ public class QuerryExecutor {
 				retval.add(ob);
 			}
 		}
+		if(ps!=null)
+			ps.close();
 		rs.close();
 		return retval;
 	}
@@ -317,22 +324,28 @@ public class QuerryExecutor {
 		Connection con=null;
 		Object retval=null;
 		ResultSet rs=null;
+		PreparedStatement ps=null;
 		try{
 			querryBuilder=QuerryBuilder.newInstance();
 			con=session.getConnection();
 			System.out.println(sql.toString());
 			session.getQueries().put(sql, session.getSessionId());
 			sql=querryBuilder.processQuery(sql, input);
-			rs=con.prepareStatement(sql.toString()).executeQuery();
+			ps=con.prepareStatement(sql.toString());
+			rs=ps.executeQuery();
 			retval=coreMapper.mapPersistanceObject(rs, mappingObject);
 		}catch(Exception e){
 			if(rs!=null)
 				rs.close();
+			if(ps!=null)
+				ps.close();
 			e.printStackTrace();
 			throw new BlownException(e.getMessage());
 		}finally{
 			if(rs!=null)
 				rs.close();
+			if(ps!=null)
+				ps.close();
 		}
 		return retval;
 	}

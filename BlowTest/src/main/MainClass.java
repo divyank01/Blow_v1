@@ -185,29 +185,30 @@ public class MainClass {
 					//.propEquals("stock.mappings.id", 124)
 					.fetchMode(BlowParam.EAGER)
 					.retrieveMany(null)));*///check params==null
-			/*long temp=new Date().getTime()-l;
+			long temp=new Date().getTime()-l;
 			System.out.println(temp);
 			//BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null);
 			//BlowCore.getInstance().getContext().getSQLResult("getProducts", null);
-			for (int i = 0; i < 100; i++) {*/
+
+			BlowUtils.getContext().openSession();
+			for (int i = 0; i < 600; i++) {
 				
 				//System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null)));
 			Map m= new HashMap();
 			m.put("product", p);
-			BlowUtils.getContext().openSession();
 				System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getProducts", m)));
-				BlowUtils.getContext().closeSession();
-				/*Prodcty p1=(Prodcty) BlowUtils
+				
+				Prodcty p11=(Prodcty) BlowUtils
 				.getBasis(Prodcty.class)
 				.propEquals("epd.id",121)
 				.propEquals("id", 123)
 				.fetchMode(BlowParam.EAGER)
 				.retrieveOne();
 				//System.out.println(new XStream().toXML(p1));
-
 				System.out.println(new Date().getTime()-l-temp+"         "+i);
 
-			}*/
+			}
+			BlowUtils.getContext().closeSession();
 					}catch (Exception e) {
 			e.printStackTrace();
 		}
