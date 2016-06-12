@@ -12,6 +12,7 @@
     	<MAP:one-2-one name="mappings" ref-class="com.sales.pojo.StockMappings" foreign-key="STOCK_ID" foreign-key-ref="true"/>
     </MAP:Map>
   </MAP:Mapping>
+  
   <MAP:Mapping>
     <MAP:Class>com.sales.pojo.StockMappings</MAP:Class>
     <MAP:RDBSchema>STOCK_MAPPINGS</MAP:RDBSchema>

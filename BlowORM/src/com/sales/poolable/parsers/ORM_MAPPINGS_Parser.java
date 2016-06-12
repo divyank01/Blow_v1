@@ -24,6 +24,7 @@
 package com.sales.poolable.parsers;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -49,6 +50,7 @@ import com.sales.blow.annotations.One2One;
 import com.sales.blow.exceptions.BlownException;
 import com.sales.blow.exceptions.MappingsException;
 import com.sales.core.DatabaseStateManager;
+import com.sales.file.generator.ClassFileGenerator;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.DataBaseInfo.Table.Column;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.pools.ConnectionPool;
@@ -107,7 +109,7 @@ public class ORM_MAPPINGS_Parser {
 			for(int i=0;i<annotationPackages.size();i++){
 				String pack=annotationPackages.get(i);
 				File packageFile=new File(Thread.currentThread().
-								getContextClassLoader().getResource(pack.replaceAll("\\.", "/").trim()).getFile());
+								getContextClassLoader().getResource(pack.replaceAll("\\.", Character.toString(File.separatorChar)).trim()).getFile());
 				loadAnnotations(packageFile,pack);
 			}
 		}else{
@@ -127,7 +129,11 @@ public class ORM_MAPPINGS_Parser {
 		}
 		OrmConfigParserPool.getInstance().returnObject(configParser);
 	}
-
+	
+	private String getPackageName(String filename){
+		return filename.substring(0, filename.lastIndexOf("."));
+	}
+	
 	private void loadAnnotations(File file,String packageName) throws MappingsException {
 		for(File f:file.listFiles()){
 			if(!f.isHidden() && f.getName().endsWith(".class")){

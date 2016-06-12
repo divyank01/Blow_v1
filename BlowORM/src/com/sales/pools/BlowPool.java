@@ -88,4 +88,9 @@ public class BlowPool<T> {
 		System.out.println("locked========>"+locked+"\t\t"+m);
 		System.out.println("unlocked========>"+unLocked+"\t\t"+m);
 	}
+	
+	public void printPoolSize(){
+		System.out.println("locked :"+locked.size()+" entities found.");
+		System.out.println("unlocked :"+unLocked.size()+" entities found.");
+	}
 }

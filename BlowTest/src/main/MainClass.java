@@ -19,6 +19,7 @@ import com.sales.pojo.Prodcty;
 import com.sales.pojo.ProductDetails;
 import com.sales.pojo.Stock;
 import com.sales.pojo.StockMappings;
+import com.sales.pools.ConnectionPool;
 import com.thoughtworks.xstream.XStream;
 
 public class MainClass {
@@ -33,31 +34,31 @@ public class MainClass {
 			long l=d.getTime();
 			BlowUtils.getContext().openSession();
 			Object p=(Object) BlowUtils
-			.getBasis(Prodcty.class)
-			.prop(BlowParam.LIKE_AROUND, "id", 121)
-			.retrieveOne();
-			
+					.getBasis(Stock.class)
+					//.prop(BlowParam.LIKE_AROUND, "id", "")
+					.retrieveMany(null);
+
 			Object p1=(Object) BlowUtils
-			.getBasis(Prodcty.class)
-			.propEquals("id",121)
-			.retrieveOne();
-			
+					.getBasis(Prodcty.class)
+					.propEquals("id",121)
+					.retrieveOne();
+
 			Object p2=(Object) BlowUtils
-			.getBasis(Prodcty.class)
-			.propEquals("id",121)
-			.retrieveOne();
-			
+					.getBasis(Prodcty.class)
+					.propEquals("id",121)
+					.retrieveOne();
+
 			Object p3=(Object) BlowUtils
-			.getBasis(Prodcty.class)
-			.propEquals("id",121)
-			.retrieveOne();
+					.getBasis(Prodcty.class)
+					.propEquals("id",121)
+					.retrieveOne();
 			BlowUtils.getContext().closeSession();
 			//.retrieveMany(null);
-			
+
 			/*p.setId(126);
 			p.getEpd().setId(125);
 			p.getEpd().setProdId(124);*/
-			
+
 			//BlowUtils.getContext().saveOrUpdateEntity(p);
 			System.out.println(new XStream().toXML(p));
 
@@ -74,7 +75,7 @@ public class MainClass {
 			.propEquals("product.details.id",254)
 			.retrieveOne();
 			System.out.println(new XStream().toXML(p2));*/
-			 
+
 
 
 
@@ -91,13 +92,13 @@ public class MainClass {
 					.propEquals("id", 1234)
 					//.propEquals("catId", 2)
 					.retrieveOne();
-			
+
 			//System.out.println(new XStream().toXML(p3));
 			System.out.println(new XStream().toXML(p4));*/
-			
-			
-			
-			
+
+
+
+
 			/*Prodcty p3=new Prodcty();
 			List list = new ArrayList();
 			//for(int i=0;i<1000;i++){
@@ -178,38 +179,40 @@ public class MainClass {
 			//BlowUtils.getContext().saveOrUpdateEntity(list);
 			System.out.println(new Date().getTime()-l);
 			BlowUtils.getContext().saveOrUpdateEntity(p2);
-			
+
 			System.out.println(new XStream().toXML( BlowUtils
 					.getBasis(Prodcty.class)
 					.propEquals("id", p2.getProduct().getId())
 					//.propEquals("stock.mappings.id", 124)
 					.fetchMode(BlowParam.EAGER)
 					.retrieveMany(null)));*///check params==null
-			long temp=new Date().getTime()-l;
-			System.out.println(temp);
+			//long temp=new Date().getTime()-l;
+			//System.out.println(temp);
 			//BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null);
 			//BlowCore.getInstance().getContext().getSQLResult("getProducts", null);
+			System.out.println(new Date().getTime()-l);
+			/*BlowUtils.getContext().openSession();
+			for (int i = 0; i < 1000; i++) {
 
-			BlowUtils.getContext().openSession();
-			for (int i = 0; i < 600; i++) {
-				
 				//System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null)));
-			Map m= new HashMap();
-			m.put("product", p);
-				System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getProducts", m)));
-				
-				Prodcty p11=(Prodcty) BlowUtils
-				.getBasis(Prodcty.class)
-				.propEquals("epd.id",121)
-				.propEquals("id", 123)
-				.fetchMode(BlowParam.EAGER)
-				.retrieveOne();
+				Map m= new HashMap();
+				m.put("product", p);
+				//System.out.println(new XStream().toXML());
+				BlowCore.getInstance().getContext().getSQLResult("getProducts", m);
+			    BlowUtils
+						.getBasis(Prodcty.class)
+						.propEquals("epd.id",121)
+						.propEquals("id", 123)
+						.fetchMode(BlowParam.EAGER)
+						.retrieveMany(null);
 				//System.out.println(new XStream().toXML(p1));
-				System.out.println(new Date().getTime()-l-temp+"         "+i);
+				//System.out.println(new Date().getTime()-l-temp+"         "+i);
 
 			}
-			BlowUtils.getContext().closeSession();
-					}catch (Exception e) {
+			System.out.println(new Date().getTime()-l);
+			ConnectionPool.getInstance().printPoolSize();
+			BlowUtils.getContext().closeSession();*/
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
