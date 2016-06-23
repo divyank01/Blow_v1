@@ -28,6 +28,7 @@ public abstract interface ConfigConstants {
 	public static final String USERNAME="BLOW:USER";
 	public static final String PASSWORD="BLOW:PASSWORD";
 	public static final String URL="BLOW:URL";
+	public static final String DRIVER="BLOW:JDBCDriver";
 	public static final String MAPPINGS="BLOW:MAPPINGS";
 	public static final String ANNOTATIONS="BLOW:ANNOTATIONS";
 	public static final String PACKAGE_SCAN="BLOW:package-scan";
@@ -41,4 +42,5 @@ public abstract interface ConfigConstants {
 	public static final String Q_INCLUDE="BLOW:Include";
 	public static final String Q_OBJECT="BLOW:Object";
 	public static final String Q_PROP="BLOW:property";
+	public static final String SQL_LOGGING="BLOW:SqlLogging";
 }

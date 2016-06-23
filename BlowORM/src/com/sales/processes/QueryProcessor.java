@@ -23,13 +23,40 @@
   */
 package com.sales.processes;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.sales.constants.BlowConstatnts;
+import com.sales.constants.BlowParam;
+import com.sales.core.helper.PropParam;
+
 public class QueryProcessor {
 
-	public static String processQuery(String query){
-		
-		
-		
-		
-		return null;
+	public static PreparedStatement processQuery(PreparedStatement ps,Map<String, Object> map) throws SQLException{
+		Iterator<String> keys=map.keySet().iterator();
+		while(keys.hasNext()){
+			String key=keys.next();
+			processParam(map,key,ps);
+		}
+		return ps;
+	}
+	
+	private static void processParam(Map<String, Object> map,String key,PreparedStatement sql) throws SQLException{
+		PropParam param=(PropParam)map.get(key);
+		if(param.getParam().equals(BlowParam.LIKE_AROUND)){
+			sql.setObject(((PropParam)map.get(key)).getIndex(), BlowConstatnts.LIKE+((PropParam)map.get(key)).getValue()+BlowConstatnts.LIKE);
+		}
+		else if(param.getParam().equals(BlowParam.LIKE_FRONT)){
+			sql.setObject(((PropParam)map.get(key)).getIndex(), BlowConstatnts.LIKE+((PropParam)map.get(key)).getValue());
+			
+		}
+		else if(param.getParam().equals(BlowParam.LIKE_END)){
+			sql.setObject(((PropParam)map.get(key)).getIndex(), ((PropParam)map.get(key)).getValue()+BlowConstatnts.LIKE);
+		}
+		else{
+			sql.setObject(((PropParam)map.get(key)).getIndex(), ((PropParam)map.get(key)).getValue());
+		}
 	}
 }

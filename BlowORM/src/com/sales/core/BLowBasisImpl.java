@@ -31,6 +31,7 @@ import java.util.Map;
 
 import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.BlowParam;
+import com.sales.core.helper.CachedQuery;
 import com.sales.core.helper.PropParam;
 import com.sales.core.helper.SessionContainer;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser;
@@ -78,8 +79,19 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	@Override
 	public List<T> retrieveMany(U u) throws Exception{
 		List<T> retval=null;
-		querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
-		retval=(List<T>)getExecutor().retriveMultipleRecord(sql.toString(), blowParam, mappings, t,this.container);
+		//querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
+		String qId=calculateQryId();
+		String querry=null;
+		if(QuerryBuilder.getQuerryCache().containsKey(qId)){
+			//System.out.println("found cached query with qId:"+qId);
+			querry=((CachedQuery)QuerryBuilder.getQuerryCache().get(qId)).getCachedQuery();
+			QuerryBuilder.newInstance().mapParamIndexes(((CachedQuery)QuerryBuilder.getQuerryCache().get(qId)).getCachedParams(), params);
+		}else{
+			querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
+			QuerryBuilder.getQuerryCache().put(qId, new CachedQuery(params, sql.toString()));
+			querry=sql.toString();
+		}
+		retval=(List<T>)getExecutor().retriveMultipleRecord(querry, blowParam, mappings,params, t,this.container);
 		return retval;
 	}
 
@@ -91,11 +103,12 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 		String qId=calculateQryId();
 		String querry=null;
 		if(QuerryBuilder.getQuerryCache().containsKey(qId)){
-			System.out.println("found cached query with qId:"+qId);
-			querry=(String)QuerryBuilder.getQuerryCache().get(qId);
+			//System.out.println("found cached query with qId:"+qId);
+			querry=((CachedQuery)QuerryBuilder.getQuerryCache().get(qId)).getCachedQuery();
+			QuerryBuilder.newInstance().mapParamIndexes(((CachedQuery)QuerryBuilder.getQuerryCache().get(qId)).getCachedParams(), params);
 		}else{
 			querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
-			QuerryBuilder.getQuerryCache().put(qId, sql.toString());
+			QuerryBuilder.getQuerryCache().put(qId, new CachedQuery(params, sql.toString()));
 			querry=sql.toString();
 		}	
 		retval=(T)getExecutor().retriveSingleRecord(querry, blowParam, mappings, t,params,this.container);

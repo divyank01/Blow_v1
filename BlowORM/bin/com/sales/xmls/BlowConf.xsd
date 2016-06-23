@@ -37,8 +37,11 @@
 			<element name="USER" type="BLOW:USER" minOccurs="1"
 				maxOccurs="1" nillable="false">
 			</element>
-			<element name="QUERIES" type="BLOW:QUERIES"
-				maxOccurs="1" minOccurs="0">
+			<element name="JDBCDriver" type="string" maxOccurs="1"
+				minOccurs="1">
+			</element>
+			<element name="QUERIES" type="BLOW:QUERIES" maxOccurs="1"
+				minOccurs="0">
 			</element>
 			<element name="MAPPINGS" type="BLOW:MAPPINGS" minOccurs="0"
 				maxOccurs="unbounded">
@@ -55,7 +58,10 @@
 					</documentation>
 				</annotation>
 			</element>
-			<element name="GenerateSchema" type="boolean" maxOccurs="1" minOccurs="1"></element>
+			<element name="GenerateSchema" type="boolean" maxOccurs="1"
+				minOccurs="1">
+			</element>
+			<element name="SqlLogging" type="boolean" maxOccurs="1" minOccurs="1"></element>
 		</sequence>
 	</complexType>
 

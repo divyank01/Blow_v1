@@ -7,6 +7,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.customer.pojo.Customer;
 import com.sale.util.BlowUtils;
@@ -20,6 +22,7 @@ import com.sales.pojo.ProductDetails;
 import com.sales.pojo.Stock;
 import com.sales.pojo.StockMappings;
 import com.sales.pools.ConnectionPool;
+import com.sales.pools.OrmMappingPool;
 import com.thoughtworks.xstream.XStream;
 
 public class MainClass {
@@ -29,13 +32,14 @@ public class MainClass {
 	 */
 	public static void main(String[] args) {
 		try {
-
 			Date d=new Date();
 			long l=d.getTime();
-			BlowUtils.getContext().openSession();
+			
+			/*BlowUtils.getContext().openSession();
 			Object p=(Object) BlowUtils
-					.getBasis(Stock.class)
-					//.prop(BlowParam.LIKE_AROUND, "id", "")
+					.getBasis(Prodcty.class)
+					//.prop(BlowParam.GT, "id", 0).prop(BlowParam.GT, "epd.id", 0)
+					//.prop(BlowParam.LIKE_AROUND, "name", "")
 					.retrieveMany(null);
 
 			Object p1=(Object) BlowUtils
@@ -45,22 +49,27 @@ public class MainClass {
 
 			Object p2=(Object) BlowUtils
 					.getBasis(Prodcty.class)
-					.propEquals("id",121)
+					.propEquals("id",1)
 					.retrieveOne();
 
 			Object p3=(Object) BlowUtils
 					.getBasis(Prodcty.class)
-					.propEquals("id",121)
+					.propEquals("id",12)
 					.retrieveOne();
-			BlowUtils.getContext().closeSession();
+			
 			//.retrieveMany(null);
 
+			//Map m= new HashMap();
+			//m.put("product", p);
+			//System.out.println(new XStream().toXML());
+			//BlowCore.getInstance().getContext().getSQLResult("getProducts", m);
+			BlowUtils.getContext().closeSession();
 			/*p.setId(126);
 			p.getEpd().setId(125);
 			p.getEpd().setProdId(124);*/
 
 			//BlowUtils.getContext().saveOrUpdateEntity(p);
-			System.out.println(new XStream().toXML(p));
+			//System.out.println(new XStream().toXML(p));
 
 
 			/*ProductDetails p1=(ProductDetails) BlowUtils
@@ -191,14 +200,34 @@ public class MainClass {
 			//BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null);
 			//BlowCore.getInstance().getContext().getSQLResult("getProducts", null);
 			System.out.println(new Date().getTime()-l);
-			/*BlowUtils.getContext().openSession();
+			BlowUtils.getContext().openSession();
 			for (int i = 0; i < 1000; i++) {
 
 				//System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null)));
-				Map m= new HashMap();
-				m.put("product", p);
+				//Map m= new HashMap();
+				//m.put("product", p);
 				//System.out.println(new XStream().toXML());
-				BlowCore.getInstance().getContext().getSQLResult("getProducts", m);
+				//BlowCore.getInstance().getContext().getSQLResult("getProducts", m);
+				Object p=(Object) BlowUtils
+						.getBasis(Prodcty.class)
+						//.prop(BlowParam.GT, "id", 0).prop(BlowParam.GT, "epd.id", 0)
+						//.prop(BlowParam.LIKE_AROUND, "name", "")
+						.retrieveMany(null);
+
+				Object p1=(Object) BlowUtils
+						.getBasis(Prodcty.class)
+						.propEquals("id",121)
+						.retrieveOne();
+
+				Object p2=(Object) BlowUtils
+						.getBasis(Prodcty.class)
+						.propEquals("id",1)
+						.retrieveOne();
+
+				Object p3=(Object) BlowUtils
+						.getBasis(Prodcty.class)
+						.propEquals("id",12)
+						.retrieveOne();
 			    BlowUtils
 						.getBasis(Prodcty.class)
 						.propEquals("epd.id",121)
@@ -211,7 +240,7 @@ public class MainClass {
 			}
 			System.out.println(new Date().getTime()-l);
 			ConnectionPool.getInstance().printPoolSize();
-			BlowUtils.getContext().closeSession();*/
+			BlowUtils.getContext().closeSession();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

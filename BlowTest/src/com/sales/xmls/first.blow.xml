@@ -20,7 +20,7 @@
   	<MAP:Map>
      	<MAP:Property name="id" type="int" colName="id" primary-key="true" generated="true" seq="PD_SEQ"/>
   		<MAP:Property name="prodId" type="int" colName="PROD_ID"/>
-  		<MAP:Property name="brand" type="String" colName="BRAND"/>
+  		<MAP:Property name="brand" type="String" colName="BRAND" length="100"/>
   		<MAP:Property name="color" type="String" colName="COLOR"/>
   		<MAP:Property name="productSize" type="String" colName="PROD_SIZE"/>
   		<MAP:Property name="price" type="int" colName="PRICE"/>

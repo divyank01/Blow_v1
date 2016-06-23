@@ -284,7 +284,7 @@ public class ORM_MAPPINGS_Parser {
 			String clsToCheck=iter.next();
 			Maps mapOfClass=orm_mapping.getMaps().get(clsToCheck);
 			for(String s:mapOfClass.getDependentClasses())
-				mapOfClass.getDependentClassMap().put(s, orm_mapping.getMaps().get(s));
+				mapOfClass.getDependentClassMap().put(s, orm_mapping.getMapForClass(s));
 		}
 	}
 
@@ -356,7 +356,10 @@ public class ORM_MAPPINGS_Parser {
 				if(nodeMap.getNamedItem("foreign-key")==null){
 					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
 				}
-
+				if(nodeMap.getNamedItem("foreign-key-ref")!=null){
+					attr.setReferenced(Boolean.valueOf(nodeMap.getNamedItem("foreign-key-ref").getNodeValue()));
+				}else
+					attr.setReferenced(false);
 				ormMaps.getAttributeMap().put(nodeMap.getNamedItem("name").getNodeValue(),attr);
 				ormMaps.getFkAttr().put(nodeMap.getNamedItem("ref-class").getNodeValue(), attr);
 				if(!ormMaps.getDependentClasses().contains(nodeMap.getNamedItem("ref-class").getNodeValue()))

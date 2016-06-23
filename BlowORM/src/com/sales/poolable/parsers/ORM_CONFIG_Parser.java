@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.ConfigConstants;
 
 
@@ -77,6 +78,8 @@ public final class ORM_CONFIG_Parser {
 		List<String> packagesToScan=new ArrayList<String>();
 		List<String> schemas=new ArrayList<String>();
 		List<String> queries=new ArrayList<String>();
+		String driver=null;
+		boolean logging=false;
 		boolean useAnnotations=false;
 		Document doc=DocumentBuilderFactory.
 						newInstance().
@@ -91,6 +94,8 @@ public final class ORM_CONFIG_Parser {
 			if(node.getNodeType()==Node.ELEMENT_NODE){
 				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.URL))
 					url=node.getTextContent();
+				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.DRIVER))
+					driver=node.getTextContent();
 				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.PASSWORD))
 					pwd=node.getTextContent();
 				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.USERNAME))
@@ -120,10 +125,18 @@ public final class ORM_CONFIG_Parser {
 						}
 					}
 				}
+				if(node.getNodeName().equalsIgnoreCase(ConfigConstants.SQL_LOGGING)){
+					logging=Boolean.valueOf(node.getTextContent());
+				}
 			}
+		}
+		if(userName==null||pwd==null||url==null||driver==null){
+			throw new BlownException("Not enough information to connect to databse");
 		}
 		orm_config=new ORM_CONFIG(userName, pwd, url,useAnnotations,packagesToScan,mappings,schemas,queries);
 		orm_config.setGenSchema(genSchema);
+		orm_config.setDriver(driver);
+		orm_config.setLoggingEnabled(logging);
 	}
 	
 	private void getAnnotations(List<String> packagesToScan,Node nod) {
@@ -151,12 +164,14 @@ public final class ORM_CONFIG_Parser {
 		private String userName;
 		private String pwd;
 		private String url;
+		private String driver;
 		private boolean genSchema;
 		private boolean useAnnotations;
 		private List<String> packagesToScan;
 		private List<String> mappingFiles;
 		private List<String> schemas;
 		private List<String> queries;
+		private boolean loggingEnabled;
 		public ORM_CONFIG(String userName, String pwd, String url,boolean useAnnotations, List<String> packagesToScan,List<String> mappingFiles,List<String> schemas,List<String> queries) {
 			super();
 			this.userName = userName;
@@ -200,6 +215,18 @@ public final class ORM_CONFIG_Parser {
 		}
 		public List<String> getQueries() {
 			return queries;
+		}
+		public String getDriver() {
+			return driver;
+		}
+		public void setDriver(String driver) {
+			this.driver = driver;
+		}
+		public boolean isLoggingEnabled() {
+			return loggingEnabled;
+		}
+		protected void setLoggingEnabled(boolean loggingEnabled) {
+			this.loggingEnabled = loggingEnabled;
 		}
 		
 		

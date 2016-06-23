@@ -40,7 +40,7 @@ public final class ConnectionFactory extends BlowFactory<Connection>{
 		Connection con = null;
 		ORM_CONFIG_Parser parser=OrmConfigParserPool.getInstance().borrowObject();
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
+			Class.forName(parser.getOrm_config().getDriver().trim());
 			con = DriverManager.getConnection(parser.getOrm_config().getUrl(),
 					parser.getOrm_config().getUserName(),
 					parser.getOrm_config().getPwd());

@@ -30,6 +30,7 @@ public class PropParam {
 	private String property;
 	private BlowParam param;
 	private Object value;
+	private int index;
 	
 	public PropParam(String property,BlowParam param,Object value){
 		this.property=property;
@@ -54,6 +55,14 @@ public class PropParam {
 	}
 	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 	
 	

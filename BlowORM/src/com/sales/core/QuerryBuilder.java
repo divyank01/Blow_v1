@@ -292,6 +292,7 @@ public class QuerryBuilder {
 	}
 
 	protected void processParams(ORM_MAPPINGS mappings,StringBuffer sql,Map<String, ?> params2,String t,boolean useJoin,BlowParam blowParam) throws Exception {
+		int index=0;
 		sql.append(BlowConstatnts.SELECT);
 		StringBuilder build=new StringBuilder();
 		if(mappings.getMaps().get(t)==null){
@@ -321,6 +322,7 @@ public class QuerryBuilder {
 			while(iter.hasNext()){
 				String prop=iter.next();
 				PropParam propParam=(PropParam)params2.get(prop);
+				propParam.setIndex(++index);
 				if(useJoin && check){				
 					if(prop.contains(BlowConstatnts.DOT)){
 						StringTokenizer tokens=new StringTokenizer(prop, BlowConstatnts.DOT);
@@ -384,55 +386,43 @@ public class QuerryBuilder {
 	private void processParam(PropParam param,StringBuffer sql){
 		if(param.getParam().equals(BlowParam.EQ)){
 			sql.append(BlowConstatnts.EQ);
-			sql.append(BlowConstatnts.S_QT);
-			sql.append(param.getValue());
-			sql.append(BlowConstatnts.S_QT);
+			//sql.append(BlowConstatnts.S_QT);
+			sql.append("?");//param.getValue()
+			//sql.append(BlowConstatnts.S_QT);
 		}
 		if(param.getParam().equals(BlowParam.GT)){
 			sql.append(BlowConstatnts.GT);
-			sql.append(BlowConstatnts.S_QT);
-			sql.append(param.getValue());
-			sql.append(BlowConstatnts.S_QT);
+			//sql.append(BlowConstatnts.S_QT);
+			sql.append("?");
+			//sql.append(BlowConstatnts.S_QT);
 		}
 		if(param.getParam().equals(BlowParam.GT_EQ)){
 			sql.append(BlowConstatnts.GT_EQ);
-			sql.append(BlowConstatnts.S_QT);
-			sql.append(param.getValue());
-			sql.append(BlowConstatnts.S_QT);
+			//sql.append(BlowConstatnts.S_QT);
+			sql.append("?");
+			//sql.append(BlowConstatnts.S_QT);
 		}
 		if(param.getParam().equals(BlowParam.LT)){
 			sql.append(BlowConstatnts.LT);
-			sql.append(BlowConstatnts.S_QT);
-			sql.append(param.getValue());
-			sql.append(BlowConstatnts.S_QT);
+			//sql.append(BlowConstatnts.S_QT);
+			sql.append("?");
+			//sql.append(BlowConstatnts.S_QT);
 		}
 		if(param.getParam().equals(BlowParam.LT_EQ)){
 			sql.append(BlowConstatnts.LT_EQ);
-			sql.append(BlowConstatnts.S_QT);
-			sql.append(param.getValue());
-			sql.append(BlowConstatnts.S_QT);
+			sql.append("?");
 		}
 		if(param.getParam().equals(BlowParam.LIKE_AROUND)){
 			sql.append(BlowConstatnts._LIKE);
-			sql.append(BlowConstatnts.S_QT);
-			sql.append(BlowConstatnts.LIKE);
-			sql.append(param.getValue());
-			sql.append(BlowConstatnts.LIKE);
-			sql.append(BlowConstatnts.S_QT);
+			sql.append("?");
 		}
 		if(param.getParam().equals(BlowParam.LIKE_FRONT)){
 			sql.append(BlowConstatnts._LIKE);
-			sql.append(BlowConstatnts.S_QT);
-			sql.append(BlowConstatnts.LIKE);
-			sql.append(param.getValue());
-			sql.append(BlowConstatnts.S_QT);
+			sql.append("?");
 		}
 		if(param.getParam().equals(BlowParam.LIKE_END)){
 			sql.append(BlowConstatnts._LIKE);
-			sql.append(BlowConstatnts.S_QT);
-			sql.append(param.getValue());
-			sql.append(BlowConstatnts.LIKE);
-			sql.append(BlowConstatnts.S_QT);
+			sql.append("?");
 		}
 	}
 	
@@ -628,4 +618,13 @@ public class QuerryBuilder {
 		}
 		return tokens;
 	}
+	
+	protected void mapParamIndexes(Map<String, Object> oldMap,Map<String, Object> newMap){
+		Iterator<String> itr=oldMap.keySet().iterator();
+		while(itr.hasNext()){
+			String key=itr.next();
+			((PropParam)newMap.get(key)).setIndex(((PropParam)oldMap.get(key)).getIndex());
+		}
+	}
+	
 }

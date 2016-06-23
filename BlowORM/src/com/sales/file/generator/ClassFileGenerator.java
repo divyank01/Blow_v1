@@ -58,7 +58,7 @@ public class ClassFileGenerator {
 					builder.insert(afterPkg, "import "+attr.getClassName()+";\n");
 				}
 				if(attr.isPk()){
-					builder.append("\n\t@BlowId\n");
+					builder.append("\n\t@BlowId"+(attr.isGenerated()?("(generated=true,seq="+attr.getSeqName()+")"):"")+"\n");
 					builder.append("\t@BlowProperty(columnName=\""+attr.getColName()+"\")\n");
 					if(!property){
 						property=true;

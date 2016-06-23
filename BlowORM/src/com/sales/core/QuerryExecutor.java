@@ -48,7 +48,9 @@ import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attribut
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.MappingObject;
 import com.sales.pools.ConnectionPool;
 import com.sales.pools.OrmMappingPool;
+import com.sales.processes.QueryProcessor;
 
+import static com.sales.core.helper.LoggingHelper.log;
 
 /**
  * 
@@ -251,10 +253,12 @@ public class QuerryExecutor {
 		Connection con=null;
 		Object retval=null;
 			con=session.getConnection();
-			System.out.println(sql.toString());
+			log(sql.toString());
+			//System.out.println(sql.toString());
 			session.getQueries().put(sql, session.getSessionId());
 			PreparedStatement ps=con
 					.prepareStatement(sql.toString());
+			ps=QueryProcessor.processQuery(ps, params);
 			ResultSet rs=ps
 			.executeQuery();
 			int counter=0;
@@ -277,42 +281,51 @@ public class QuerryExecutor {
 	}
 	
 	
-	protected List<Object> retriveMultipleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t,SessionContainer session) throws Exception{
+	protected List<Object> retriveMultipleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Map<String, Object> params,Object t,SessionContainer session) throws Exception{
 		Connection con=session.getConnection();;
 		List<Object> retval=new ArrayList<Object>();
-		System.out.println(sql.toString());
+		log(sql.toString());
+		//System.out.println(sql.toString());
 		session.getQueries().put(sql, session.getSessionId());
-		PreparedStatement ps=con.prepareStatement(sql.toString());
-		ResultSet rs=ps.executeQuery();
-		int counter=0;
-		int pos=-1;
-		Object ob=null;
-		while(rs.next()){
-			/*ob=extractResltSet(rs,true,null,blowParam,mappings,t);
+		PreparedStatement ps=null;
+		ResultSet rs=null;
+		try{
+			ps=con.prepareStatement(sql.toString());
+			ps=QueryProcessor.processQuery(ps, params);
+			rs=ps.executeQuery();
+			int counter=0;
+			int pos=-1;
+			Object ob=null;
+			while(rs.next()){
+				/*ob=extractResltSet(rs,true,null,blowParam,mappings,t);
 			if(!retval.contains(ob)){
 				retval.add(ob);
 			}*/
-			boolean flag=coreMapper.newObjectFromRS(rs, mappings.getMaps().get(t), ob);
-			if(counter>0 && ob!=null){
-				ob=coreMapper.processObjectForCordinality(ob, mappings, rs,params);
+				boolean flag=coreMapper.newObjectFromRS(rs, mappings.getMaps().get(t), ob);
+				if(counter>0 && ob!=null){
+					ob=coreMapper.processObjectForCordinality(ob, mappings, rs,this.params);
+				}
+				if(ob==null)
+					ob=extractResltSet(rs,flag,null,blowParam,mappings,t);
+				else
+					ob=extractResltSet(rs,flag,ob,blowParam,mappings,t);
+				counter++;
+				if(!coreMapper.contains(mappings,ob,retval)){
+					retval.add(ob);
+				}
+				if(coreMapper.contains(mappings,ob,retval)){
+					pos=coreMapper.getPostionFromList(mappings,ob,retval);
+					retval.remove(pos);
+					retval.add(ob);
+				}
 			}
-			if(ob==null)
-				ob=extractResltSet(rs,flag,null,blowParam,mappings,t);
-			else
-				ob=extractResltSet(rs,flag,ob,blowParam,mappings,t);
-			counter++;
-			if(!coreMapper.contains(mappings,ob,retval)){
-				retval.add(ob);
-			}
-			if(coreMapper.contains(mappings,ob,retval)){
-				pos=coreMapper.getPostionFromList(mappings,ob,retval);
-				retval.remove(pos);
-				retval.add(ob);
-			}
+
+		}finally{
+			if(ps!=null)
+				ps.close();
+			if(rs!=null)
+				rs.close();
 		}
-		if(ps!=null)
-			ps.close();
-		rs.close();
 		return retval;
 	}
 		
