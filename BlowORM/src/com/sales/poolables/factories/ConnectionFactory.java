@@ -44,6 +44,7 @@ public final class ConnectionFactory extends BlowFactory<Connection>{
 			con = DriverManager.getConnection(parser.getOrm_config().getUrl(),
 					parser.getOrm_config().getUserName(),
 					parser.getOrm_config().getPwd());
+			con.setAutoCommit(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.school.Student;
+
 import com.customer.pojo.Customer;
 import com.sale.util.BlowUtils;
 import com.sales.constants.BlowParam;
@@ -106,9 +108,25 @@ public class MainClass {
 			System.out.println(new XStream().toXML(p4));*/
 
 
-
-
-			/*Prodcty p3=new Prodcty();
+			BlowUtils.getContext().openSession();
+			Object o=BlowUtils
+			.getBasis(Prodcty.class)
+			.propEquals("id",1008)
+			.retrieveOne();
+			Map m= new HashMap();
+			m.put("product", o);
+			System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
+			System.out.println(new XStream().toXML(o));
+			for(int i=0;i<10;i++){
+				Student s= new Student();
+				//s.setId(i);
+				s.setFirstName("fhg"+i);
+				s.setLastName("ghdhh"+i);
+				s.setAge(i);
+				//BlowUtils.getContext().saveOrUpdateEntity(s);
+			}
+			//BlowUtils.getContext().rollback();
+			Prodcty p3=new Prodcty();
 			List list = new ArrayList();
 			//for(int i=0;i<1000;i++){
 			Prodcty p4=new Prodcty();
@@ -187,9 +205,9 @@ public class MainClass {
 			//}
 			//BlowUtils.getContext().saveOrUpdateEntity(list);
 			System.out.println(new Date().getTime()-l);
-			BlowUtils.getContext().saveOrUpdateEntity(p2);
-
-			System.out.println(new XStream().toXML( BlowUtils
+			//BlowUtils.getContext().saveOrUpdateEntity(p4);
+			BlowUtils.getContext().closeSession();
+			/*System.out.println(new XStream().toXML( BlowUtils
 					.getBasis(Prodcty.class)
 					.propEquals("id", p2.getProduct().getId())
 					//.propEquals("stock.mappings.id", 124)
@@ -199,7 +217,7 @@ public class MainClass {
 			//System.out.println(temp);
 			//BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null);
 			//BlowCore.getInstance().getContext().getSQLResult("getProducts", null);
-			System.out.println(new Date().getTime()-l);
+			/*System.out.println(new Date().getTime()-l);
 			BlowUtils.getContext().openSession();
 			for (int i = 0; i < 1000; i++) {
 
@@ -240,7 +258,7 @@ public class MainClass {
 			}
 			System.out.println(new Date().getTime()-l);
 			ConnectionPool.getInstance().printPoolSize();
-			BlowUtils.getContext().closeSession();
+			BlowUtils.getContext().closeSession();*/
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

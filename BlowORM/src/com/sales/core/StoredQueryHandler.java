@@ -48,10 +48,8 @@ public class StoredQueryHandler {
 	protected Object getObjectFromSQL(String id,Map input,SessionContainer session) throws Exception{
 		try{
 			Query q=ORM_QUERY_Parser.getInstance().getQueries(id);
-			String s=null;
 			if(q!=null){
-				s=q.getContent();
-				return executor.runSql(s.trim(), q.getMappingObject(), input,session);
+				return executor.runSql(q, input,session);
 			}else
 				throw new BlownException("Query id not found in the mappings");
 		}catch(Exception e){

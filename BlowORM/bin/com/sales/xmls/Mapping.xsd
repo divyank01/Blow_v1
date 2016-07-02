@@ -28,23 +28,31 @@
 
 	<complexType name="Mapping">
 		<sequence>
-			<element name="Class" type="string" minOccurs="1" maxOccurs="1"></element>
+			<element name="Class" type="string" minOccurs="1"
+				maxOccurs="1">
+			</element>
 			<element name="RDBSchema" type="string" minOccurs="1"
-				maxOccurs="1"></element>
-			<element name="Map" type="MAP:Map" minOccurs="1" maxOccurs="1"></element>
+				maxOccurs="1">
+			</element>
+			<element name="Map" type="MAP:Map" minOccurs="1"
+				maxOccurs="1">
+			</element>
 		</sequence>
 	</complexType>
 
 	<complexType name="Map">
         <sequence>
-			<element name="Property" type="MAP:Property" minOccurs="0" maxOccurs="unbounded">
-			</element>
-			<element name="one-2-one" type="MAP:one-2-one" maxOccurs="unbounded" minOccurs="0">
-			</element>
-			<element name="one-2-many" type="MAP:one-2-many" maxOccurs="unbounded" minOccurs="0">
-			</element>
-			<element name="complexPrimaryKey" type="MAP:ComplexPrimaryKey" maxOccurs="unbounded" minOccurs="0"></element>
-		</sequence>
+        	<!-- <element name="Key" type="MAP:PrimaryKey" maxOccurs="1" minOccurs="1"></element> -->
+        	<element name="Property" type="MAP:Property" minOccurs="0"
+        		maxOccurs="unbounded">
+        	</element>
+        	<element name="one-2-one" type="MAP:one-2-one"
+        		maxOccurs="unbounded" minOccurs="0">
+        	</element>
+        	<element name="one-2-many" type="MAP:one-2-many"
+        		maxOccurs="unbounded" minOccurs="0">
+        	</element>
+        </sequence>
 	</complexType>
 
 	<complexType name="Mappings">
@@ -99,9 +107,10 @@
 		<attribute name="foreign-key-ref" type="boolean"></attribute>
 	</complexType>
 
-	<complexType name="ComplexPrimaryKey">
+
+	<complexType name="PrimaryKey">
 		<sequence>
-			<element name="property" type="MAP:Property" maxOccurs="unbounded" minOccurs="1"></element>
+			<element name="Property" type="MAP:Property" maxOccurs="unbounded" minOccurs="1"></element>
 		</sequence>
 	</complexType>
 </schema>

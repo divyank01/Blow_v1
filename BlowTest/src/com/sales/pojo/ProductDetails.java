@@ -11,8 +11,8 @@ public class ProductDetails {
 	@BlowId
 	@BlowProperty(columnName="ID")
 	private Integer id;
-	@BlowProperty(columnName="PROD_ID")
-	private Integer prodId;
+	//@BlowProperty(columnName="PROD_ID")
+	//private Integer prodId;
 	@BlowProperty(columnName="BRAND")
 	private String brand;
 	@BlowProperty(columnName="PROD_SIZE" ,length=20)
@@ -31,12 +31,12 @@ public class ProductDetails {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public Integer getProdId() {
+	/*public Integer getProdId() {
 		return prodId;
 	}
 	public void setProdId(Integer prodId) {
 		this.prodId = prodId;
-	}
+	}*/
 	public String getBrand() {
 		return brand;
 	}

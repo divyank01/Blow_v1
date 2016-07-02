@@ -40,6 +40,7 @@ import org.xml.sax.SAXException;
 
 import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.ConfigConstants;
+import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query.Condition;
 import com.sales.pools.OrmConfigParserPool;
 
 public class ORM_QUERY_Parser {
@@ -82,6 +83,7 @@ public class ORM_QUERY_Parser {
 				.getResourceAsStream(string));
 		Node node=document.getFirstChild();
 		NodeList nodeList=node.getChildNodes();
+		int cntr=0;
 		for(int i=0;i<nodeList.getLength();i++){
 			Node nodes=nodeList.item(i);
 			if(nodes.getNodeName().equalsIgnoreCase(ConfigConstants.Q_INCLUDE)){
@@ -96,9 +98,60 @@ public class ORM_QUERY_Parser {
 					if(nod.getNodeType()==3){
 						builder.append(nod.getTextContent().trim());
 					}
-					if(nod.getNodeType()==1){
+					if(nod.getNodeType()==1 && nod.getNodeName().equals("BLOW:Include")){
 						builder.append("#@#").append(nod.getAttributes().getNamedItem("ref").getNodeValue()).append("#@#");
 						qry.getIncludes().add(nod.getAttributes().getNamedItem("ref").getNodeValue());
+					}
+					if(nod.getNodeType()==1 && nod.getNodeName().equals("BLOW:condition")){
+						NodeList nl=nod.getChildNodes();
+						for(int k=0;k<nl.getLength();k++){
+							Node nod1=nl.item(k);
+							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:NotNull")){
+								builder.append("~@~").append(cntr).append("~@~");
+								Condition condition=qry.new Condition();
+								condition.setId(cntr);
+								condition.setOperator("NOTNULL");
+								condition.setProp(nod1.getAttributes().getNamedItem("prop").getNodeValue());
+								condition.setType("NOT_NULL");
+								condition.setContent(nod1.getTextContent());
+								qry.getConditions().add(condition);
+								cntr++;
+							}
+							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:when")){
+								builder.append("~@~").append(cntr).append("~@~");
+								Condition condition=qry.new Condition();
+								condition.setOperator(nod1.getAttributes().getNamedItem("operator").getNodeValue());
+								condition.setId(cntr);
+								condition.setProp(nod1.getAttributes().getNamedItem("prop").getNodeValue());
+								condition.setType("WHEN");
+								condition.setContent(nod1.getTextContent());
+								condition.setValue(nod1.getAttributes().getNamedItem("value").getNodeValue());
+								qry.getConditions().add(condition);
+								cntr++;
+							}
+							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:otherwise")){
+								builder.append("~@~").append(cntr).append("~@~");
+								Condition condition=qry.new Condition();
+								condition.setId(cntr);
+								condition.setType("OTHERWISE");
+								condition.setWhen(qry.getConditions().get(qry.getConditions().size()-1));
+								condition.setContent(nod1.getTextContent());
+								qry.getConditions().add(condition);
+								cntr++;
+							}
+							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:if")){
+								builder.append("~@~").append(cntr).append("~@~");
+								Condition condition=qry.new Condition();
+								condition.setId(cntr);
+								condition.setOperator(nod1.getAttributes().getNamedItem("operator").getNodeValue());
+								condition.setProp(nod1.getAttributes().getNamedItem("prop").getNodeValue());
+								condition.setType("IF");
+								condition.setValue(nod1.getAttributes().getNamedItem("value").getNodeValue());
+								condition.setContent(nod1.getTextContent());
+								qry.getConditions().add(condition);
+								cntr++;
+							}
+						}
 					}
 				}
 				qry.setContent(builder.toString());
@@ -153,6 +206,7 @@ public class ORM_QUERY_Parser {
 		
 		public class Query{
 			private List<String> includes=new ArrayList<String>();
+			private List<Condition> conditions=new ArrayList<Condition>();
 			private String content;
 			private String className;
 			private MappingObject mappingObject;
@@ -186,6 +240,86 @@ public class ORM_QUERY_Parser {
 			}
 			public void setMappingObjName(String mappingObjName) {
 				this.mappingObjName = mappingObjName;
+			}
+			public List<Condition> getConditions() {
+				return conditions;
+			}
+			public void setConditions(List<Condition> conditions) {
+				this.conditions = conditions;
+			}
+			
+			public Condition getConditionById(int id){
+				Condition c=null;
+				if(id<conditions.size()-1)
+					c=conditions.get(id);
+				if(c!=null && c.getId()==id)
+					return c;
+				else{
+					for(Condition condi:conditions){
+						if(condi.getId()==id)
+							return condi;
+					}
+				}
+				return c;
+			}
+			
+			public class Condition{
+				private String type;
+				private String value;
+				private String operator;
+				private String prop;
+				private int id;
+				private String content;
+				private boolean isWhen;
+				private Condition when;
+				public String getValue() {
+					return value;
+				}
+				public void setValue(String value) {
+					this.value = value;
+				}
+				public String getOperator() {
+					return operator;
+				}
+				public void setOperator(String operator) {
+					this.operator = operator;
+				}
+				public String getProp() {
+					return prop;
+				}
+				public void setProp(String prop) {
+					this.prop = prop;
+				}
+				public String getType() {
+					return type;
+				}
+				public void setType(String type) {
+					this.type = type;
+				}
+				public int getId() {
+					return id;
+				}
+				public void setId(int id) {
+					this.id = id;
+				}
+				public String getContent() {
+					return content;
+				}
+				public void setContent(String content) {
+					this.content = content;
+				}
+				public boolean isWhen() {
+					return isWhen;
+				}
+				public void setWhen(boolean isWhen) {
+					this.isWhen = isWhen;
+				}
+				public Condition getWhen() {
+					return when;
+				}
+				public void setWhen(Condition when) {
+					this.when = when;
+				}
 			}
 		}
 		

@@ -14,7 +14,7 @@ public class LoggingHelper {
 
 	private LoggingHelper(){}
 	
-	private static LoggingHelper logger;
+	//private static LoggingHelper logger;
 	
 	private static boolean doLog;
 	

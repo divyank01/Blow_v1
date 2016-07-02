@@ -122,7 +122,7 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 			if(t instanceof List)
 				executor.batchInsertOrUpdate(t, mappings);
 			else
-				executor.executeInsertOrUpdate(t, mappings,new HashMap());
+				executor.executeInsertOrUpdate(t, mappings,new HashMap(),this.container);
 		} catch (Exception e) {
 			throw new BlownException(e.getMessage());
 		}

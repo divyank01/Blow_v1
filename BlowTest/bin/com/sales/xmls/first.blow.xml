@@ -19,7 +19,7 @@
   	<MAP:RDBSchema>product_details</MAP:RDBSchema>
   	<MAP:Map>
      	<MAP:Property name="id" type="int" colName="id" primary-key="true" generated="true" seq="PD_SEQ"/>
-  		<MAP:Property name="prodId" type="int" colName="PROD_ID"/>
+  		<!-- <MAP:Property name="prodId" type="int" colName="PROD_ID"/> -->
   		<MAP:Property name="brand" type="String" colName="BRAND" length="100"/>
   		<MAP:Property name="color" type="String" colName="COLOR"/>
   		<MAP:Property name="productSize" type="String" colName="PROD_SIZE"/>
@@ -35,12 +35,12 @@
      	<MAP:Property name="id" type="int" colName="id" primary-key="true" generated="true" seq="EPD_SEQ"/>
   		<MAP:Property name="description" type="String" colName="ELE_DESCRIPTION"/>
   		<MAP:Property name="techDetails" type="String" colName="TECH_DETAILS"/>
-  		<MAP:Property name="prodId" type="int" colName="PROD_ID"/>
+  		<!-- <MAP:Property name="prodId" type="int" colName="PROD_ID"/> -->
   		<MAP:Property name="brand" type="String" colName="BRAND"/>
   		<MAP:Property name="color" type="String" colName="COLOR"/>
   		<MAP:Property name="price" type="int" colName="PRICE"/>
   		<MAP:Property name="material" type="String" colName="MATERIAL"/>
-  		<MAP:one-2-one name="product" ref-class="com.sales.pojo.Prodcty" foreign-key="ID"/>
+  		<MAP:one-2-one name="product" ref-class="com.sales.pojo.Prodcty" foreign-key="PROD_ID"/>
   	</MAP:Map>
   </MAP:Mapping>
   
@@ -48,15 +48,25 @@
   	<MAP:Class>com.sales.pojos.ElectronicProductDetails</MAP:Class>
   	<MAP:RDBSchema>ELECTRONIC_PRODUCT_DETAILS</MAP:RDBSchema>
   	<MAP:Map>
-     	<MAP:Property name="id" type="int" colName="id" primary-key="true" generated="true" seq="EPD_SEQ"/>
+     	<MAP:Property name="id" type="int" colName="id" primary-key="true" generated="true" seq="EPD_SEQ_NEW"/>
   		<MAP:Property name="description" type="String" colName="ELE_DESCRIPTION"/>
   		<MAP:Property name="techDetails" type="String" colName="TECH_DETAILS"/>
-  		<MAP:Property name="prodId" type="int" colName="PROD_ID"/>
+  		<!-- <MAP:Property name="prodId" type="int" colName="PROD_ID"/> -->
   		<MAP:Property name="brand" type="String" colName="BRAND"/>
   		<MAP:Property name="color" type="String" colName="COLOR"/>
   		<MAP:Property name="price" type="int" colName="PRICE"/>
   		<MAP:Property name="material" type="String" colName="MATERIAL"/>
   		<MAP:one-2-one name="product" ref-class="com.sales.pojo.Prodcty" foreign-key="ID"/>
+  	</MAP:Map>
+  </MAP:Mapping>
+  <MAP:Mapping>
+  	<MAP:Class>org.school.Student</MAP:Class>
+  	<MAP:RDBSchema>STUDENT</MAP:RDBSchema>
+  	<MAP:Map>
+     	<MAP:Property name="id" type="int" colName="id" primary-key="true" length="10" generated="true" seq="student_seq"/>
+  		<MAP:Property name="firstName" type="String" colName="F_NAME" length="50"/>
+  		<MAP:Property name="age" type="int" colName="AGE" length="3"/>
+  		<MAP:Property name="lastName" type="String" colName="L_NAME" length="50"/>
   	</MAP:Map>
   </MAP:Mapping>
 </MAP:Mappings>

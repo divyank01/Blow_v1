@@ -23,10 +23,11 @@
   */
 package com.sales.core;
 
+import static com.sales.core.helper.LoggingHelper.log;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +36,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import com.sales.blow.comparator.DependencyMapComparator;
 import com.sales.blow.exceptions.BlownException;
@@ -46,11 +46,9 @@ import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.MappingObject;
+import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query;
 import com.sales.pools.ConnectionPool;
-import com.sales.pools.OrmMappingPool;
 import com.sales.processes.QueryProcessor;
-
-import static com.sales.core.helper.LoggingHelper.log;
 
 /**
  * 
@@ -187,48 +185,53 @@ public class QuerryExecutor {
 		return sqlMap;
 	}
 	
-	protected boolean executeInsertOrUpdate(Object obj,ORM_MAPPINGS mappings,Map m) throws Exception{
+	protected boolean executeInsertOrUpdate(Object obj,ORM_MAPPINGS mappings,Map m,SessionContainer container) throws Exception{
 		m.put(obj, null);
 		Connection con=null;
-		con=ConnectionPool.getInstance().borrowObject();
+		con=container.getConnection();
 		querryBuilder=QuerryBuilder.newInstance();
 		PreparedStatement stmt=null;
-		if(countOfRecord(con, mappings, obj)==0){
-			/*
-			 * insert code will go here
-			 */
-			stmt=querryBuilder.createInsertQuerry(mappings, obj,con);
-		}else{
-			/*
-			 * update code will go here
-			 */
-			stmt=querryBuilder.createUpadteQuerry(mappings, obj,con);		
-		}
-		stmt.execute();
-		stmt.close();
-		
-		
-		Map<String, Attributes> aMap=mappings.getMapForClass(obj.getClass().getCanonicalName()).getAttributeMap();
-		Iterator<String> iter=aMap.keySet().iterator();
-		while (iter.hasNext()) {
-			String attr=iter.next();
-			if(aMap.get(attr).isFk()){
-				Object ob1=obj.getClass().getMethod(getterForField(aMap.get(attr).getName()), null).invoke(obj, null);
-				if (ob1 instanceof Collection<?>){
-					Iterator it=((Collection)ob1).iterator();
-					while(it.hasNext()){
-						executeInsertOrUpdate(it.next(), mappings, m);
+		try{
+			if(countOfRecord(con, mappings, obj)==0){
+				/*
+				 * insert code will go here
+				 */
+				stmt=querryBuilder.createInsertQuerry(mappings, obj,con);
+			}else{
+				/*
+				 * update code will go here
+				 */
+				stmt=querryBuilder.createUpadteQuerry(mappings, obj,con);		
+			}
+			stmt.execute();
+			stmt.close();
+
+
+			Map<String, Attributes> aMap=mappings.getMapForClass(obj.getClass().getCanonicalName()).getAttributeMap();
+			Iterator<String> iter=aMap.keySet().iterator();
+			while (iter.hasNext()) {
+				String attr=iter.next();
+				if(aMap.get(attr).isFk()){
+					Object ob1=obj.getClass().getMethod(getterForField(aMap.get(attr).getName()), null).invoke(obj, null);
+					if (ob1 instanceof Collection<?>){
+						Iterator it=((Collection)ob1).iterator();
+						while(it.hasNext()){
+							executeInsertOrUpdate(it.next(), mappings, m,container);
+						}
+					}
+					else{
+						if(ob1!=null && !m.containsKey(ob1))
+							executeInsertOrUpdate(ob1, mappings, m,container);
 					}
 				}
-				else{
-					if(ob1!=null && !m.containsKey(ob1))
-						executeInsertOrUpdate(ob1, mappings, m);
-				}
 			}
+		}catch(Exception ex){
+			log("rolling back current session, session_id:"+container.getSessionId());
+			container.getConnection().rollback();
+			throw new BlownException(ex);
+		}finally{
+			stmt.close();
 		}
-		
-		//con.commit();		 do it on session commit
-		ConnectionPool.getInstance().returnObject(con);
 		return false;
 	}
 	
@@ -252,15 +255,16 @@ public class QuerryExecutor {
 	protected Object retriveSingleRecord(String sql,BlowParam blowParam,ORM_MAPPINGS mappings,Object t, Map<String, Object> params,SessionContainer session) throws Exception{
 		Connection con=null;
 		Object retval=null;
+		PreparedStatement ps=null;
+		ResultSet rs=null;
+		try{
 			con=session.getConnection();
 			log(sql.toString());
 			//System.out.println(sql.toString());
 			session.getQueries().put(sql, session.getSessionId());
-			PreparedStatement ps=con
-					.prepareStatement(sql.toString());
+			ps=con.prepareStatement(sql.toString());
 			ps=QueryProcessor.processQuery(ps, params);
-			ResultSet rs=ps
-			.executeQuery();
+			rs=ps.executeQuery();
 			int counter=0;
 			while(rs.next()){
 				if(counter>0 && retval!=null){
@@ -275,8 +279,14 @@ public class QuerryExecutor {
 				rs.close();
 				//throw new BlownException("multiple records found");
 			}
+		}catch(Exception ex){
+			session.getConnection().rollback();
+			throw new BlownException(ex);
+		}finally{
 			ps.close();
-			rs.close();
+			if(rs!=null)
+				rs.close();
+		}
 		return retval;
 	}
 	
@@ -333,20 +343,21 @@ public class QuerryExecutor {
 		return coreMapper.mapPersistaceToObj(rs,mappings.getMaps().get(t),mappings,blowParam,preObject,flag);
 	}
 	
-	protected Object runSql(String sql,MappingObject mappingObject,Map input,SessionContainer session) throws Exception{
+	protected Object runSql(Query query,Map input,SessionContainer session) throws Exception{
 		Connection con=null;
 		Object retval=null;
 		ResultSet rs=null;
 		PreparedStatement ps=null;
 		try{
+			String sql=query.getContent().trim();
 			querryBuilder=QuerryBuilder.newInstance();
 			con=session.getConnection();
-			System.out.println(sql.toString());
 			session.getQueries().put(sql, session.getSessionId());
-			sql=querryBuilder.processQuery(sql, input);
+			sql=querryBuilder.processQuery(query, input);
+			log(sql.toString());
 			ps=con.prepareStatement(sql.toString());
 			rs=ps.executeQuery();
-			retval=coreMapper.mapPersistanceObject(rs, mappingObject);
+			retval=coreMapper.mapPersistanceObject(rs, query.getMappingObject());
 		}catch(Exception e){
 			if(rs!=null)
 				rs.close();

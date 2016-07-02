@@ -27,6 +27,6 @@
 	<!-- multiple schema can be mentioned for loading tables separated by comma -->
 	<BLOW:Schema>DIVYANK</BLOW:Schema>
 	<!-- generate schema -->
-	<BLOW:GenerateSchema>false</BLOW:GenerateSchema>
+	<BLOW:GenerateSchema>true</BLOW:GenerateSchema>
 	<BLOW:SqlLogging>true</BLOW:SqlLogging>
 </BLOW:JDBCConnection>

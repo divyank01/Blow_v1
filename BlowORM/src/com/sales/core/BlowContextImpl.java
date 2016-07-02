@@ -58,6 +58,7 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 	public void closeSession() throws Exception {
 		if(this.session!=null && this.session.getConnection()!=null){
 			BlowContextImpl.activeSessions.remove(this.getSessionId());
+			this.session.getConnection().commit();
 			ConnectionPool.getInstance().returnObject(this.session.getConnection());
 			this.session=null;
 		}
@@ -111,6 +112,7 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 		if(session==null)
 			throw new BlownException("Trying to get basis on closed session, open session first");
 		this.session.getConnection().rollback();
+		this.session.getConnection().commit();
 	}
 	@Override
 	public long getSessionId() throws BlownException {

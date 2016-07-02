@@ -23,10 +23,11 @@
   */
 package com.sales.core;
 
+import static com.sales.core.helper.LoggingHelper.log;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,14 +42,14 @@ import com.sales.core.helper.PropParam;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
+import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query;
+import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query.Condition;
 
 public class QuerryBuilder {
 
 	private QuerryBuilder(){}
 	private static QuerryBuilder bildr;
 	protected String propBasis;
-	//protected BlowParam param;
-	private int counter=0;
 	private static Map<String,Object> querryCache=new HashMap<String, Object>();
 	protected static QuerryBuilder newInstance(){
 		bildr=new QuerryBuilder();
@@ -64,7 +65,7 @@ public class QuerryBuilder {
 		buffer.append(dMap.getSchemaName());
 		buffer.append(" WHERE ");
 		buffer.append(dMap.getPkAttr().getColName()+"=?");
-		System.out.println(buffer.toString());
+		log(buffer.toString());
 		Object ob1=obj.getClass().getMethod(getterForField(dMap.getPkAttr().getName()), null).invoke(obj, null);
 		PreparedStatement smt=con.prepareStatement(buffer.toString());
 		smt.setObject(1, ob1);
@@ -139,6 +140,18 @@ public class QuerryBuilder {
 				if(iter.hasNext()){
 					qMarks.append(",");
 					sql.append(",");
+				}
+			}else{
+				if(!aMap.get(attr).isReferenced()){
+					sql.append(aMap.get(attr).getColName());
+					Attributes pk=mappings.getMapForClass(aMap.get(attr).getClassName()).getPkAttr();
+					if(pk.isGenerated()){
+						qMarks.append(pk.getSeqName()+".currval");
+					}
+					if(iter.hasNext()){
+						qMarks.append(",");
+						sql.append(",");
+					}
 				}
 			}
 		}
@@ -241,7 +254,6 @@ public class QuerryBuilder {
 					}
 				}
 			}
-			System.out.println(sql);
 		}else{
 			Maps dMap=mappings.getMapForClass(obj.getClass().getCanonicalName());
 			Map<String, Attributes> aMap=dMap.getAttributeMap();
@@ -257,8 +269,8 @@ public class QuerryBuilder {
 					count++;
 				}
 			}
-			System.out.println(sql);
 		}
+		log(sql);
 		return stmt;
 	}
 
@@ -282,7 +294,7 @@ public class QuerryBuilder {
 			throw new BlownException("PK attribute "+dMap.getPkAttr().getName()+" is null for "+dMap.getSchemaName());
 		else
 			stmt.setObject(count, ob1);
-		System.out.println(sql.toString());
+		log(sql.toString());
 		return stmt;
 	}
 
@@ -386,27 +398,19 @@ public class QuerryBuilder {
 	private void processParam(PropParam param,StringBuffer sql){
 		if(param.getParam().equals(BlowParam.EQ)){
 			sql.append(BlowConstatnts.EQ);
-			//sql.append(BlowConstatnts.S_QT);
-			sql.append("?");//param.getValue()
-			//sql.append(BlowConstatnts.S_QT);
+			sql.append("?");
 		}
 		if(param.getParam().equals(BlowParam.GT)){
 			sql.append(BlowConstatnts.GT);
-			//sql.append(BlowConstatnts.S_QT);
 			sql.append("?");
-			//sql.append(BlowConstatnts.S_QT);
 		}
 		if(param.getParam().equals(BlowParam.GT_EQ)){
 			sql.append(BlowConstatnts.GT_EQ);
-			//sql.append(BlowConstatnts.S_QT);
 			sql.append("?");
-			//sql.append(BlowConstatnts.S_QT);
 		}
 		if(param.getParam().equals(BlowParam.LT)){
 			sql.append(BlowConstatnts.LT);
-			//sql.append(BlowConstatnts.S_QT);
 			sql.append("?");
-			//sql.append(BlowConstatnts.S_QT);
 		}
 		if(param.getParam().equals(BlowParam.LT_EQ)){
 			sql.append(BlowConstatnts.LT_EQ);
@@ -575,16 +579,116 @@ public class QuerryBuilder {
 	protected static Map<String, Object> getQuerryCache(){
 		return querryCache;
 	}
+
+	protected String processQuery(Query query,Map input) throws Exception{
+		String sql=query.getContent().trim();
+		for(Condition condition:query.getConditions()){
+			if(condition.getProp()!=null && condition.getProp().contains(".")){
+				StringTokenizer splits=new StringTokenizer(condition.getProp(),".");
+				String tkn=splits.nextToken();
+				boolean isValidCondition=validateCondition(condition, getValueForToken(splits,input.get(tkn)));
+				int otherId=condition.getId()+1;
+				if(input.get(tkn)==null)
+					throw new BlownException("Invalid input in query map '"+tkn+"' is not valid input.");
+				if(isValidCondition && condition.getType().equals("WHEN")){
+					sql=sql.replace("~@~"+condition.getId()+"~@~",condition.getContent().trim());
+					sql=sql.replace("~@~"+otherId+"~@~","");
+				}else if(!isValidCondition && condition.getType().equals("WHEN")){
+					sql=sql.replace("~@~"+condition.getId()+"~@~","");
+					sql=sql.replace("~@~"+otherId+"~@~",query.getConditionById(otherId).getContent().trim());
+				}else if(!isValidCondition && condition.getType().equals("IF")){
+					sql=sql.replace("~@~"+condition.getId()+"~@~","");
+				}else if(isValidCondition && condition.getType().equals("IF")){
+					sql=sql.replace("~@~"+condition.getId()+"~@~",condition.getContent().trim());
+				}
+			}else{
+				if(!condition.getType().equalsIgnoreCase("otherwise"))
+					if(validateCondition(condition, input.get(condition.getProp()).toString()))
+						sql=sql.replace("~@~"+condition.getId()+"~@~", condition.getContent().trim());
+			}
+		}
+		query.setContent(sql.replaceAll("\n", " ").replaceAll("\t", " "));
+		sql=processQueryForTokens(query, input);
+		return sql;
+	}
+	private boolean validateCondition(Condition condition,String value) throws BlownException{
+		try{
+			if(condition.getType().equalsIgnoreCase("otherwise"))
+				return false;
+			if(condition.getOperator().equals("NOTNULL")){
+				return value!=null?(value.trim().equals("NULL")?false:true):false;
+			}
+			if(condition.getOperator().equals("GT")){
+				if(!isNAN(condition.getValue()))
+					if(getIntVal(value)>getIntVal(condition.getValue())){
+						return true;
+					}
+			}
+			if(condition.getOperator().equals("LT")){
+				if(!isNAN(condition.getValue()))
+					if(getIntVal(value)<getIntVal(condition.getValue())){
+						return true;
+					}
+			}
+			if(condition.getOperator().equals("GTEQ")){
+				if(!isNAN(condition.getValue()))
+					if(getIntVal(value)>getIntVal(condition.getValue())){
+						return true;
+					}
+			}
+			if(condition.getOperator().equals("LTEQ")){
+				if(!isNAN(condition.getValue()))
+					if(getIntVal(value)<getIntVal(condition.getValue())){
+						return true;
+					}
+			}
+			if(condition.getOperator().equals("EQ")){
+				if(isNAN(condition.getValue())){
+					if(value.equals(condition.getValue()))
+						return true;
+				}else
+					if(getIntVal(value)==getIntVal(condition.getValue())){
+						return true;
+					}
+			}
+			if(condition.getOperator().equals("NOTEQ")){
+				if(isNAN(condition.getValue())){
+					if(value.equals(condition.getValue()))
+						return false;
+				}else
+					if(getIntVal(value)!=getIntVal(condition.getValue())){
+						return true;
+					}
+			}
+		}catch(Exception e){
+			throw new BlownException("invalid attribute value for condition");
+		}
+		return false;
+	}
+
+	private int getIntVal(String value){
+		return Integer.valueOf(value);
+	}
 	
-	protected String processQuery(String sql,Map input) throws Exception{
+	private boolean isNAN(String val){
+		try{
+			Integer.valueOf(val);
+			return false;
+		}catch(Exception e){
+			return true;
+		}
+	}
+	
+	private String processQueryForTokens(Query query,Map input) throws Exception{
+		String sql=query.getContent().trim();
 		if(sql.indexOf("#")>0){
-			for(String s:getTokens(sql)){
+			for(String s:getTokens(sql,1)){
 				if(s.contains(".")){
 					StringTokenizer splits=new StringTokenizer(s,".");
 					String tkn=splits.nextToken();
 					if(input.get(tkn)==null)
 						throw new BlownException("Invalid input in query map '"+tkn+"' is not valid input.");
-					sql=sql.replace("#"+s+"#", getValueForToken(splits,input.get(tkn),false));
+					sql=sql.replace("#"+s+"#", getValueForToken(splits,input.get(tkn)));
 				}else{
 					if(input.get(s)==null)
 						throw new BlownException("Invalid input in query map '"+s+"' is not valid input.");
@@ -592,25 +696,32 @@ public class QuerryBuilder {
 				}
 			}
 		}
-		System.out.println(sql);
 		return sql;
 	}
 	
-	private String getValueForToken(StringTokenizer splits,Object obj,boolean isComplete) throws Exception {
+	private String getValueForToken(StringTokenizer splits,Object obj) throws Exception {
 		while(splits.hasMoreElements()){
 			if(obj==null)
 				return " NULL";
 			obj=obj.getClass().getMethod(getterForField(splits.nextToken()), null).invoke(obj, null);
 		}
-		return obj.toString();
+		return obj.toString().trim();
 	}
 	
-	private boolean hasMoreTokens(int currentPos, String[] tokens){
+	private Object getValueForToken(String prop,Object obj) throws Exception {
+			obj=obj.getClass().getMethod(getterForField(prop), null).invoke(obj, null);
+		return obj;
+	}
+	/*private boolean hasMoreTokens(int currentPos, String[] tokens){
 		return currentPos<tokens.length; 
-	}
+	}*/
 	
-	private List<String> getTokens(String input){
-		String[] arr=input.split("#");
+	private List<String> getTokens(String input,int type){
+		String[] arr=null;
+		if(type==1)
+			arr=input.split("#");
+		else
+			arr=input.split("~@~");
 		List<String> tokens=new ArrayList<String>();
 		for(int i=0;i<arr.length;i++){
 			if(i%2!=0)
