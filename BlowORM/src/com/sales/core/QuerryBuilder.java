@@ -50,6 +50,10 @@ public class QuerryBuilder {
 	private QuerryBuilder(){}
 	private static QuerryBuilder bildr;
 	protected String propBasis;
+	private static final String cDelim="~@~";
+	private static final String hash="#";
+	private static final String nxtLine="\n";
+	private static final String tab="\t";
 	private static Map<String,Object> querryCache=new HashMap<String, Object>();
 	protected static QuerryBuilder newInstance(){
 		bildr=new QuerryBuilder();
@@ -535,6 +539,15 @@ public class QuerryBuilder {
 	}
 	
 	/**
+	 * Creates a sequence query for given name
+	 * @param maps
+	 * @return
+	 */
+	protected String createSequence(String seqName){
+		return "CREATE SEQUENCE "+seqName+" START WITH 1 INCREMENT BY 1 CACHE 10";
+	}
+	
+	/**
 	 * Alter the given table and add provided attribute.
 	 * @param attr
 	 * @param tableName
@@ -591,23 +604,23 @@ public class QuerryBuilder {
 				if(input.get(tkn)==null)
 					throw new BlownException("Invalid input in query map '"+tkn+"' is not valid input.");
 				if(isValidCondition && condition.getType().equals("WHEN")){
-					sql=sql.replace("~@~"+condition.getId()+"~@~",condition.getContent().trim());
-					sql=sql.replace("~@~"+otherId+"~@~","");
+					sql=sql.replace(cDelim+condition.getId()+cDelim,condition.getContent().trim());
+					sql=sql.replace(cDelim+otherId+cDelim,"");
 				}else if(!isValidCondition && condition.getType().equals("WHEN")){
-					sql=sql.replace("~@~"+condition.getId()+"~@~","");
-					sql=sql.replace("~@~"+otherId+"~@~",query.getConditionById(otherId).getContent().trim());
+					sql=sql.replace(cDelim+condition.getId()+cDelim,"");
+					sql=sql.replace(cDelim+otherId+cDelim,query.getConditionById(otherId).getContent().trim());
 				}else if(!isValidCondition && condition.getType().equals("IF")){
-					sql=sql.replace("~@~"+condition.getId()+"~@~","");
+					sql=sql.replace(cDelim+condition.getId()+cDelim,"");
 				}else if(isValidCondition && condition.getType().equals("IF")){
-					sql=sql.replace("~@~"+condition.getId()+"~@~",condition.getContent().trim());
+					sql=sql.replace(cDelim+condition.getId()+cDelim,condition.getContent().trim());
 				}
 			}else{
 				if(!condition.getType().equalsIgnoreCase("otherwise"))
 					if(validateCondition(condition, input.get(condition.getProp()).toString()))
-						sql=sql.replace("~@~"+condition.getId()+"~@~", condition.getContent().trim());
+						sql=sql.replace(cDelim+condition.getId()+cDelim, condition.getContent().trim());
 			}
 		}
-		query.setContent(sql.replaceAll("\n", " ").replaceAll("\t", " "));
+		query.setContent(sql.replaceAll(nxtLine, " ").replaceAll(tab, " "));
 		sql=processQueryForTokens(query, input);
 		return sql;
 	}
@@ -681,18 +694,18 @@ public class QuerryBuilder {
 	
 	private String processQueryForTokens(Query query,Map input) throws Exception{
 		String sql=query.getContent().trim();
-		if(sql.indexOf("#")>0){
+		if(sql.indexOf(hash)>0){
 			for(String s:getTokens(sql,1)){
 				if(s.contains(".")){
 					StringTokenizer splits=new StringTokenizer(s,".");
 					String tkn=splits.nextToken();
 					if(input.get(tkn)==null)
 						throw new BlownException("Invalid input in query map '"+tkn+"' is not valid input.");
-					sql=sql.replace("#"+s+"#", getValueForToken(splits,input.get(tkn)));
+					sql=sql.replace(hash+s+hash, getValueForToken(splits,input.get(tkn)));
 				}else{
 					if(input.get(s)==null)
 						throw new BlownException("Invalid input in query map '"+s+"' is not valid input.");
-					sql=sql.replace("#"+s+"#", input.get(s).toString());
+					sql=sql.replace(hash+s+hash, input.get(s).toString());
 				}
 			}
 		}
@@ -708,20 +721,12 @@ public class QuerryBuilder {
 		return obj.toString().trim();
 	}
 	
-	private Object getValueForToken(String prop,Object obj) throws Exception {
-			obj=obj.getClass().getMethod(getterForField(prop), null).invoke(obj, null);
-		return obj;
-	}
-	/*private boolean hasMoreTokens(int currentPos, String[] tokens){
-		return currentPos<tokens.length; 
-	}*/
-	
 	private List<String> getTokens(String input,int type){
 		String[] arr=null;
 		if(type==1)
-			arr=input.split("#");
+			arr=input.split(hash);
 		else
-			arr=input.split("~@~");
+			arr=input.split(cDelim);
 		List<String> tokens=new ArrayList<String>();
 		for(int i=0;i<arr.length;i++){
 			if(i%2!=0)

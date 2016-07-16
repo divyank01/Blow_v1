@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BLOW:JDBCConnection xmlns:BLOW="http://www.BlowORM.org/BlowConf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.BlowORM.org/BlowConf ../../BlowORM/src/com/sales/xmls/BlowConf.xsd ">
+
+	<!-- basic configs -->
+	<BLOW:URL>jdbc:oracle:thin:@localhost:1521:xe</BLOW:URL>
+	<BLOW:PASSWORD>divyank99</BLOW:PASSWORD>
+	<BLOW:USER>divyank</BLOW:USER>
+	<BLOW:JDBCDriver>oracle.jdbc.driver.OracleDriver</BLOW:JDBCDriver>
+	
+	<BLOW:QUERIES>
+		<BLOW:Query file="com/sales/xmls/some.blow.query.xml"/>
+	</BLOW:QUERIES>
+
+	<!-- mappings -->
+	<BLOW:MAPPINGS file="com/sales/xmls/first.blow.xml" />
+	<BLOW:MAPPINGS file="com/sales/xmls/second.blow.xml" />
+	<!-- <BLOW:MAPPINGS file="com/sales/xmls/three.blow.xml"/> -->
+	
+	<!-- config annotation -->
+	<BLOW:ANNOTATIONS use="false">
+		<BLOW:package-scan>com.sales.pojo</BLOW:package-scan>
+		<BLOW:package-scan>com.customer.pojo</BLOW:package-scan>
+	</BLOW:ANNOTATIONS>
+
+	<!-- multiple schema can be mentioned for loading tables separated by comma -->
+	<BLOW:Schema>DIVYANK</BLOW:Schema>
+	<!-- generate schema -->
+	<BLOW:GenerateSchema>true</BLOW:GenerateSchema>
+	<BLOW:SqlLogging>true</BLOW:SqlLogging>
+</BLOW:JDBCConnection>

@@ -23,6 +23,8 @@
   */
 package com.sales.core;
 
+import static com.sales.core.helper.LoggingHelper.log;
+
 import java.util.Iterator;
 
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.DataBaseInfo;
@@ -45,7 +47,14 @@ public class DatabaseStateManager {
 			manager=new DatabaseStateManager();
 		return manager;
 	}
-	
+	/**
+	 * Sync up the database structure with mappings
+	 * create or alter tables and creates sequences
+	 * which are required
+	 * @param mappings
+	 * @param info
+	 * @throws Exception
+	 */
 	public void syncSchema(ORM_MAPPINGS mappings,DataBaseInfo info) throws Exception {
 		Iterator<String> itr=mappings.getMaps().keySet().iterator();
 		builder=QuerryBuilder.newInstance();
@@ -60,14 +69,32 @@ public class DatabaseStateManager {
 			schema=map.getSchemaName();
 			Table table=info.getTables().get(schema.toUpperCase());
 			if(table==null){
-				//create table-----full-------
+				/*
+				 * create table-----full-------
+				 */
 				query=builder.createTableForClass(map);
-				System.out.println(query);
+				log(query);
 				executor.executeStatment(query);
 			}else if(table!=null){
-				//check if all all column are present
-				//create function maps r better then for loop
+			   /*
+			    * check if all column are present
+				* create function maps r better then for loop
+				*/
 				performTablesForModification(table, map);
+			}
+			/*
+			 * check for the sequences
+			 */
+			Iterator<String> attrs=map.getAttributeMap().keySet().iterator();
+			while(attrs.hasNext()){
+				String attr=attrs.next();
+				if(map.getAttributeMap().get(attr).isGenerated()){
+					if(!info.getSequences().contains(map.getAttributeMap().get(attr).getSeqName().toUpperCase())){
+						String seq=builder.createSequence(map.getAttributeMap().get(attr).getSeqName());
+						log(seq);
+						executor.executeStatment(seq);
+					}
+				}
 			}
 		}
 		
@@ -84,13 +111,13 @@ public class DatabaseStateManager {
 				if(col==null){
 					//alter table
 					query=builder.alterAddColumn(attr,maps.getSchemaName());
-					System.out.println(query);
+					log(query);
 					executor.executeStatment(query);
 				}else{
 					if(attr.getLength()>0 && attr.getLength()!=col.getLength()){
 						//modify column
 						query=builder.modifyColumn(attr,maps.getSchemaName());
-						System.out.println(query);
+						log(query);
 						executor.executeStatment(query);
 					}
 				}

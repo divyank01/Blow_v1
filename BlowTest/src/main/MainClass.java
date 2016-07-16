@@ -113,9 +113,12 @@ public class MainClass {
 			.getBasis(Prodcty.class)
 			.propEquals("id",1008)
 			.retrieveOne();
+			Prodcty p=(Prodcty)o;
+			//p.setId(10230);
+			BlowUtils.getContext().saveOrUpdateEntity(o);
 			Map m= new HashMap();
 			m.put("product", o);
-			System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
+			//System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
 			System.out.println(new XStream().toXML(o));
 			for(int i=0;i<10;i++){
 				Student s= new Student();
@@ -123,6 +126,7 @@ public class MainClass {
 				s.setFirstName("fhg"+i);
 				s.setLastName("ghdhh"+i);
 				s.setAge(i);
+				//System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
 				//BlowUtils.getContext().saveOrUpdateEntity(s);
 			}
 			//BlowUtils.getContext().rollback();

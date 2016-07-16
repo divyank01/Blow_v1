@@ -12,12 +12,6 @@
 		<BLOW:property attr="fhj" column="gd" />
 	</BLOW:Object>
 
-
-	<BLOW:Include name="product_details">
-		select prod_id from product_details
-		where id=#product.details.id#
-	</BLOW:Include>
-
 	<BLOW:Include name="product">
 		select * from product
 	</BLOW:Include>
@@ -31,7 +25,7 @@
 	<BLOW:Query name="getProducts" type="select" class=""
 		mapping-object="product">
 		select * from product where id in(
-		<!-- --><BLOW:condition>
+		<BLOW:condition>
 			<BLOW:when operator="GT" value="240000" prop="product.id">
 				1006,
 			</BLOW:when>
@@ -39,22 +33,28 @@
 				1007,
 			</BLOW:otherwise>
 		</BLOW:condition>
-		
+		2003,121,
 		<BLOW:condition>
 			<BLOW:NotNull prop="product">
 				1009,
 			</BLOW:NotNull>
 		</BLOW:condition>
-		
+
 		<BLOW:condition>
 			<BLOW:if operator="GT" value="270" prop="product.id">
 				1010,
 			</BLOW:if>
 		</BLOW:condition>
-		(<BLOW:Include ref="product_details" />)
+		(
+		<BLOW:Include ref="product_details" />
+		)
 		)
 	</BLOW:Query>
 
+	<BLOW:Include name="product_details">
+		select prod_id from product_details
+		where id=#product.details.id#
+	</BLOW:Include>
 
 	<BLOW:Object className="com.sales.pojo.Prodcty" name="product">
 		<BLOW:property attr="id" column="id" />

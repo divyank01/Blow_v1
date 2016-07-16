@@ -11,6 +11,7 @@
 	
 	<BLOW:QUERIES>
 		<BLOW:Query file="com/sales/xmls/some.blow.query.xml"/>
+		<BLOW:Query file="com/sales/xmls/some.blow.query.xml"/>
 	</BLOW:QUERIES>
 
 	<!-- mappings -->
@@ -19,7 +20,7 @@
 	<!-- <BLOW:MAPPINGS file="com/sales/xmls/three.blow.xml"/> -->
 	
 	<!-- config annotation -->
-	<BLOW:ANNOTATIONS use="false">
+	<BLOW:ANNOTATIONS use="true">
 		<BLOW:package-scan>com.sales.pojo</BLOW:package-scan>
 		<BLOW:package-scan>com.customer.pojo</BLOW:package-scan>
 	</BLOW:ANNOTATIONS>

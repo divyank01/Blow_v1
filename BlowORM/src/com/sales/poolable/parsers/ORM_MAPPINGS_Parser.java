@@ -402,10 +402,13 @@ public class ORM_MAPPINGS_Parser {
 		
 		private Map<String,Table> tables=new HashMap<String, Table>();
 		
+		private List<String> sequences=new ArrayList<String>();
+		
 		protected void loadDataBaseInfo(List<String> schemas)throws Exception{
 			Connection con=ConnectionPool.getInstance().borrowObject();
 			DatabaseMetaData meta=con.getMetaData();
 			ResultSet _columns=null;
+			ResultSet _seq=null;
 			try{
 				for(String schema:schemas){
 					_columns=meta.getColumns(null,schema,null,null);
@@ -433,8 +436,14 @@ public class ORM_MAPPINGS_Parser {
 							tables.put(tableName, tab);
 						}
 					}
+					String[] seq= {"SEQUENCE"};
+					_seq=meta.getTables(null,schema,null,seq);
+					while(_seq.next()){
+						sequences.add(_seq.getString(3).toUpperCase());
+					}
 				}
 			}finally{
+				_seq.close();
 				_columns.close();
 				ConnectionPool.getInstance().returnObject(con);
 			}
@@ -491,8 +500,8 @@ public class ORM_MAPPINGS_Parser {
 			return tables;
 		}
 
-		public void setTables(Map<String, Table> tables) {
-			this.tables = tables;
+		public List<String> getSequences() {
+			return sequences;
 		}
 	}
 

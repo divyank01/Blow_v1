@@ -13,6 +13,7 @@ public class PoolTester {
 			
 			OrmMappingPool.getInstance().returnObject(ob);
 			
+			System.out.println(ob.getOrm_Mappings().getDataBaseInfo());
 			//ORM_CONFIG_Parser p= OrmConfigParserPool.getInstance().borrowObject();
 			//OrmConfigParserPool.getInstance().returnObject(p);
 		} catch (Exception e) {

@@ -121,7 +121,7 @@
 
 	<complexType name="QUERIES">
 		<sequence>
-			<element name="Query" type="BLOW:QUERY"></element>
+			<element name="Query" type="BLOW:QUERY" minOccurs="1" maxOccurs="unbounded"></element>
 		</sequence>
 	</complexType>
 </schema>

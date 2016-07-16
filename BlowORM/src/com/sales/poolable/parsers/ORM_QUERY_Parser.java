@@ -45,11 +45,18 @@ import com.sales.pools.OrmConfigParserPool;
 
 public class ORM_QUERY_Parser {
 	
+	private static final String cDelim="~@~";
+	
+	private static final String iDelim="#@#";
+	
+	
 	private ORM_QUERY_Parser(){}
 	
 	private static ORM_QUERY_Parser parser;
 	
 	private ORM_QUERY_Parser.Queries queries=new Queries();
+	
+	
 	
 	static{
 		parser=new ORM_QUERY_Parser();
@@ -99,7 +106,7 @@ public class ORM_QUERY_Parser {
 						builder.append(nod.getTextContent().trim());
 					}
 					if(nod.getNodeType()==1 && nod.getNodeName().equals("BLOW:Include")){
-						builder.append("#@#").append(nod.getAttributes().getNamedItem("ref").getNodeValue()).append("#@#");
+						builder.append(iDelim).append(nod.getAttributes().getNamedItem("ref").getNodeValue()).append(iDelim);
 						qry.getIncludes().add(nod.getAttributes().getNamedItem("ref").getNodeValue());
 					}
 					if(nod.getNodeType()==1 && nod.getNodeName().equals("BLOW:condition")){
@@ -107,7 +114,7 @@ public class ORM_QUERY_Parser {
 						for(int k=0;k<nl.getLength();k++){
 							Node nod1=nl.item(k);
 							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:NotNull")){
-								builder.append("~@~").append(cntr).append("~@~");
+								builder.append(cDelim).append(cntr).append(cDelim);
 								Condition condition=qry.new Condition();
 								condition.setId(cntr);
 								condition.setOperator("NOTNULL");
@@ -118,7 +125,7 @@ public class ORM_QUERY_Parser {
 								cntr++;
 							}
 							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:when")){
-								builder.append("~@~").append(cntr).append("~@~");
+								builder.append(cDelim).append(cntr).append(cDelim);
 								Condition condition=qry.new Condition();
 								condition.setOperator(nod1.getAttributes().getNamedItem("operator").getNodeValue());
 								condition.setId(cntr);
@@ -130,7 +137,7 @@ public class ORM_QUERY_Parser {
 								cntr++;
 							}
 							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:otherwise")){
-								builder.append("~@~").append(cntr).append("~@~");
+								builder.append(cDelim).append(cntr).append(cDelim);
 								Condition condition=qry.new Condition();
 								condition.setId(cntr);
 								condition.setType("OTHERWISE");
@@ -140,7 +147,7 @@ public class ORM_QUERY_Parser {
 								cntr++;
 							}
 							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:if")){
-								builder.append("~@~").append(cntr).append("~@~");
+								builder.append(cDelim).append(cntr).append(cDelim);
 								Condition condition=qry.new Condition();
 								condition.setId(cntr);
 								condition.setOperator(nod1.getAttributes().getNamedItem("operator").getNodeValue());
@@ -337,7 +344,7 @@ public class ORM_QUERY_Parser {
 				qry.setMappingObject(parser.queries.getMappingObjects().get(qry.getMappingObjName()));
 				List<String> inclds= qry.getIncludes();
 				for(int i=0;i<inclds.size();i++){
-					if(qry.getContent()!=null && qry.getContent().indexOf("#@#")>=0){
+					if(qry.getContent()!=null && qry.getContent().indexOf(iDelim)>=0){
 						qry.setContent(processQuery(qry.getContent()));
 					}
 				}
@@ -346,15 +353,15 @@ public class ORM_QUERY_Parser {
 		
 		private String processQuery(String input){
 			StringBuilder builder=new StringBuilder();			
-			int startIndex =input.indexOf("#@#");
+			int startIndex =input.indexOf(iDelim);
 			String start=input.substring(0,startIndex);
-			int lastIndex=startIndex+3+input.substring(startIndex+3).indexOf("#@#")+3;
+			int lastIndex=startIndex+3+input.substring(startIndex+3).indexOf(iDelim)+3;
 			String retVal=builder.append(start)
 								 .append(" ")
-								 .append(includes.get(input.substring(startIndex, lastIndex).replaceAll("#@#", "")))
+								 .append(includes.get(input.substring(startIndex, lastIndex).replaceAll(iDelim, "")))
 								 .append(" ")
 								 .append(input.substring(lastIndex,input.length())).toString();
-			if(retVal.indexOf("#@#")>=0)
+			if(retVal.indexOf(iDelim)>=0)
 				processQuery(retVal);
 			return retVal;
 		}

@@ -23,33 +23,33 @@
   */
 package com.sales.constants;
 
-public abstract class BlowConstatnts {
+public abstract interface BlowConstatnts {
 
 	
-	public static String EQ="=";
-	public static String LOJ=" left outer join ";
-	public static String ON=" on ";
-	public static String WHERE=" where ";
-	public static String DOT=".";
-	public static String AND=" AND ";
-	public static String SELECT="select ";
-	public static String FROM=" from ";
-	public static String S_QT="'";
-	public static String D_QT="\"";
-	public static String SPACE=" ";
-	public static String GET="get";
-	public static String R_BRCKT=")";
-	public static String L_BRCKT="(";
-	public static String COMMA=",";
-	public static String S_COLON=";";
-	public static String PK="PRIMARY KEY";
-	public static String ADD="ADD";
-	public static String MODIFY="MODIFY";
-	public static String SET="set";
-	public static String LIKE="%";
-	public static String LT=" < ";
-	public static String GT=" > ";
-	public static String LT_EQ=" <= ";
-	public static String GT_EQ=" >= ";
-	public static String _LIKE=" LIKE ";
+	public static final String EQ="=";
+	public static final String LOJ=" left outer join ";
+	public static final String ON=" on ";
+	public static final String WHERE=" where ";
+	public static final String DOT=".";
+	public static final String AND=" AND ";
+	public static final String SELECT="select ";
+	public static final String FROM=" from ";
+	public static final String S_QT="'";
+	public static final String D_QT="\"";
+	public static final String SPACE=" ";
+	public static final String GET="get";
+	public static final String R_BRCKT=")";
+	public static final String L_BRCKT="(";
+	public static final String COMMA=",";
+	public static final String S_COLON=";";
+	public static final String PK="PRIMARY KEY";
+	public static final String ADD="ADD";
+	public static final String MODIFY="MODIFY";
+	public static final String SET="set";
+	public static final String LIKE="%";
+	public static final String LT=" < ";
+	public static final String GT=" > ";
+	public static final String LT_EQ=" <= ";
+	public static final String GT_EQ=" >= ";
+	public static final String _LIKE=" LIKE ";
 }

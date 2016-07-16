@@ -1,0 +1,6 @@
+create sequence "PRODUCT_SEQ" start with 1000 increment by 1 cache 10 nocycle noorder
+create sequence "PD_SEQ" start with 1000 increment by 1 cache 10 nocycle noorder
+create sequence "EPD_SEQ" start with 1000 increment by 1 cache 10 nocycle noorder
+create sequence "EPD_SEQ_NEW" start with 1000 increment by 1 cache 10 nocycle noorder
+create sequence "STOCK_SEQ" start with 1000 increment by 1 cache 10 nocycle noorder
+create sequence "STOCK_MAPPING_SEQ" start with 1000 increment by 1 cache 10 nocycle noorder
