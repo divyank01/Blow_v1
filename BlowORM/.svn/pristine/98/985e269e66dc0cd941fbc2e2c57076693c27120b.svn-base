@@ -45,18 +45,18 @@ import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attribut
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query;
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query.Condition;
 
-public class QuerryBuilder {
+public class QueryBuilder {
 
-	private QuerryBuilder(){}
-	private static QuerryBuilder bildr;
+	private QueryBuilder(){}
+	private static QueryBuilder bildr;
 	protected String propBasis;
 	private static final String cDelim="~@~";
 	private static final String hash="#";
 	private static final String nxtLine="\n";
 	private static final String tab="\t";
 	private static Map<String,Object> querryCache=new HashMap<String, Object>();
-	protected static QuerryBuilder newInstance(){
-		bildr=new QuerryBuilder();
+	protected static QueryBuilder newInstance(){
+		bildr=new QueryBuilder();
 		return bildr;
 	}
 	/*

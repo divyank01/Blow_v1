@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  *  BLOW-ORM is an open source ORM for java and its currently under development.
+  *
+  *  Copyright (C) 2016  @author Divyank Sharma
+  *
+  *  This program is free software: you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+  *  the Free Software Foundation, either version 3 of the License, or
+  *  (at your option) any later version.
+  *
+  *  This program is distributed in the hope that it will be useful,
+  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *  GNU General Public License for more details.
+  *
+  *  You should have received a copy of the GNU General Public License
+  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  *  
+  *  
+  *  In Addition to it if you find any bugs or encounter any issue you need to notify me.
+  *  I appreciate any suggestions to improve it.
+  *  @mailto: divyank01@gmail.com-->
+
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.blocore.org/BlowQuery"
+	elementFormDefault="qualified" xmlns:BLOW="http://www.blocore.org/BlowQuery">
+
+	<complexType name="Query" mixed="true">
+		<choice minOccurs="0" maxOccurs="unbounded">
+			<element name="Include" type="BLOW:Include" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+			<element name="condition" type="BLOW:Condition" maxOccurs="1" minOccurs="0"></element>
+		</choice>
+		<attribute name="type" use="required">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="insert"></enumeration>
+					<enumeration value="update"></enumeration>
+					<enumeration value="delete"></enumeration>
+					<enumeration value="select"></enumeration>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attribute name="name" type="string" use="required"></attribute>
+		<attribute name="class" type="string" use="required"></attribute>
+		<attribute name="mapping-object" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="Include">
+		<attribute name="ref" type="string" use="required"></attribute>
+	</complexType>
+
+	<element name="Queries" type="BLOW:Queries"></element>
+
+	<complexType name="Queries">
+		<sequence maxOccurs="unbounded" minOccurs="0">
+			<element name="Include" type="BLOW:SubQuery" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+			<element name="Query" type="BLOW:Query" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+			<element name="Object" type="BLOW:Object" minOccurs="0"
+				maxOccurs="unbounded"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="SubQuery" mixed="true">
+		<attribute name="name" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="Object" mixed="true">
+		<sequence>
+			<element name="property" type="BLOW:Property" minOccurs="1"
+				maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="className" type="string" use="required"></attribute>
+		<attribute name="name" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="Property" mixed="true">
+		<attribute name="attr" type="string" use="required"></attribute>
+		<attribute name="column" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="NotNull" mixed="true">
+		<attribute name="prop" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="Condition" mixed="false">
+		<choice minOccurs="0" maxOccurs="unbounded">
+			<sequence>
+				<element name="when" type="BLOW:When" maxOccurs="1"
+					minOccurs="1">
+				</element>
+				<element name="otherwise" type="BLOW:OtherWise" maxOccurs="1" minOccurs="1"></element>
+			</sequence>
+			<sequence>
+				<element name="if" type="BLOW:When" maxOccurs="unbounded"
+					minOccurs="1">
+				</element>
+			</sequence>
+			<sequence>
+				<element name="NotNull" type="BLOW:NotNull"
+					maxOccurs="unbounded" minOccurs="0">
+				</element>
+			</sequence>
+		</choice>		
+	</complexType>
+
+	<complexType name="When" mixed="true">
+		<attribute name="prop" use="required">
+			<simpleType>
+				<restriction base="string">
+					<pattern value="(\w+(.)?\w+)+"></pattern>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attribute name="operator" use="required">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="GT"></enumeration>
+					<enumeration value="EQ"></enumeration>
+					<enumeration value="LT"></enumeration>
+					<enumeration value="GTEQ"></enumeration>
+					<enumeration value="LTEQ"></enumeration>
+					<enumeration value="NOTEQ"></enumeration>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attribute name="value" use="required">
+			<simpleType>
+				<restriction base="string">
+					<pattern value="\w+"></pattern>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</complexType>
+
+	<complexType name="OtherWise" mixed="true"></complexType>
+</schema>

@@ -63,18 +63,18 @@ import com.sales.processes.QueryProcessor;
 
 
 
-public class QuerryExecutor {
+public class QueryExecutor {
 
-	private QuerryBuilder querryBuilder;
+	private QueryBuilder querryBuilder;
 	private BlowCoreMapper coreMapper;
 	private Map<String, Object> params=new HashMap<String, Object>();
 	private static final String LIST_SIZE="incomingListSize";
 	
-	private QuerryExecutor(){
+	private QueryExecutor(){
 		coreMapper=BlowCoreMapper.getInstance();
 	}
-	protected static QuerryExecutor getExecutor(){
-		return new QuerryExecutor();
+	protected static QueryExecutor getExecutor(){
+		return new QueryExecutor();
 	}	
 	
 	private List<String> sortForRelations(Map m,ORM_MAPPINGS mapping){
@@ -119,12 +119,12 @@ public class QuerryExecutor {
 		return false;
 	}
 	
-	private Map<String, PreparedStatement> batchInsertOrUpdate(Object obj1,ORM_MAPPINGS mappings,QuerryBuilder builder,Connection con,Map map,Map m)throws Exception{
+	private Map<String, PreparedStatement> batchInsertOrUpdate(Object obj1,ORM_MAPPINGS mappings,QueryBuilder builder,Connection con,Map map,Map m)throws Exception{
 		if(m==null)
 			m=new HashMap<Object, Object>();
 		Map<String, PreparedStatement> sqlMap=map;
 		if(builder==null)
-			builder=QuerryBuilder.newInstance();
+			builder=QueryBuilder.newInstance();
 		if(map==null)
 			sqlMap=new HashMap<String, PreparedStatement>();
 		if(obj1 instanceof List){
@@ -189,7 +189,7 @@ public class QuerryExecutor {
 		m.put(obj, null);
 		Connection con=null;
 		con=container.getConnection();
-		querryBuilder=QuerryBuilder.newInstance();
+		querryBuilder=QueryBuilder.newInstance();
 		PreparedStatement stmt=null;
 		try{
 			if(countOfRecord(con, mappings, obj)==0){
@@ -350,7 +350,7 @@ public class QuerryExecutor {
 		PreparedStatement ps=null;
 		try{
 			String sql=query.getContent().trim();
-			querryBuilder=QuerryBuilder.newInstance();
+			querryBuilder=QueryBuilder.newInstance();
 			con=session.getConnection();
 			session.getQueries().put(sql, session.getSessionId());
 			sql=querryBuilder.processQuery(query, input);
