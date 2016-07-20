@@ -54,5 +54,5 @@ public interface Basis<T,U> {
 	
 	public Basis<T, U> fetchMode(BlowParam param)throws Exception;
 	
-	public void remove()throws Exception;
+	public void remove(Object obj)throws Exception;
 }

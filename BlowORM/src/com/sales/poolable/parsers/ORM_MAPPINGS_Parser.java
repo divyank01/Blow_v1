@@ -49,6 +49,7 @@ import com.sales.blow.annotations.One2Many;
 import com.sales.blow.annotations.One2One;
 import com.sales.blow.exceptions.BlownException;
 import com.sales.blow.exceptions.MappingsException;
+import com.sales.constants.ConfigConstants;
 import com.sales.core.DatabaseStateManager;
 import com.sales.file.generator.ClassFileGenerator;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.DataBaseInfo.Table.Column;
@@ -259,14 +260,14 @@ public class ORM_MAPPINGS_Parser {
 				NodeList mapping=mappings.item(i).getChildNodes();
 				for(int j=0;j<mapping.getLength();j++){
 					if(mapping.item(j).getNodeType()==Node.ELEMENT_NODE){
-						if(mapping.item(j).getNodeName().equalsIgnoreCase("MAP:Class"))
+						if(mapping.item(j).getNodeName().equalsIgnoreCase(ConfigConstants.CLASS))
 							if(orm_mapping.maps.containsKey(mapping.item(j).getTextContent())){
 								throw new MappingsException("Duplicate mappings found for"+mapping.item(j).getTextContent());
 							}else
 								orm_maps.setClassName(mapping.item(j).getTextContent());
-						if(mapping.item(j).getNodeName().equalsIgnoreCase("MAP:RDBSchema"))
+						if(mapping.item(j).getNodeName().equalsIgnoreCase(ConfigConstants.RDBMS))
 							orm_maps.setSchemaName(mapping.item(j).getTextContent());
-						if(mapping.item(j).getNodeName().equalsIgnoreCase("MAP:Map")){
+						if(mapping.item(j).getNodeName().equalsIgnoreCase(ConfigConstants.MAP)){
 							mapAttributes(mapping.item(j),orm_maps,mappingIndex);
 						}
 
@@ -293,77 +294,77 @@ public class ORM_MAPPINGS_Parser {
 		boolean isPkSet=false;
 		for(int i=0;i<mapEntries.getLength();i++){
 			NamedNodeMap nodeMap=mapEntries.item(i).getAttributes();
-			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase("MAP:Property")){
+			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase(ConfigConstants.PROPERTY)){
 				Maps.Attributes attr =  ormMaps.new Attributes();
-				ormMaps.getAttributeMap().put(nodeMap.getNamedItem("name").getNodeValue(),attr);
-				attr.setColName(nodeMap.getNamedItem("colName").getNodeValue());
-				attr.setName(nodeMap.getNamedItem("name").getNodeValue());
-				attr.setType(nodeMap.getNamedItem("type").getNodeValue());
+				ormMaps.getAttributeMap().put(nodeMap.getNamedItem(ConfigConstants.NAME).getNodeValue(),attr);
+				attr.setColName(nodeMap.getNamedItem(ConfigConstants.COL_NAME).getNodeValue());
+				attr.setName(nodeMap.getNamedItem(ConfigConstants.NAME).getNodeValue());
+				attr.setType(nodeMap.getNamedItem(ConfigConstants.TYPE).getNodeValue());
 				attr.setRelation('N');
-				if(nodeMap.getNamedItem("length")!=null){
-					attr.setLength(Integer.valueOf(nodeMap.getNamedItem("length").getNodeValue()));
+				if(nodeMap.getNamedItem(ConfigConstants.LEN)!=null){
+					attr.setLength(Integer.valueOf(nodeMap.getNamedItem(ConfigConstants.LEN).getNodeValue()));
 				}
-				if(nodeMap.getNamedItem("generated")!=null){
-					boolean isGenerated=Boolean.valueOf(nodeMap.getNamedItem("generated").getNodeValue());
+				if(nodeMap.getNamedItem(ConfigConstants.GENERATED)!=null){
+					boolean isGenerated=Boolean.valueOf(nodeMap.getNamedItem(ConfigConstants.GENERATED).getNodeValue());
 					attr.setGenerated(isGenerated);
 					if(isGenerated){
-						attr.setSeqName(nodeMap.getNamedItem("seq").getNodeValue());
+						attr.setSeqName(nodeMap.getNamedItem(ConfigConstants.SEQ).getNodeValue());
 					}
 				}
-				if(nodeMap.getNamedItem("primary-key")!=null){
+				if(nodeMap.getNamedItem(ConfigConstants.PK)!=null){
 					attr.setPk(true);
 					ormMaps.setPkAttr(attr);
 					isPkSet=true;
 				}
-				String nameVal=nodeMap.getNamedItem("name").getNodeValue();
-				ormMaps.qMap.put(ormMaps.getSchemaName()+"."+mapEntries.item(i).getAttributes().getNamedItem("colName").getNodeValue(), 
+				String nameVal=nodeMap.getNamedItem(ConfigConstants.NAME).getNodeValue();
+				ormMaps.qMap.put(ormMaps.getSchemaName()+"."+mapEntries.item(i).getAttributes().getNamedItem(ConfigConstants.COL_NAME).getNodeValue(), 
 						(nameVal.length()<10?nameVal:nameVal.substring(0, 10))+"_"+indexCount);
 				/*ormMaps.qMap.put(attr.getName(), 
 						(nameVal.length()<10?nameVal:nameVal.substring(0, 10))+"_"+indexCount);*/
 			}
-			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase("MAP:one-2-one")){
+			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase(ConfigConstants.ONE_2_ONE)){
 				Maps.Attributes attr =  ormMaps.new Attributes();
-				attr.setColName(nodeMap.getNamedItem("foreign-key").getNodeValue());
-				String propName=nodeMap.getNamedItem("name").getNodeValue();
-				if(nodeMap.getNamedItem("foreign-key-ref")!=null){
-					attr.setReferenced(Boolean.valueOf(nodeMap.getNamedItem("foreign-key-ref").getNodeValue()));
+				attr.setColName(nodeMap.getNamedItem(ConfigConstants.FK).getNodeValue());
+				String propName=nodeMap.getNamedItem(ConfigConstants.NAME).getNodeValue();
+				if(nodeMap.getNamedItem(ConfigConstants.FK_REF)!=null){
+					attr.setReferenced(Boolean.valueOf(nodeMap.getNamedItem(ConfigConstants.FK_REF).getNodeValue()));
 				}else
 					attr.setReferenced(false);
 				attr.setName(propName);
 				attr.setAlias(propName.length()<10?propName+"_"+indexCount:propName.substring(0, 10)+"_"+indexCount);
 				attr.setFk(true);
-				attr.setClassName(nodeMap.getNamedItem("ref-class").getNodeValue());
+				attr.setClassName(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue());
 				attr.setSupplimentryClass(ormMaps.getClassName());
-				if(nodeMap.getNamedItem("foreign-key")==null){
+				if(nodeMap.getNamedItem(ConfigConstants.FK)==null){
 					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
 				}
 				attr.setRelation('O');
-				ormMaps.getAttributeMap().put(nodeMap.getNamedItem("name").getNodeValue(),attr);
-				ormMaps.getFkAttr().put(nodeMap.getNamedItem("ref-class").getNodeValue(), attr);
-				ormMaps.getDependentClasses().add(nodeMap.getNamedItem("ref-class").getNodeValue());
+				ormMaps.getAttributeMap().put(nodeMap.getNamedItem(ConfigConstants.NAME).getNodeValue(),attr);
+				ormMaps.getFkAttr().put(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue(), attr);
+				ormMaps.getDependentClasses().add(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue());
 			}
-			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase("MAP:one-2-many")){
+			if(mapEntries.item(i).getNodeType()==Node.ELEMENT_NODE && mapEntries.item(i).getNodeName().equalsIgnoreCase(ConfigConstants.ONE_2_MANY)){
 				Maps.Attributes attr =  ormMaps.new Attributes();
-				attr.setColName(nodeMap.getNamedItem("foreign-key").getNodeValue());
+				attr.setColName(nodeMap.getNamedItem(ConfigConstants.FK).getNodeValue());
 				attr.setCollectionType(nodeMap.getNamedItem("collectionType").getNodeValue());
-				String propName=nodeMap.getNamedItem("name").getNodeValue();
+				String propName=nodeMap.getNamedItem(ConfigConstants.NAME).getNodeValue();
 				attr.setName(propName);
 				attr.setAlias(propName.length()<10?propName+"_"+indexCount:propName.substring(0, 10)+"_"+indexCount);
 				attr.setFk(true);
-				attr.setClassName(nodeMap.getNamedItem("ref-class").getNodeValue());
+				attr.setClassName(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue());
 				attr.setSupplimentryClass(ormMaps.getClassName());
 				attr.setRelation('M');
-				if(nodeMap.getNamedItem("foreign-key")==null){
+				if(nodeMap.getNamedItem(ConfigConstants.FK)==null){
 					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
 				}
-				if(nodeMap.getNamedItem("foreign-key-ref")!=null){
-					attr.setReferenced(Boolean.valueOf(nodeMap.getNamedItem("foreign-key-ref").getNodeValue()));
+				if(nodeMap.getNamedItem(ConfigConstants.FK_REF)!=null){
+					attr.setReferenced(Boolean.valueOf(nodeMap.getNamedItem(ConfigConstants.FK_REF).getNodeValue()));
 				}else
 					attr.setReferenced(false);
-				ormMaps.getAttributeMap().put(nodeMap.getNamedItem("name").getNodeValue(),attr);
-				ormMaps.getFkAttr().put(nodeMap.getNamedItem("ref-class").getNodeValue(), attr);
-				if(!ormMaps.getDependentClasses().contains(nodeMap.getNamedItem("ref-class").getNodeValue()))
-					ormMaps.getDependentClasses().add(nodeMap.getNamedItem("ref-class").getNodeValue());
+				ormMaps.getAttributeMap().put(nodeMap.getNamedItem(ConfigConstants.NAME).getNodeValue(),attr);
+				ormMaps.getFkAttr().put(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue(), attr);
+				if(!ormMaps.getDependentClasses().contains(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue()))
+					ormMaps.getDependentClasses().add(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue());
 			}
 		}
 		if(!isPkSet)

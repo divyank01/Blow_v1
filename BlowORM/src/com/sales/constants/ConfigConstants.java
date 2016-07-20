@@ -25,22 +25,40 @@ package com.sales.constants;
 
 public abstract interface ConfigConstants {
 
-	public static final String USERNAME="BLOW:USER";
-	public static final String PASSWORD="BLOW:PASSWORD";
-	public static final String URL="BLOW:URL";
-	public static final String DRIVER="BLOW:JDBCDriver";
-	public static final String MAPPINGS="BLOW:MAPPINGS";
-	public static final String ANNOTATIONS="BLOW:ANNOTATIONS";
-	public static final String PACKAGE_SCAN="BLOW:package-scan";
+	public static final String USERNAME="USER";
+	public static final String PASSWORD="PASSWORD";
+	public static final String URL="URL";
+	public static final String DRIVER="JDBCDriver";
+	public static final String MAPPINGS="MAPPINGS";
+	public static final String ANNOTATIONS="ANNOTATIONS";
+	public static final String PACKAGE_SCAN="package-scan";
 	public static final String MAPPINGS_FILE="file";
 	public static final String ANNOTATION_USE="use";
-	public static final String SCHEMAS="BLOW:Schema";
-	public static final String GEN_SCHEMA="BLOW:GenerateSchema";
-	public static final String QUERIES="BLOW:QUERIES";
-	public static final String QUERY="BLOW:Query";
+	public static final String SCHEMAS="Schema";
+	public static final String GEN_SCHEMA="GenerateSchema";
+	public static final String QUERIES="QUERIES";
+	public static final String QUERY="Query";
 	public static final String Q_FILE="file";
-	public static final String Q_INCLUDE="BLOW:Include";
-	public static final String Q_OBJECT="BLOW:Object";
-	public static final String Q_PROP="BLOW:property";
-	public static final String SQL_LOGGING="BLOW:SqlLogging";
+	public static final String Q_INCLUDE="Include";
+	public static final String Q_OBJECT="Object";
+	public static final String Q_PROP="property";
+	public static final String SQL_LOGGING="SqlLogging";
+	
+	
+	public static final String FK_REF="foreign-key-ref";
+	public static final String REF_CLASS="ref-class";
+	public static final String NAME="name";
+	public static final String FK="foreign-key";
+	public static final String ONE_2_MANY="one-2-many";
+	public static final String ONE_2_ONE="one-2-one";
+	public static final String PK="primary-key";
+	public static final String CLASS="Class";
+	public static final String RDBMS="RDBSchema";
+	public static final String MAP="Map";
+	public static final String LEN="length";
+	public static final String GENERATED="generated";
+	public static final String SEQ="seq";
+	public static final String PROPERTY="Property";
+	public static final String COL_NAME="colName";
+	public static final String TYPE="type";
 }

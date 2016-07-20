@@ -22,106 +22,95 @@
   *  I appreciate any suggestions to improve it.
   *  @mailto: divyank01@gmail.com-->
   
-<schema targetNamespace="http://www.BlowORM.org/BlowConf"
-	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:BLOW="http://www.BlowORM.org/BlowConf">
+<ns:schema targetNamespace="http://www.BlowORM.org/BlowConf" elementFormDefault="qualified" xmlns:ns="http://www.w3.org/2001/XMLSchema" xmlns="http://www.BlowORM.org/BlowConf">
 
-	<complexType name="JDBCConnection">
-		<sequence>
-			<element name="URL" type="BLOW:URL" minOccurs="1"
-				maxOccurs="1" nillable="false">
-			</element>
-			<element name="PASSWORD" type="BLOW:PASSWORD" minOccurs="1"
-				maxOccurs="1" nillable="false">
-			</element>
-			<element name="USER" type="BLOW:USER" minOccurs="1"
-				maxOccurs="1" nillable="false">
-			</element>
-			<element name="JDBCDriver" type="string" maxOccurs="1"
-				minOccurs="1">
-			</element>
-			<element name="QUERIES" type="BLOW:QUERIES" maxOccurs="1"
-				minOccurs="0">
-			</element>
-			<element name="MAPPINGS" type="BLOW:MAPPINGS" minOccurs="0"
-				maxOccurs="unbounded">
-			</element>
-			<element name="ANNOTATIONS" type="BLOW:ANNOTIONS"
-				maxOccurs="1" minOccurs="0">
-			</element>
-			<element name="Schema" type="string" maxOccurs="1"
-				minOccurs="1">
-				<annotation>
-					<documentation>
+	<ns:complexType name="JDBCConnection">
+		<ns:sequence>
+			<ns:element name="URL" type="URL" minOccurs="1" maxOccurs="1" nillable="false">
+			</ns:element>
+			<ns:element name="PASSWORD" type="PASSWORD" minOccurs="1" maxOccurs="1" nillable="false">
+			</ns:element>
+			<ns:element name="USER" type="USER" minOccurs="1" maxOccurs="1" nillable="false">
+			</ns:element>
+			<ns:element name="JDBCDriver" type="ns:string" maxOccurs="1" minOccurs="1">
+			</ns:element>
+			<ns:element name="QUERIES" type="QUERIES" maxOccurs="1" minOccurs="0">
+			</ns:element>
+			<ns:element name="MAPPINGS" type="MAPPINGS" minOccurs="0" maxOccurs="unbounded">
+			</ns:element>
+			<ns:element name="ANNOTATIONS" type="ANNOTIONS" maxOccurs="1" minOccurs="0">
+			</ns:element>
+			<ns:element name="Schema" type="ns:string" maxOccurs="1" minOccurs="1">
+				<ns:annotation>
+					<ns:documentation>
 						multiple schema can be mentioned for loading
 						tables separated by comma.
-					</documentation>
-				</annotation>
-			</element>
-			<element name="GenerateSchema" type="boolean" maxOccurs="1"
-				minOccurs="1">
-			</element>
-			<element name="SqlLogging" type="boolean" maxOccurs="1" minOccurs="1"></element>
-		</sequence>
-	</complexType>
+					</ns:documentation>
+				</ns:annotation>
+			</ns:element>
+			<ns:element name="GenerateSchema" type="ns:boolean" maxOccurs="1" minOccurs="1">
+			</ns:element>
+			<ns:element name="SqlLogging" type="ns:boolean" maxOccurs="1" minOccurs="1"></ns:element>
+		</ns:sequence>
+	</ns:complexType>
 
-	<simpleType name="URL">
-		<restriction base="string"></restriction>
-	</simpleType>
+	<ns:simpleType name="URL">
+		<ns:restriction base="ns:string"></ns:restriction>
+	</ns:simpleType>
 
-	<simpleType name="USER">
-		<restriction base="string"></restriction>
-	</simpleType>
+	<ns:simpleType name="USER">
+		<ns:restriction base="ns:string"></ns:restriction>
+	</ns:simpleType>
 
-	<simpleType name="PASSWORD">
-		<restriction base="string"></restriction>
-	</simpleType>
+	<ns:simpleType name="PASSWORD">
+		<ns:restriction base="ns:string"></ns:restriction>
+	</ns:simpleType>
 
-	<element name="JDBCConnection" type="BLOW:JDBCConnection"></element>
+	<ns:element name="JDBCConnection" type="JDBCConnection"></ns:element>
 
-	<complexType name="MAPPINGS">
-		<attribute name="file" use="required">
-			<simpleType>
-				<restriction base="string">
-					<pattern value=".*.blow.xml"></pattern>
-				</restriction>
-			</simpleType>
-		</attribute>
+	<ns:complexType name="MAPPINGS">
+		<ns:attribute name="file" use="required">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:pattern value=".*.blow.xml"></ns:pattern>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
 
-	</complexType>
+	</ns:complexType>
 
-	<complexType name="QUERY">
-		<attribute name="file" use="required">
-			<simpleType>
-				<restriction base="string">
-					<pattern value=".*.blow.query.xml"></pattern>
-				</restriction>
-			</simpleType>
-		</attribute>
-	</complexType>
+	<ns:complexType name="QUERY">
+		<ns:attribute name="file" use="required">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:pattern value=".*.blow.query.xml"></ns:pattern>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
+	</ns:complexType>
 	
-	<complexType name="ANNOTIONS">
-		<sequence>
-			<element name="package-scan" maxOccurs="unbounded" minOccurs="1">
-				<simpleType>
-					<restriction base="string">
-						<whiteSpace value="collapse"></whiteSpace>
-					</restriction>
-				</simpleType>
-			</element>
-		</sequence>
-		<attribute name="use" type="boolean" use="required"></attribute>
-	</complexType>
+	<ns:complexType name="ANNOTIONS">
+		<ns:sequence>
+			<ns:element name="package-scan" maxOccurs="unbounded" minOccurs="1">
+				<ns:simpleType>
+					<ns:restriction base="ns:string">
+						<ns:whiteSpace value="collapse"></ns:whiteSpace>
+					</ns:restriction>
+				</ns:simpleType>
+			</ns:element>
+		</ns:sequence>
+		<ns:attribute name="use" type="ns:boolean" use="required"></ns:attribute>
+	</ns:complexType>
 
-	<simpleType name="DATABASE">
-		<restriction base="string">
-			<enumeration value="oracle"></enumeration>
-			<enumeration value="mysql"></enumeration>
-		</restriction></simpleType>
+	<ns:simpleType name="DATABASE">
+		<ns:restriction base="ns:string">
+			<ns:enumeration value="oracle"></ns:enumeration>
+			<ns:enumeration value="mysql"></ns:enumeration>
+		</ns:restriction></ns:simpleType>
 
-	<complexType name="QUERIES">
-		<sequence>
-			<element name="Query" type="BLOW:QUERY" minOccurs="1" maxOccurs="unbounded"></element>
-		</sequence>
-	</complexType>
-</schema>
+	<ns:complexType name="QUERIES">
+		<ns:sequence>
+			<ns:element name="Query" type="QUERY" minOccurs="1" maxOccurs="unbounded"></ns:element>
+		</ns:sequence>
+	</ns:complexType>
+</ns:schema>

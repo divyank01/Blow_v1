@@ -185,7 +185,7 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	}
 
 	@Override
-	public void remove() throws Exception {
+	public void remove(Object obj) throws Exception {
 		
 	}
 

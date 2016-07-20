@@ -15,102 +15,102 @@
   *  GNU General Public License for more details.
   *
   *  You should have received a copy of the GNU General Public License
-  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  *  along with this program.  If not, see <ns:http://www.gnu.org/licenses/>.
   *  
   *  
   *  In Addition to it if you find any bugs or encounter any issue you need to notify me.
   *  I appreciate any suggestions to improve it.
   *  @mailto: divyank01@gmail.com-->
   
-<schema targetNamespace="http://www.blow.org/Mapping"
-	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:MAP="http://www.blow.org/Mapping">
+<ns:schema targetNamespace="http://www.blow.org/Mapping"
+	elementFormDefault="qualified" xmlns:ns="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://www.blow.org/Mapping">
 
-	<complexType name="Mapping">
-		<sequence>
-			<element name="Class" type="string" minOccurs="1"
+	<ns:complexType name="Mapping">
+		<ns:sequence>
+			<ns:element name="Class" type="ns:string" minOccurs="1"
 				maxOccurs="1">
-			</element>
-			<element name="RDBSchema" type="string" minOccurs="1"
+			</ns:element>
+			<ns:element name="RDBSchema" type="ns:string" minOccurs="1"
 				maxOccurs="1">
-			</element>
-			<element name="Map" type="MAP:Map" minOccurs="1"
+			</ns:element>
+			<ns:element name="Map" type="Map" minOccurs="1"
 				maxOccurs="1">
-			</element>
-		</sequence>
-	</complexType>
+			</ns:element>
+		</ns:sequence>
+	</ns:complexType>
 
-	<complexType name="Map">
-        <sequence>
-        	<!-- <element name="Key" type="MAP:PrimaryKey" maxOccurs="1" minOccurs="1"></element> -->
-        	<element name="Property" type="MAP:Property" minOccurs="0"
+	<ns:complexType name="Map">
+        <ns:sequence>
+        	<!-- <ns:element name="Key" type="PrimaryKey" maxOccurs="1" minOccurs="1"></ns:element> -->
+        	<ns:element name="Property" type="Property" minOccurs="0"
         		maxOccurs="unbounded">
-        	</element>
-        	<element name="one-2-one" type="MAP:one-2-one"
+        	</ns:element>
+        	<ns:element name="one-2-one" type="one-2-one"
         		maxOccurs="unbounded" minOccurs="0">
-        	</element>
-        	<element name="one-2-many" type="MAP:one-2-many"
+        	</ns:element>
+        	<ns:element name="one-2-many" type="one-2-many"
         		maxOccurs="unbounded" minOccurs="0">
-        	</element>
-        </sequence>
-	</complexType>
+        	</ns:element>
+        </ns:sequence>
+	</ns:complexType>
 
-	<complexType name="Mappings">
-		<sequence>
-			<element name="Mapping" type="MAP:Mapping" minOccurs="1"
-				maxOccurs="unbounded"></element>
-		</sequence>
-	</complexType>
+	<ns:complexType name="Mappings">
+		<ns:sequence>
+			<ns:element name="Mapping" type="Mapping" minOccurs="1"
+				maxOccurs="unbounded"></ns:element>
+		</ns:sequence>
+	</ns:complexType>
 
-	<element name="Mappings" type="MAP:Mappings"></element>
+	<ns:element name="Mappings" type="Mappings"></ns:element>
 
-	<complexType name="Property">
-		<attribute name="type" type="string" use="required"></attribute>
-		<attribute name="colName" type="string" use="required"></attribute>
-		<attribute name="name" type="string" use="required"></attribute>
-		<attribute name="primary-key" type="boolean"></attribute>
-		<attribute name="generated" type="boolean" use="optional"></attribute>
-		<attribute name="seq" type="string" use="optional"></attribute>
-		<attribute name="length" type="int" use="optional"></attribute>
-	</complexType>
+	<ns:complexType name="Property">
+		<ns:attribute name="type" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="colName" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="name" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="primary-key" type="ns:boolean"></ns:attribute>
+		<ns:attribute name="generated" type="ns:boolean" use="optional"></ns:attribute>
+		<ns:attribute name="seq" type="ns:string" use="optional"></ns:attribute>
+		<ns:attribute name="length" type="ns:int" use="optional"></ns:attribute>
+	</ns:complexType>
 
-	<complexType name="one-2-one">
-		<annotation>
-			<documentation>
+	<ns:complexType name="one-2-one">
+		<ns:annotation>
+			<ns:documentation>
 				this attribute can handle one to one as well as many to
 				one relationships.
-			</documentation>
-		</annotation>
-		<attribute name="name" type="string" use="required"></attribute>
-		<attribute name="ref-class" type="string" use="required"></attribute>
-		<attribute name="foreign-key" type="string" use="optional"></attribute>
-		<attribute name="foreign-key-ref" type="boolean" use="optional"></attribute>
-	</complexType>
+			</ns:documentation>
+		</ns:annotation>
+		<ns:attribute name="name" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="ref-class" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="foreign-key" type="ns:string" use="optional"></ns:attribute>
+		<ns:attribute name="foreign-key-ref" type="ns:boolean" use="optional"></ns:attribute>
+	</ns:complexType>
 
-	<complexType name="one-2-many">
-		<annotation>
-			<documentation>
+	<ns:complexType name="one-2-many">
+		<ns:annotation>
+			<ns:documentation>
 				this attribute can handle one to many relationship.
-			</documentation>
-		</annotation>
-		<attribute name="ref-class" type="string" use="required"></attribute>
-		<attribute name="foreign-key" type="string" use="required"></attribute>
-		<attribute name="collectionType" use="required">
-			<simpleType>
-				<restriction base="string">
-					<enumeration value="list"></enumeration>
-					<enumeration value="set"></enumeration>
-				</restriction>
-			</simpleType>
-		</attribute>
-		<attribute name="name" type="string" use="required"></attribute>
-		<attribute name="foreign-key-ref" type="boolean"></attribute>
-	</complexType>
+			</ns:documentation>
+		</ns:annotation>
+		<ns:attribute name="ref-class" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="foreign-key" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="collectionType" use="required">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:enumeration value="list"></ns:enumeration>
+					<ns:enumeration value="set"></ns:enumeration>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
+		<ns:attribute name="name" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="foreign-key-ref" type="ns:boolean"></ns:attribute>
+	</ns:complexType>
 
 
-	<complexType name="PrimaryKey">
-		<sequence>
-			<element name="Property" type="MAP:Property" maxOccurs="unbounded" minOccurs="1"></element>
-		</sequence>
-	</complexType>
-</schema>
+	<ns:complexType name="PrimaryKey">
+		<ns:sequence>
+			<ns:element name="Property" type="Property" maxOccurs="unbounded" minOccurs="1"></ns:element>
+		</ns:sequence>
+	</ns:complexType>
+</ns:schema>

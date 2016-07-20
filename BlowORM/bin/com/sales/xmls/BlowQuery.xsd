@@ -22,122 +22,113 @@
   *  I appreciate any suggestions to improve it.
   *  @mailto: divyank01@gmail.com-->
 
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.blocore.org/BlowQuery"
-	elementFormDefault="qualified" xmlns:BLOW="http://www.blocore.org/BlowQuery">
+<ns:schema targetNamespace="http://www.blocore.org/BlowQuery" elementFormDefault="qualified" xmlns:ns="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blocore.org/BlowQuery">
 
-	<complexType name="Query" mixed="true">
-		<choice minOccurs="0" maxOccurs="unbounded">
-			<element name="Include" type="BLOW:Include" minOccurs="0"
-				maxOccurs="unbounded">
-			</element>
-			<element name="condition" type="BLOW:Condition" maxOccurs="1" minOccurs="0"></element>
-		</choice>
-		<attribute name="type" use="required">
-			<simpleType>
-				<restriction base="string">
-					<enumeration value="insert"></enumeration>
-					<enumeration value="update"></enumeration>
-					<enumeration value="delete"></enumeration>
-					<enumeration value="select"></enumeration>
-				</restriction>
-			</simpleType>
-		</attribute>
-		<attribute name="name" type="string" use="required"></attribute>
-		<attribute name="class" type="string" use="required"></attribute>
-		<attribute name="mapping-object" type="string" use="required"></attribute>
-	</complexType>
+	<ns:complexType name="Query" mixed="true">
+		<ns:choice minOccurs="0" maxOccurs="unbounded">
+			<ns:element name="Include" type="Include" minOccurs="0" maxOccurs="unbounded">
+			</ns:element>
+			<ns:element name="condition" type="Condition" maxOccurs="1" minOccurs="0"></ns:element>
+		</ns:choice>
+		<ns:attribute name="type" use="required">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:enumeration value="insert"></ns:enumeration>
+					<ns:enumeration value="update"></ns:enumeration>
+					<ns:enumeration value="delete"></ns:enumeration>
+					<ns:enumeration value="select"></ns:enumeration>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
+		<ns:attribute name="name" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="class" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="mapping-object" type="ns:string" use="required"></ns:attribute>
+	</ns:complexType>
 
-	<complexType name="Include">
-		<attribute name="ref" type="string" use="required"></attribute>
-	</complexType>
+	<ns:complexType name="Include">
+		<ns:attribute name="ref" type="ns:string" use="required"></ns:attribute>
+	</ns:complexType>
 
-	<element name="Queries" type="BLOW:Queries"></element>
+	<ns:element name="Queries" type="Queries"></ns:element>
 
-	<complexType name="Queries">
-		<sequence maxOccurs="unbounded" minOccurs="0">
-			<element name="Include" type="BLOW:SubQuery" minOccurs="0"
-				maxOccurs="unbounded">
-			</element>
-			<element name="Query" type="BLOW:Query" minOccurs="0"
-				maxOccurs="unbounded">
-			</element>
-			<element name="Object" type="BLOW:Object" minOccurs="0"
-				maxOccurs="unbounded"></element>
-		</sequence>
-	</complexType>
+	<ns:complexType name="Queries">
+		<ns:sequence maxOccurs="unbounded" minOccurs="0">
+			<ns:element name="Include" type="SubQuery" minOccurs="0" maxOccurs="unbounded">
+			</ns:element>
+			<ns:element name="Query" type="Query" minOccurs="0" maxOccurs="unbounded">
+			</ns:element>
+			<ns:element name="Object" type="Object" minOccurs="0" maxOccurs="unbounded"></ns:element>
+		</ns:sequence>
+	</ns:complexType>
 
-	<complexType name="SubQuery" mixed="true">
-		<attribute name="name" type="string" use="required"></attribute>
-	</complexType>
+	<ns:complexType name="SubQuery" mixed="true">
+		<ns:attribute name="name" type="ns:string" use="required"></ns:attribute>
+	</ns:complexType>
 
-	<complexType name="Object" mixed="true">
-		<sequence>
-			<element name="property" type="BLOW:Property" minOccurs="1"
-				maxOccurs="unbounded">
-			</element>
-		</sequence>
-		<attribute name="className" type="string" use="required"></attribute>
-		<attribute name="name" type="string" use="required"></attribute>
-	</complexType>
+	<ns:complexType name="Object" mixed="true">
+		<ns:sequence>
+			<ns:element name="property" type="Property" minOccurs="1" maxOccurs="unbounded">
+			</ns:element>
+		</ns:sequence>
+		<ns:attribute name="className" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="name" type="ns:string" use="required"></ns:attribute>
+	</ns:complexType>
 
-	<complexType name="Property" mixed="true">
-		<attribute name="attr" type="string" use="required"></attribute>
-		<attribute name="column" type="string" use="required"></attribute>
-	</complexType>
+	<ns:complexType name="Property" mixed="true">
+		<ns:attribute name="attr" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="column" type="ns:string" use="required"></ns:attribute>
+	</ns:complexType>
 
-	<complexType name="NotNull" mixed="true">
-		<attribute name="prop" type="string" use="required"></attribute>
-	</complexType>
+	<ns:complexType name="NotNull" mixed="true">
+		<ns:attribute name="prop" type="ns:string" use="required"></ns:attribute>
+	</ns:complexType>
 
-	<complexType name="Condition" mixed="false">
-		<choice minOccurs="0" maxOccurs="unbounded">
-			<sequence>
-				<element name="when" type="BLOW:When" maxOccurs="1"
-					minOccurs="1">
-				</element>
-				<element name="otherwise" type="BLOW:OtherWise" maxOccurs="1" minOccurs="1"></element>
-			</sequence>
-			<sequence>
-				<element name="if" type="BLOW:When" maxOccurs="unbounded"
-					minOccurs="1">
-				</element>
-			</sequence>
-			<sequence>
-				<element name="NotNull" type="BLOW:NotNull"
-					maxOccurs="unbounded" minOccurs="0">
-				</element>
-			</sequence>
-		</choice>		
-	</complexType>
+	<ns:complexType name="Condition" mixed="false">
+		<ns:choice minOccurs="0" maxOccurs="unbounded">
+			<ns:sequence>
+				<ns:element name="when" type="When" maxOccurs="1" minOccurs="1">
+				</ns:element>
+				<ns:element name="otherwise" type="OtherWise" maxOccurs="1" minOccurs="1"></ns:element>
+			</ns:sequence>
+			<ns:sequence>
+				<ns:element name="if" type="When" maxOccurs="unbounded" minOccurs="1">
+				</ns:element>
+			</ns:sequence>
+			<ns:sequence>
+				<ns:element name="NotNull" type="NotNull" maxOccurs="unbounded" minOccurs="0">
+				</ns:element>
+			</ns:sequence>
+		</ns:choice>		
+	</ns:complexType>
 
-	<complexType name="When" mixed="true">
-		<attribute name="prop" use="required">
-			<simpleType>
-				<restriction base="string">
-					<pattern value="(\w+(.)?\w+)+"></pattern>
-				</restriction>
-			</simpleType>
-		</attribute>
-		<attribute name="operator" use="required">
-			<simpleType>
-				<restriction base="string">
-					<enumeration value="GT"></enumeration>
-					<enumeration value="EQ"></enumeration>
-					<enumeration value="LT"></enumeration>
-					<enumeration value="GTEQ"></enumeration>
-					<enumeration value="LTEQ"></enumeration>
-					<enumeration value="NOTEQ"></enumeration>
-				</restriction>
-			</simpleType>
-		</attribute>
-		<attribute name="value" use="required">
-			<simpleType>
-				<restriction base="string">
-					<pattern value="\w+"></pattern>
-				</restriction>
-			</simpleType>
-		</attribute>
-	</complexType>
+	<ns:complexType name="When" mixed="true">
+		<ns:attribute name="prop" use="required">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:pattern value="(\w+(.)?\w+)+"></ns:pattern>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
+		<ns:attribute name="operator" use="required">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:enumeration value="GT"></ns:enumeration>
+					<ns:enumeration value="EQ"></ns:enumeration>
+					<ns:enumeration value="LT"></ns:enumeration>
+					<ns:enumeration value="GTEQ"></ns:enumeration>
+					<ns:enumeration value="LTEQ"></ns:enumeration>
+					<ns:enumeration value="NOTEQ"></ns:enumeration>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
+		<ns:attribute name="value" use="required">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:pattern value="\w+"></ns:pattern>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
+	</ns:complexType>
 
-	<complexType name="OtherWise" mixed="true"></complexType>
-</schema>
+	<ns:complexType name="OtherWise" mixed="true"></ns:complexType>
+</ns:schema>

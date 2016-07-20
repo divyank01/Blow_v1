@@ -378,7 +378,7 @@ public class BlowCoreMapper {
 	 * @throws SecurityException 
 	 */
 	protected boolean contains(ORM_MAPPINGS mappings ,Object newObj,List lst) throws Exception{
-		String getter="get"+BlowCoreUtils._FCFieldName(mappings.getMapForClass(newObj.getClass().getCanonicalName()).getPkAttr().getName()).trim();
+		String getter=BlowConstatnts.GET+BlowCoreUtils._FCFieldName(mappings.getMapForClass(newObj.getClass().getCanonicalName()).getPkAttr().getName()).trim();
 		Object obj=newObj.getClass().getMethod(getter, new Class[0]).invoke(newObj, null);		
 		for(Object o:lst){
 			if(equals(newObj.getClass().getMethod(getter, new Class[0]).invoke(newObj, null),o.getClass().getMethod(getter, new Class[0]).invoke(o, null))){
@@ -391,7 +391,7 @@ public class BlowCoreMapper {
 	
 	
 	protected int getPostionFromList(ORM_MAPPINGS mappings ,Object newObj,List lst) throws Exception{
-		String getter="get"+BlowCoreUtils._FCFieldName(mappings.getMapForClass(newObj.getClass().getCanonicalName()).getPkAttr().getName()).trim();
+		String getter=BlowConstatnts.GET+BlowCoreUtils._FCFieldName(mappings.getMapForClass(newObj.getClass().getCanonicalName()).getPkAttr().getName()).trim();
 		Object obj=newObj.getClass().getMethod(getter, new Class[0]).invoke(newObj, null);		
 		int i=0;
 		for(Object o:lst){
