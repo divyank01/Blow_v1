@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<BLOW:Queries xmlns:BLOW="http://www.blocore.org/BlowQuery"
+<Queries xmlns:BLOW="http://www.blocore.org/BlowQuery"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.blocore.org/BlowQuery ../../../../../BlowORM/src/com/sales/xmls/BlowQuery.xsd ">
 
-	<BLOW:Object className="com.sales.pojo.Prodcty" name="product1">
-		<BLOW:property attr="name" column="name" />
-		<BLOW:property attr="id" column="id" />
-	</BLOW:Object>
+	<Object className="com.sales.pojo.Prodcty" name="product1">
+		<property attr="name" column="name" />
+		<property attr="id" column="id" />
+	</Object>
 
-	<BLOW:Object className="com.sales.pojo.Product" name="product2">
-		<BLOW:property attr="fhj" column="gd" />
-	</BLOW:Object>
+	<Object className="com.sales.pojo.Product" name="product2">
+		<property attr="fhj" column="gd" />
+	</Object>
 
-	<BLOW:Include name="product">
+	<Include name="product">
 		select * from product
-	</BLOW:Include>
+	</Include>
 
 
-	<BLOW:Query name="getAllProducts" type="select" class=""
+	<Query name="getAllProducts" type="select" class=""
 		mapping-object="product">
 		select * from product
-	</BLOW:Query>
+	</Query>
 
-	<BLOW:Query name="getProducts" type="select" class=""
+	<Query name="getProducts" type="select" class=""
 		mapping-object="product">
 		select * from product where id in(
-		<BLOW:condition>
-			<BLOW:when operator="GT" value="240000" prop="product.id">
+		<condition>
+			<when operator="GT" value="240000" prop="product.id">
 				1006,
-			</BLOW:when>
-			<BLOW:otherwise>
+			</when>
+			<otherwise>
 				1007,
-			</BLOW:otherwise>
-		</BLOW:condition>
+			</otherwise>
+		</condition>
 		2003,121,
-		<BLOW:condition>
-			<BLOW:NotNull prop="product">
+		<condition>
+			<NotNull prop="product">
 				1009,
-			</BLOW:NotNull>
-		</BLOW:condition>
+			</NotNull>
+		</condition>
 
-		<BLOW:condition>
-			<BLOW:if operator="GT" value="270" prop="product.id">
+		<condition>
+			<if operator="GT" value="270" prop="product.id">
 				1010,
-			</BLOW:if>
-		</BLOW:condition>
+			</if>
+		</condition>
 		(
-		<BLOW:Include ref="product_details" />
+		<Include ref="product_details" />
 		)
 		)
-	</BLOW:Query>
+	</Query>
 
-	<BLOW:Include name="product_details">
+	<Include name="product_details">
 		select prod_id from product_details
 		where id=#product.details.id#
-	</BLOW:Include>
+	</Include>
 
-	<BLOW:Object className="com.sales.pojo.Prodcty" name="product">
-		<BLOW:property attr="id" column="id" />
-		<BLOW:property attr="name" column="name" />
-		<BLOW:property attr="catId" column="cat_id" />
-	</BLOW:Object>
+	<Object className="com.sales.pojo.Prodcty" name="product">
+		<property attr="id" column="id" />
+		<property attr="name" column="name" />
+		<property attr="catId" column="cat_id" />
+	</Object>
 
 
-</BLOW:Queries>
+</Queries>

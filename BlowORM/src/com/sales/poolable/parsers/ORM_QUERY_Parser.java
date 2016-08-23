@@ -105,15 +105,15 @@ public class ORM_QUERY_Parser {
 					if(nod.getNodeType()==3){
 						builder.append(nod.getTextContent().trim());
 					}
-					if(nod.getNodeType()==1 && nod.getNodeName().equals("BLOW:Include")){
+					if(nod.getNodeType()==1 && nod.getNodeName().equals("Include")){
 						builder.append(iDelim).append(nod.getAttributes().getNamedItem("ref").getNodeValue()).append(iDelim);
 						qry.getIncludes().add(nod.getAttributes().getNamedItem("ref").getNodeValue());
 					}
-					if(nod.getNodeType()==1 && nod.getNodeName().equals("BLOW:condition")){
+					if(nod.getNodeType()==1 && nod.getNodeName().equals("condition")){
 						NodeList nl=nod.getChildNodes();
 						for(int k=0;k<nl.getLength();k++){
 							Node nod1=nl.item(k);
-							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:NotNull")){
+							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("NotNull")){
 								builder.append(cDelim).append(cntr).append(cDelim);
 								Condition condition=qry.new Condition();
 								condition.setId(cntr);
@@ -124,7 +124,7 @@ public class ORM_QUERY_Parser {
 								qry.getConditions().add(condition);
 								cntr++;
 							}
-							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:when")){
+							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("when")){
 								builder.append(cDelim).append(cntr).append(cDelim);
 								Condition condition=qry.new Condition();
 								condition.setOperator(nod1.getAttributes().getNamedItem("operator").getNodeValue());
@@ -136,7 +136,7 @@ public class ORM_QUERY_Parser {
 								qry.getConditions().add(condition);
 								cntr++;
 							}
-							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:otherwise")){
+							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("otherwise")){
 								builder.append(cDelim).append(cntr).append(cDelim);
 								Condition condition=qry.new Condition();
 								condition.setId(cntr);
@@ -146,7 +146,7 @@ public class ORM_QUERY_Parser {
 								qry.getConditions().add(condition);
 								cntr++;
 							}
-							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("BLOW:if")){
+							if(nod1.getNodeType()==1 && nod1.getNodeName().equals("if")){
 								builder.append(cDelim).append(cntr).append(cDelim);
 								Condition condition=qry.new Condition();
 								condition.setId(cntr);

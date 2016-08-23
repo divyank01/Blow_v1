@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.BlowORM.org/BlowConf ../../BlowORM/src/com/sales/xmls/BlowConf.xsd ">
 
 	<!-- basic configs -->
-	<URL>jdbc:oracle:thin:@localhost:1521:xe</URL>
+	<URL>jdbc:oracle:thin:@192.168.0.7:1521:xe</URL>
 	<PASSWORD>divyank99</PASSWORD>
 	<USER>divyank</USER>
 	<JDBCDriver>oracle.jdbc.driver.OracleDriver</JDBCDriver>
