@@ -61,4 +61,5 @@ public abstract interface ConfigConstants {
 	public static final String PROPERTY="Property";
 	public static final String COL_NAME="colName";
 	public static final String TYPE="type";
+	public static final String CASCADE="cascade";
 }

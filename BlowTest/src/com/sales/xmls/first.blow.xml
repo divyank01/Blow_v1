@@ -17,9 +17,9 @@
 				foreign-key="PROD_ID" foreign-key-ref="true" />
 			<one-2-one name="epd"
 				ref-class="com.sales.pojo.ElectronicProductDetails" foreign-key="PROD_ID"
-				foreign-key-ref="true" />
+				foreign-key-ref="true" cascade="delete"/>
 			<one-2-many ref-class="com.sales.pojo.Stock" name="stocks"
-				foreign-key="PROD_ID" collectionType="list" foreign-key-ref="true" />
+				foreign-key="PROD_ID" collectionType="list" foreign-key-ref="true" cascade="delete"/>
 		</Map>
 	</Mapping>
 
@@ -36,7 +36,7 @@
 			<Property name="productSize" type="String" colName="PROD_SIZE" />
 			<Property name="price" type="int" colName="PRICE" />
 			<Property name="material" type="String" colName="MATERIAL" />
-			<one-2-one name="product" ref-class="com.sales.pojo.Prodcty"
+			<one-2-one name="product" ref-class="com.sales.pojo.Prodcty" cascade="delete"
 				foreign-key="PROD_ID" />
 		</Map>
 	</Mapping>

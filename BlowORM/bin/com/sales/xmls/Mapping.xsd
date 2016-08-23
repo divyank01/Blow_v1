@@ -85,6 +85,16 @@
 		<ns:attribute name="ref-class" type="ns:string" use="required"></ns:attribute>
 		<ns:attribute name="foreign-key" type="ns:string" use="optional"></ns:attribute>
 		<ns:attribute name="foreign-key-ref" type="ns:boolean" use="optional"></ns:attribute>
+		<ns:attribute name="cascade" use="optional">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:enumeration value="save"></ns:enumeration>
+					<ns:enumeration value="delete"></ns:enumeration>
+					<ns:enumeration value="update"></ns:enumeration>
+					<ns:enumeration value="all"></ns:enumeration>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
 	</ns:complexType>
 
 	<ns:complexType name="one-2-many">
@@ -93,8 +103,12 @@
 				this attribute can handle one to many relationship.
 			</ns:documentation>
 		</ns:annotation>
-		<ns:attribute name="ref-class" type="ns:string" use="required"></ns:attribute>
-		<ns:attribute name="foreign-key" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="ref-class" type="ns:string"
+			use="required">
+		</ns:attribute>
+		<ns:attribute name="foreign-key" type="ns:string"
+			use="required">
+		</ns:attribute>
 		<ns:attribute name="collectionType" use="required">
 			<ns:simpleType>
 				<ns:restriction base="ns:string">
@@ -105,6 +119,16 @@
 		</ns:attribute>
 		<ns:attribute name="name" type="ns:string" use="required"></ns:attribute>
 		<ns:attribute name="foreign-key-ref" type="ns:boolean"></ns:attribute>
+		<ns:attribute name="cascade" use="optional">
+			<ns:simpleType>
+				<ns:restriction base="ns:string">
+					<ns:enumeration value="save"></ns:enumeration>
+					<ns:enumeration value="delete"></ns:enumeration>
+					<ns:enumeration value="update"></ns:enumeration>
+					<ns:enumeration value="all"></ns:enumeration>
+				</ns:restriction>
+			</ns:simpleType>
+		</ns:attribute>
 	</ns:complexType>
 
 

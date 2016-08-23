@@ -83,11 +83,11 @@ public class ORM_MAPPINGS_Parser {
 	
 	private DatabaseStateManager stateManager;
 	
-	public static ORM_MAPPINGS_Parser getInstance(){
+	public synchronized static ORM_MAPPINGS_Parser getInstance(){
 		return config;
 	}
 
-	static{
+	static {
 		if(config==null){
 			config=new ORM_MAPPINGS_Parser();
 			try {
@@ -338,6 +338,10 @@ public class ORM_MAPPINGS_Parser {
 				if(nodeMap.getNamedItem(ConfigConstants.FK)==null){
 					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
 				}
+				if(nodeMap.getNamedItem(ConfigConstants.CASCADE)!=null){
+					attr.setCascade(nodeMap.getNamedItem(ConfigConstants.CASCADE).getNodeValue());
+					ormMaps.getCascades().add(propName);
+				}
 				attr.setRelation('O');
 				ormMaps.getAttributeMap().put(nodeMap.getNamedItem(ConfigConstants.NAME).getNodeValue(),attr);
 				ormMaps.getFkAttr().put(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue(), attr);
@@ -356,6 +360,10 @@ public class ORM_MAPPINGS_Parser {
 				attr.setRelation('M');
 				if(nodeMap.getNamedItem(ConfigConstants.FK)==null){
 					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
+				}
+				if(nodeMap.getNamedItem(ConfigConstants.CASCADE)!=null){
+					attr.setCascade(nodeMap.getNamedItem(ConfigConstants.CASCADE).getNodeValue());
+					ormMaps.getCascades().add(propName);
 				}
 				if(nodeMap.getNamedItem(ConfigConstants.FK_REF)!=null){
 					attr.setReferenced(Boolean.valueOf(nodeMap.getNamedItem(ConfigConstants.FK_REF).getNodeValue()));
@@ -558,7 +566,7 @@ public class ORM_MAPPINGS_Parser {
 			private Map<String, String> qMap=new HashMap<String, String>();
 			private Attributes pkAttr;
 			private Map<String, Attributes> fkAttr=new HashMap<String, Attributes>();
-
+			private List<String> cascades=new ArrayList<String>();
 			public boolean haveDependents(){
 				if(!fkAttr.isEmpty())
 					return true;
@@ -616,6 +624,7 @@ public class ORM_MAPPINGS_Parser {
 				private String seqName;
 				private boolean isReferenced;
 				private int length;
+				private String cascade;
 				public String getName() {
 					return name;
 				}
@@ -700,6 +709,12 @@ public class ORM_MAPPINGS_Parser {
 				public void setLength(int length) {
 					this.length = length;
 				}
+				public String getCascade() {
+					return cascade;
+				}
+				public void setCascade(String cascade) {
+					this.cascade = cascade;
+				}
 			}
 			public Attributes getPkAttr() {
 				return pkAttr;
@@ -728,6 +743,14 @@ public class ORM_MAPPINGS_Parser {
 
 			public void setIndex(int index) {
 				this.index = index;
+			}
+
+			public List<String> getCascades() {
+				return cascades;
+			}
+
+			public void setCascades(List<String> cascades) {
+				this.cascades = cascades;
 			}
 
 		}

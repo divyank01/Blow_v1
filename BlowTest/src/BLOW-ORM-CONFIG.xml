@@ -20,7 +20,7 @@
 	<!-- <MAPPINGS file="com/sales/xmls/three.blow.xml"/> -->
 	
 	<!-- config annotation -->
-	<ANNOTATIONS use="true">
+	<ANNOTATIONS use="false">
 		<package-scan>com.sales.pojo</package-scan>
 		<package-scan>com.customer.pojo</package-scan>
 	</ANNOTATIONS>

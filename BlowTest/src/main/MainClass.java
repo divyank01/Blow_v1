@@ -115,11 +115,12 @@ public class MainClass {
 			.retrieveOne();
 			Prodcty p=(Prodcty)o;
 			//p.setId(10230);
-			BlowUtils.getContext().saveOrUpdateEntity(o);
+			//BlowUtils.getContext().saveOrUpdateEntity(o);
 			Map m= new HashMap();
 			m.put("product", o);
+			BlowUtils.getBasis(Prodcty.class).prop(BlowParam.GT, "id", 24).prop(BlowParam.LT, "id", 23).remove(o);
 			//System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
-			System.out.println(new XStream().toXML(o));
+			//System.out.println(new XStream().toXML(o));
 			for(int i=0;i<10;i++){
 				Student s= new Student();
 				//s.setId(i);

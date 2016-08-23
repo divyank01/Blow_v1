@@ -27,6 +27,7 @@ import static com.sales.core.helper.LoggingHelper.log;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,8 +38,10 @@ import java.util.StringTokenizer;
 import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.BlowConstatnts;
 import com.sales.constants.BlowParam;
+import com.sales.constants.BlowParams;
 import com.sales.constants.SQLTypes;
 import com.sales.core.helper.PropParam;
+import com.sales.core.helper.SessionContainer;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attributes;
@@ -742,5 +745,40 @@ public class QueryBuilder {
 			((PropParam)newMap.get(key)).setIndex(((PropParam)oldMap.get(key)).getIndex());
 		}
 	}
+	protected List<String> deleteEntity(ORM_MAPPINGS mappings, Maps map,Map<String, Object> params, SessionContainer container,boolean processParam) throws BlownException {
+		List<String> queries=new ArrayList<String>();
+		if(map.getCascades().isEmpty())
+			delete(map, queries,params,processParam);
+		else{
+			for(String cascade:map.getCascades()){
+				String type=map.getAttributeMap().get(cascade).getClassName();
+				deleteEntity(mappings,mappings.getMapForClass(type),params,container,false);
+				delete(map, queries,params,processParam);
+			}
+		}
+		return queries;
+	}
 	
+	private List<String> delete(Maps map,List<String> queries,Map<String, Object> params,boolean processParam) throws BlownException{
+		StringBuffer sb=new StringBuffer("delete from ");
+		sb.append(map.getSchemaName()+" where ");
+		if(params.isEmpty() || !processParam){
+			sb.append(map.getPkAttr().getColName()+"=?");
+		}else{
+			Iterator<String> itr=params.keySet().iterator();
+			while(itr.hasNext()){
+				PropParam pp=(PropParam)params.get(itr.next());
+				if(map.getAttributeMap().get(pp.getProperty())==null)
+					throw new BlownException("invalid attribute name "+pp.getProperty());
+				sb.append(map.getAttributeMap().get(pp.getProperty()).getColName());
+				processParam(pp, sb);
+				if(itr.hasNext())
+					sb.append(" AND ");
+			}
+		}
+		System.out.println(sb.toString());
+		if(!queries.contains(sb.toString()))
+			queries.add(sb.toString());
+		return queries;
+	}
 }

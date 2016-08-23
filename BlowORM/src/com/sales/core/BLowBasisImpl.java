@@ -47,15 +47,20 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	private ORM_MAPPINGS mappings=null;
 	private ORM_MAPPINGS_Parser parser;
 	private boolean useJoin;
-	private QueryBuilder querryBuilder;
+	private QueryBuilder queryBuilder;
 	private BlowParam blowParam;
 	private SessionContainer container;
+	
+	private static final String retOne="R1";
+	private static final String retMany="R1";
+	private static final String del="R1";
+	private static final String update="R1";
 	
 	protected BLowBasisImpl(T claz,SessionContainer container)throws Exception{
 		t=claz;
 		this.container=container;
 		sql=new StringBuffer();
-		querryBuilder=QueryBuilder.newInstance();
+		queryBuilder=QueryBuilder.newInstance();
 		parser=OrmMappingPool.getInstance().borrowObject();
 		mappings=parser.getOrm_Mappings();		
 		OrmMappingPool.getInstance().returnObject(parser);
@@ -79,13 +84,13 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	@Override
 	public List<T> retrieveMany(U u) throws Exception{
 		List<T> retval=null;
-		String qId=calculateQryId();
+		String qId=calculateQryId(retMany);
 		String querry=null;
 		if(QueryBuilder.getQuerryCache().containsKey(qId)){
 			querry=((CachedQuery)QueryBuilder.getQuerryCache().get(qId)).getCachedQuery();
-			querryBuilder.mapParamIndexes(((CachedQuery)QueryBuilder.getQuerryCache().get(qId)).getCachedParams(), params);
+			queryBuilder.mapParamIndexes(((CachedQuery)QueryBuilder.getQuerryCache().get(qId)).getCachedParams(), params);
 		}else{
-			querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
+			queryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
 			QueryBuilder.getQuerryCache().put(qId, new CachedQuery(params, sql.toString()));
 			querry=sql.toString();
 		}
@@ -98,14 +103,13 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 		T retval=null;
 		if(params.isEmpty())
 			throw new BlownException("parameters not set for retriving one record");
-		String qId=calculateQryId();
+		String qId=calculateQryId(retOne);
 		String querry=null;
 		if(QueryBuilder.getQuerryCache().containsKey(qId)){
-			//System.out.println("found cached query with qId:"+qId);
 			querry=((CachedQuery)QueryBuilder.getQuerryCache().get(qId)).getCachedQuery();
-			querryBuilder.mapParamIndexes(((CachedQuery)QueryBuilder.getQuerryCache().get(qId)).getCachedParams(), params);
+			queryBuilder.mapParamIndexes(((CachedQuery)QueryBuilder.getQuerryCache().get(qId)).getCachedParams(), params);
 		}else{
-			querryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
+			queryBuilder.processParams(mappings, sql, params, (String)t, useJoin,blowParam);
 			QueryBuilder.getQuerryCache().put(qId, new CachedQuery(params, sql.toString()));
 			querry=sql.toString();
 		}	
@@ -151,18 +155,20 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 		return QueryExecutor.getExecutor();
 	}
 	
-	private String calculateQryId(){
+	private String calculateQryId(String func){
 		StringBuilder id=null;
 		if(params!=null){
 			id=new StringBuilder();
 			Iterator<String> itr=params.keySet().iterator();
 			id.append(t+"+");
+			id.append(func+"+");
 			id.append(blowParam!=null?(blowParam.toString()+"+"):"");
 			while(itr.hasNext()){
 				String key=itr.next();
 				id.append(key+"+");
 				id.append(((PropParam)params.get(key)).getParam().toString()+"+");
 			}
+			System.out.println(id);
 			return id.toString();
 		}
 		return null;
@@ -187,6 +193,9 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	@Override
 	public void remove(Object obj) throws Exception {
 		
+		if(obj==null)
+			throw new BlownException("trying to delete null object");
+		queryBuilder.deleteEntity(mappings,mappings.getMapForClass(obj.getClass().getCanonicalName()),params,container,true);
 	}
 
 }
