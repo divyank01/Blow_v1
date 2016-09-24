@@ -381,10 +381,9 @@ public class ORM_MAPPINGS_Parser {
 	}
 
 	/**
-	 * @param None
+	 * 
 	 * @author Divyank
-	 * @throws No Exception
-	 * @return void
+	 * 
 	 */
 	@Deprecated
 	public static final void excute(){
