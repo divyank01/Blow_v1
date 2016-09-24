@@ -600,6 +600,9 @@ public class QueryBuilder {
 	protected String processQuery(Query query,Map input) throws Exception{
 		String sql=query.getContent().trim();
 		for(Condition condition:query.getConditions()){
+			if(input==null){
+				throw new BlownException(EX.M22);
+			}
 			if(condition.getProp()!=null && condition.getProp().contains(".")){
 				StringTokenizer splits=new StringTokenizer(condition.getProp(),".");
 				String tkn=splits.nextToken();
@@ -678,7 +681,7 @@ public class QueryBuilder {
 					}
 			}
 		}catch(Exception e){
-			throw new BlownException(EX.M13);
+			throw new BlownException(EX.M13+condition.getProp()+" and value "+value);
 		}
 		return false;
 	}

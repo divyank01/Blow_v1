@@ -504,10 +504,28 @@ public class BlowCoreMapper {
 				Iterator<String> itr=mappingObject.getProperties().keySet().iterator();
 				while(itr.hasNext()){
 					String s=itr.next().trim();
-					for(Method m:obj.getClass().getMethods()){
+					for(Method m:obj.getClass().getDeclaredMethods()){
 						if(m.getName().equals(BlowConstatnts.SET+BlowCoreUtils._FCFieldName(s))){
-							m.invoke(obj, mapTypes(rs.getObject(mappingObject.getProperties().get(s)),m.getParameterTypes()[0]));
-							break;
+							if(mappingObject.getProperties().get(s) instanceof String){
+								m.invoke(obj, mapTypes(rs.getObject(mappingObject.getProperties().get(s).toString()),m.getParameterTypes()[0]));
+								break;
+							}
+							if(mappingObject.getProperties().get(s) instanceof MappingObject){
+								boolean isAList=m.getParameters()[0].getType().getCanonicalName().equalsIgnoreCase("java.util.List");//should be instance of list
+								List l=null;
+								if(isAList){
+									Method m1=obj.getClass().getDeclaredMethod(BlowConstatnts.GET+BlowCoreUtils._FCFieldName(s), null);
+									l=(List)m1.invoke(obj, null);
+								if(l==null)
+									l=new ArrayList();
+								l.add(_mapPersistanceObject(rs, (MappingObject)mappingObject.getProperties().get(s)));
+								m.invoke(obj, l);
+								}else{
+									Object o=_mapPersistanceObject(rs, (MappingObject)mappingObject.getProperties().get(s));
+									m.invoke(obj, o);
+								}
+								break;
+							}
 						}
 					}
 				}
@@ -527,6 +545,33 @@ public class BlowCoreMapper {
 				return list;
 			else
 				return temp;
+		}else{
+			throw new BlownException();
+		}
+	}
+	
+	private Object _mapPersistanceObject(ResultSet rs,MappingObject mappingObject) throws Exception{
+		if(rs!=null){
+			Object temp=null;	
+			Object obj=Class.forName(mappingObject.getClassName()).newInstance();
+			Iterator<String> itr=mappingObject.getProperties().keySet().iterator();
+			while(itr.hasNext()){
+				String s=itr.next().trim();
+				for(Method m:obj.getClass().getMethods()){
+					if(m.getName().equals(BlowConstatnts.SET+BlowCoreUtils._FCFieldName(s))){
+						if(mappingObject.getProperties().get(s) instanceof String){
+							m.invoke(obj, mapTypes(rs.getObject(mappingObject.getProperties().get(s).toString()),m.getParameterTypes()[0]));
+							break;
+						}
+						if(mappingObject.getProperties().get(s) instanceof MappingObject){
+							temp=_mapPersistanceObject(rs, (MappingObject)mappingObject.getProperties().get(s));
+							m.invoke(obj, temp);
+							break;
+						}
+					}
+				}
+			}
+			return obj;
 		}else{
 			throw new BlownException();
 		}

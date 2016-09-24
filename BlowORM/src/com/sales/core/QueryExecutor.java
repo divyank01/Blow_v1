@@ -49,6 +49,7 @@ import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps.Attribut
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.MappingObject;
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query;
 import com.sales.pools.ConnectionPool;
+import com.sales.pools.ObjectPool;
 import com.sales.processes.QueryProcessor;
 
 /**
@@ -94,7 +95,7 @@ public class QueryExecutor {
 	}
 	
 	protected void executeStatment(String query) throws Exception{
-		Connection con=ConnectionPool.getInstance().borrowObject();
+		Connection con=ObjectPool.getConnection();
 		Statement stmt=null;
 		try{
 			log(query);
@@ -102,13 +103,13 @@ public class QueryExecutor {
 			stmt.execute(query);
 		}finally{
 			stmt.close();
-			ConnectionPool.getInstance().returnObject(con);
+			ObjectPool.submit(con);
 		}
 	}
 	
 	
 	protected boolean batchInsertOrUpdate(Object obj1,ORM_MAPPINGS mappings) throws Exception{
-		Connection con=ConnectionPool.getInstance().borrowObject();
+		Connection con=ObjectPool.getConnection();
 		Map<String, PreparedStatement> m=batchInsertOrUpdate(obj1, mappings, null, con, null, null);
 		Iterator<String> iter=sortForRelations(m, mappings).iterator();
 		while(iter.hasNext()){
@@ -117,7 +118,7 @@ public class QueryExecutor {
 			PreparedStatement stmt=m.get(ps);
 			stmt.close();
 		}
-		ConnectionPool.getInstance().returnObject(con);
+		ObjectPool.submit(con);
 		return false;
 	}
 	
@@ -355,6 +356,8 @@ public class QueryExecutor {
 		ResultSet rs=null;
 		PreparedStatement ps=null;
 		try{
+			if(query.getMappingObject()==null)
+				throw new BlownException(EX.M23+query.getMappingObjName());
 			String sql=query.getContent().trim();
 			querryBuilder=QueryBuilder.newInstance();
 			con=session.getConnection();

@@ -45,7 +45,7 @@ public class BlowPool<T> {
 		this.factory=factory;
 	}
 	
-	public synchronized T borrowObject() throws Exception {
+	protected synchronized T borrowObject() throws Exception {
 		long current = System.currentTimeMillis();
 		Iterator<T> keys=unLocked.keySet().iterator();
 		if(!unLocked.keySet().isEmpty()){
@@ -73,7 +73,7 @@ public class BlowPool<T> {
 		return t;
 	}
 	
-	public synchronized void returnObject(T t) throws Exception {
+	protected synchronized void returnObject(T t) throws Exception {
 		long current = System.currentTimeMillis();
 		if(locked.containsKey(t) && current-locked.get(t)>expire){
 			factory.kill(t);

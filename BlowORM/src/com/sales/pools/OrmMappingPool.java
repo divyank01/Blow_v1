@@ -39,7 +39,7 @@ public class OrmMappingPool extends SimpleObjectPool<ORM_MAPPINGS_Parser, String
 		super(factory);
 	}
 
-	public static OrmMappingPool getInstance(){
+	protected static OrmMappingPool getInstance(){
 		if(pool==null)
 			pool=new OrmMappingPool(new OrmMappingfFactory());
 		return pool;

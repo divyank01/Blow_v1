@@ -39,7 +39,7 @@ public class OrmConfigParserPool extends SimpleObjectPool<ORM_CONFIG_Parser, Str
 		super(factory);
 	}
 	
-	public static OrmConfigParserPool getInstance(){
+	protected static OrmConfigParserPool getInstance(){
 		return pool;
 	}
 	

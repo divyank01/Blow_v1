@@ -60,6 +60,18 @@
 		<property attr="id" column="id" />
 		<property attr="name" column="name" />
 		<property attr="catId" column="cat_id" />
+		<property attr="epd" mapping-object="epd1" />
+		<property attr="stocks" mapping-object="stock1" />
+	</Object>
+	<Object className="com.sales.pojo.ElectronicProductDetails" name="epd1">
+		<property attr="id" column="id" />
+		<property attr="techDetails" column="name" /><!-- 
+		<property attr="catId" column="cat_id" /> -->
+	</Object>
+	<Object className="com.sales.pojo.Stock" name="stock1">
+		<property attr="id" column="id" />
+		<!-- <property attr="name" column="name" />
+		<property attr="catId" column="cat_id" /> -->
 	</Object>
 
 

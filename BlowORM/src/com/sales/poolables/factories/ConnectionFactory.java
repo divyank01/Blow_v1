@@ -29,6 +29,7 @@ import java.sql.SQLException;
 
 import com.sales.poolable.parsers.ORM_CONFIG_Parser;
 import com.sales.pools.BlowFactory;
+import com.sales.pools.ObjectPool;
 import com.sales.pools.OrmConfigParserPool;
 
 public final class ConnectionFactory extends BlowFactory<Connection>{
@@ -38,7 +39,7 @@ public final class ConnectionFactory extends BlowFactory<Connection>{
 	@Override
 	public Connection spawn() throws Exception {
 		Connection con = null;
-		ORM_CONFIG_Parser parser=OrmConfigParserPool.getInstance().borrowObject();
+		ORM_CONFIG_Parser parser=ObjectPool.getConfig();
 		try {
 			Class.forName(parser.getOrm_config().getDriver().trim());
 			con = DriverManager.getConnection(parser.getOrm_config().getUrl(),
@@ -48,7 +49,7 @@ public final class ConnectionFactory extends BlowFactory<Connection>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		OrmConfigParserPool.getInstance().returnObject(parser);
+		ObjectPool.submit(parser);
 		return con;
 	}
 

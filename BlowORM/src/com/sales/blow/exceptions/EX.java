@@ -37,7 +37,7 @@ public interface EX {
 	String M10="invalid querry type";
 	String M11="Mapping not found for class: ";
 	String M12="Either propety not present or not complex type";
-	String M13="invalid attribute value for condition";
+	String M13="invalid attribute value for condition ";
 	String M14="Failed to map list properly";
 	String M15="Not enough information to connect to databse";
 	String M16="failed to initailize Blow  :";
@@ -46,9 +46,9 @@ public interface EX {
 	String M19="Fk required for one-2-many mappings in class ";
 	String M20="Class name is not mapped for mapping objects.";
 	String M21="Cannot pool null value object";
-	/*String M22="Session already closed";
-	String M23="Session already closed";
-	String M24="Session already closed";
+	String M22="Input map is null to retrieve data.";
+	String M23="Unable to find mapping object named : ";
+	/*String M24="Session already closed";
 	String M25="Session already closed";
 	String M26="Session already closed";
 	String M27="Session already closed";

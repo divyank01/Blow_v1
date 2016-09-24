@@ -30,13 +30,14 @@ import java.util.Iterator;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
+import com.sales.pools.ObjectPool;
 import com.sales.pools.OrmMappingPool;
 
 public class BlowGenSrc {
 
 	public static void main(String[] args) {
 		try {
-			ORM_MAPPINGS_Parser parser = OrmMappingPool.getInstance().borrowObject();
+			ORM_MAPPINGS_Parser parser = ObjectPool.getMappings();
 			ORM_MAPPINGS orm_mapping=parser.getOrm_Mappings();
 			ClassFileGenerator c= new ClassFileGenerator();
 			Iterator<String> itr=orm_mapping.getMaps().keySet().iterator();
@@ -57,7 +58,7 @@ public class BlowGenSrc {
 				}
 				System.out.println("src:"+maps.getClassName());
 			}
-			OrmMappingPool.getInstance().returnObject(parser);
+			ObjectPool.submit(parser);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

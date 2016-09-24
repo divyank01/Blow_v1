@@ -33,6 +33,7 @@ import com.sales.blow.exceptions.BlownException;
 import com.sales.blow.exceptions.EX;
 import com.sales.core.helper.SessionContainer;
 import com.sales.pools.ConnectionPool;
+import com.sales.pools.ObjectPool;
 
 /**
  * @author black
@@ -62,7 +63,7 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 		if(this.session!=null && this.session.getConnection()!=null){
 			BlowContextImpl.activeSessions.remove(this.getSessionId());
 			this.session.getConnection().commit();
-			ConnectionPool.getInstance().returnObject(this.session.getConnection());
+			ObjectPool.submit(this.session.getConnection());
 			this.session=null;
 		}
 		else
@@ -104,7 +105,7 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 		this.session=new SessionContainer();
 		try {
 			this.session.setSessionId(Math.round(Math.random()*100000000000L));
-			this.session.setConnection(ConnectionPool.getInstance().borrowObject());
+			this.session.setConnection(ObjectPool.getConnection());
 			BlowContextImpl.activeSessions.put(this.getSessionId(), this.session);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -54,6 +54,7 @@ import com.sales.core.DatabaseStateManager;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.DataBaseInfo.Table.Column;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.pools.ConnectionPool;
+import com.sales.pools.ObjectPool;
 import com.sales.pools.OrmConfigParserPool;
 
 import static com.sales.core.helper.LoggingHelper.log;
@@ -103,7 +104,7 @@ public class ORM_MAPPINGS_Parser {
 	}
 
 	private void loadConfig() throws Exception{					
-		ORM_CONFIG_Parser configParser=OrmConfigParserPool.getInstance().borrowObject();
+		ORM_CONFIG_Parser configParser=ObjectPool.getConfig();
 		ormConfig=configParser.getOrm_config();
 		useAnnotaion=ormConfig.isUseAnnotations();
 		if(useAnnotaion){
@@ -129,7 +130,7 @@ public class ORM_MAPPINGS_Parser {
 			stateManager=DatabaseStateManager.getInstance();
 			stateManager.syncSchema(orm_mapping, dataBaseInfo);
 		}
-		OrmConfigParserPool.getInstance().returnObject(configParser);
+		ObjectPool.submit(configParser);
 	}
 	
 	private String getPackageName(String filename){
@@ -414,7 +415,7 @@ public class ORM_MAPPINGS_Parser {
 		private List<String> sequences=new ArrayList<String>();
 		
 		protected void loadDataBaseInfo(List<String> schemas)throws Exception{
-			Connection con=ConnectionPool.getInstance().borrowObject();
+			Connection con=ObjectPool.getConnection();
 			DatabaseMetaData meta=con.getMetaData();
 			ResultSet _columns=null;
 			ResultSet _seq=null;
@@ -454,7 +455,7 @@ public class ORM_MAPPINGS_Parser {
 			}finally{
 				_seq.close();
 				_columns.close();
-				ConnectionPool.getInstance().returnObject(con);
+				ObjectPool.submit(con);
 			}
 		}
 		

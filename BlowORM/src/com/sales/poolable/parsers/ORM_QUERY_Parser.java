@@ -23,7 +23,6 @@
   */
 package com.sales.poolable.parsers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,17 +30,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.sales.blow.exceptions.BlownException;
 import com.sales.blow.exceptions.EX;
 import com.sales.constants.ConfigConstants;
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query.Condition;
+import com.sales.pools.ObjectPool;
 import com.sales.pools.OrmConfigParserPool;
 
 public class ORM_QUERY_Parser {
@@ -75,13 +73,13 @@ public class ORM_QUERY_Parser {
 	}
 	
 	private void load() throws Exception{
-		ORM_CONFIG_Parser config_Parser=OrmConfigParserPool.getInstance().borrowObject();
+		ORM_CONFIG_Parser config_Parser=ObjectPool.getConfig();
 		List<String> qList = config_Parser.getOrm_config().getQueries();
 		for (int i = 0; i < qList.size(); i++) {
 			_load(qList.get(i));
 		}
 		queries.shuffle();
-		OrmConfigParserPool.getInstance().returnObject(config_Parser);
+		ObjectPool.submit(config_Parser);
 	}
 	
 	
@@ -170,15 +168,24 @@ public class ORM_QUERY_Parser {
 			if(nodes.getNodeName().equalsIgnoreCase(ConfigConstants.Q_OBJECT)){
 				NodeList nList=nodes.getChildNodes();
 				Queries.MappingObject object=queries.new MappingObject();
-				object.setProperties(new HashMap<String, String>());
+				//object.setProperties(new HashMap<String, String>());
 				String classname=nodes.getAttributes().getNamedItem("className").getNodeValue();
 				if(classname.isEmpty())
 					throw new BlownException(EX.M20);
 				object.setClassName(classname);
+				object.setName(nodes.getAttributes().getNamedItem("name").getNodeValue());
 				for(int j=0;j<nList.getLength();j++){
-					if(nList.item(j).getNodeName().equalsIgnoreCase(ConfigConstants.Q_PROP)){						
-						object.getProperties().put(nList.item(j).getAttributes().getNamedItem("attr").getNodeValue(),
-								nList.item(j).getAttributes().getNamedItem("column").getNodeValue());
+					if(nList.item(j).getNodeName().equalsIgnoreCase(ConfigConstants.Q_PROP)){
+						if(nList.item(j).getAttributes().getNamedItem("column")!=null)
+							object.getProperties().put(nList.item(j).getAttributes().getNamedItem("attr").getNodeValue(),
+									nList.item(j).getAttributes().getNamedItem("column").getNodeValue());
+						else{
+							Queries.MappingObject obj=queries.new MappingObject();
+							obj.setName(nList.item(j).getAttributes().getNamedItem("mapping-object").getNodeValue());
+							object.getProperties().put(nList.item(j).getAttributes().getNamedItem("attr").getNodeValue(),
+									obj);
+							
+						}
 					}
 				}
 				queries.getMappingObjects().put(nodes.getAttributes().getNamedItem("name").getNodeValue(), object);
@@ -192,13 +199,14 @@ public class ORM_QUERY_Parser {
 		private Map<String, Query> queries=new HashMap<String, Query>();
 		private Map<String, MappingObject> mappingObjects=new HashMap<String, MappingObject>();
 		public class MappingObject{
-			private Map<String,String> properties=new HashMap<String, String>();
+			private Map<String,Object> properties=new HashMap<String, Object>();
 			private String className;
-			public Map<String, String> getProperties() {
+			private String name;
+			public Map<String, Object> getProperties() {
 				return properties;
 			}
 
-			public void setProperties(Map<String, String> properties) {
+			public void setProperties(Map<String, Object> properties) {
 				this.properties = properties;
 			}
 
@@ -209,6 +217,19 @@ public class ORM_QUERY_Parser {
 			public void setClassName(String className) {
 				this.className = className;
 			}
+
+			public String getName() {
+				return this.name;
+			}
+
+			public void setName(String name) {
+				this.name = name;
+			}
+			
+			public int hashCode(){
+				return className.hashCode()+name.hashCode();
+			}
+			
 			
 		}
 		
@@ -343,6 +364,18 @@ public class ORM_QUERY_Parser {
 				String qName=itr.next();
 				Query qry=queries.get(qName);
 				qry.setMappingObject(parser.queries.getMappingObjects().get(qry.getMappingObjName()));
+				Iterator<String> it=getMappingObjects().keySet().iterator();
+				while(it.hasNext()){
+					MappingObject mObject=getMappingObjects().get(it.next());
+					Iterator<String> inIt=mObject.getProperties().keySet().iterator();
+					while(inIt.hasNext()){
+						String propName=inIt.next(); 
+						Object ob=mObject.getProperties().get(propName);
+						if(ob instanceof MappingObject){
+							mObject.getProperties().put(propName, getMappingObjects().get(((MappingObject)ob).getName()));
+						}
+					}
+				}
 				List<String> inclds= qry.getIncludes();
 				for(int i=0;i<inclds.size();i++){
 					if(qry.getContent()!=null && qry.getContent().indexOf(iDelim)>=0){

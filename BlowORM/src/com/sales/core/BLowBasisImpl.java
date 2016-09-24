@@ -38,6 +38,7 @@ import com.sales.core.helper.PropParam;
 import com.sales.core.helper.SessionContainer;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
+import com.sales.pools.ObjectPool;
 import com.sales.pools.OrmMappingPool;
 
 @SuppressWarnings("unchecked")
@@ -63,9 +64,9 @@ public class BLowBasisImpl<T, U extends SessionContainer> implements Basis<T, U>
 		this.container=container;
 		sql=new StringBuffer();
 		queryBuilder=QueryBuilder.newInstance();
-		parser=OrmMappingPool.getInstance().borrowObject();
+		parser=ObjectPool.getMappings();
 		mappings=parser.getOrm_Mappings();		
-		OrmMappingPool.getInstance().returnObject(parser);
+		ObjectPool.submit(parser);
 		if(mappings.getMaps().get(t)!=null && mappings.getMaps().get(t).haveDependents());
 			useJoin=true;
 	}

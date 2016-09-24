@@ -42,7 +42,7 @@ public class ConnectionPool extends SimpleObjectPool<Connection, String> {
 	}
 
 	@Override
-	public Connection borrowObject() throws Exception{
+	protected Connection borrowObject() throws Exception{
 		Connection con=null;
 		while(true){
 			con=super.borrowObject();
@@ -58,7 +58,7 @@ public class ConnectionPool extends SimpleObjectPool<Connection, String> {
 	}
 
 
-	public static ConnectionPool getInstance(){
+	protected static ConnectionPool getInstance(){
 		return pool;
 	}
 
