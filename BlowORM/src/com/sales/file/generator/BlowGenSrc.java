@@ -55,6 +55,7 @@ public class BlowGenSrc {
 					fw.flush();
 					fw.close();
 				}
+				System.out.println("src:"+maps.getClassName());
 			}
 			OrmMappingPool.getInstance().returnObject(parser);
 		} catch (Exception e) {

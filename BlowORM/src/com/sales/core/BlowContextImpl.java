@@ -23,15 +23,14 @@
   */
 package com.sales.core;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.core.helper.SessionContainer;
 import com.sales.pools.ConnectionPool;
 
@@ -43,15 +42,19 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 	
 	private SessionContainer session=null;
 	
-	private static Map<Long,SessionContainer> activeSessions=new HashMap<Long, SessionContainer>();
+	private static Map<Long,SessionContainer> activeSessions=new ConcurrentHashMap<Long, SessionContainer>();
 	
 	protected BlowContextImpl(){}
 	
 	@Override
 	public Basis<T, T> getBasis(Class<T> clazz) throws Exception{
-		if(session==null)
-			throw new BlownException("Trying to get basis on closed session, open session first");
-		return new BLowBasisImpl<T,T>((T) ((Class)clazz).getCanonicalName(),this.session);
+		try{
+			if(session==null)
+				throw new BlownException(EX.M1);
+			return new BLowBasisImpl((T) ((Class)clazz).getCanonicalName(),this.session);
+		}catch (Exception e) {
+			throw new BlownException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -63,22 +66,22 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 			this.session=null;
 		}
 		else
-			throw new BlownException("Session already closed");
+			throw new BlownException(EX.M2);
 	}
 	
 	@Override
 	public boolean saveOrUpdateEntity(T t)throws Exception {
 			if(session==null)
-				throw new BlownException("Trying to get basis on closed session, open session first");
+				throw new BlownException(EX.M1);
 			if(t instanceof Collection){
 				if(t instanceof List){
 					List entities =(List)t;
 					if(!entities.isEmpty()){
 						return new BLowBasisImpl(entities.get(0).getClass(),this.session).saveEntity(t);
 					}else
-						throw new BlownException("Unable to save collection: collection size "+entities.size());
+						throw new BlownException(EX.M3+entities.size());
 				}else
-					throw new BlownException("Unable to save collection. Collection type: "+t.getClass());
+					throw new BlownException(EX.M4+t.getClass());
 			}else{
 				return new BLowBasisImpl(t.getClass(),this.session).saveEntity(t);
 			}
@@ -87,7 +90,7 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 	@Override
 	public Object getSQLResult(String id, Map input) throws BlownException {
 		if(session==null)
-			throw new BlownException("Trying to get basis on closed session, open session first");
+			throw new BlownException(EX.M1);
 		try {
 			return StoredQueryHandler.getHandler().getObjectFromSQL(id, input,this.session);
 		} catch (Exception e) {
@@ -110,15 +113,31 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 	@Override
 	public void rollback() throws BlownException,SQLException {
 		if(session==null)
-			throw new BlownException("Trying to get basis on closed session, open session first");
+			throw new BlownException(EX.M1);
 		this.session.getConnection().rollback();
 		this.session.getConnection().commit();
 	}
+	
+	@Override
+	public void rollback(long sessionId) throws BlownException,SQLException {
+		SessionContainer ses=activeSessions.get(sessionId);
+		if(ses==null)
+			throw new BlownException(EX.M1);
+		ses.getConnection().rollback();
+		ses.getConnection().commit();
+	}
+	
 	@Override
 	public long getSessionId() throws BlownException {
 		if(session==null)
-			throw new BlownException("Trying to get basis on closed session, open session first");
+			throw new BlownException(EX.M1);
 		return this.session.getSessionId();
+	}
+
+	@Override
+	public void delete(T t) throws Exception{
+		getBasis((Class<T>)t.getClass()).remove(t);;
+		
 	}	
 
 }

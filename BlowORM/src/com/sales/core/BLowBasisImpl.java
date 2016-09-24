@@ -24,12 +24,14 @@
 package com.sales.core;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.constants.BlowParam;
 import com.sales.core.helper.CachedQuery;
 import com.sales.core.helper.PropParam;
@@ -39,7 +41,7 @@ import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
 import com.sales.pools.OrmMappingPool;
 
 @SuppressWarnings("unchecked")
-public class BLowBasisImpl<T, U> implements Basis<T, U> {
+public class BLowBasisImpl<T, U extends SessionContainer> implements Basis<T, U> {
 
 	private T t;
 	private StringBuffer sql;
@@ -52,11 +54,11 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	private SessionContainer container;
 	
 	private static final String retOne="R1";
-	private static final String retMany="R1";
-	private static final String del="R1";
-	private static final String update="R1";
+	private static final String retMany="RM";
+	private static final String del="D";
+	private static final String update="U";
 	
-	protected BLowBasisImpl(T claz,SessionContainer container)throws Exception{
+	protected BLowBasisImpl(T claz,U container)throws Exception{
 		t=claz;
 		this.container=container;
 		sql=new StringBuffer();
@@ -70,7 +72,7 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 
 	@Override
 	public void commitCharge() throws Exception{
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -102,7 +104,7 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	public T retrieveOne() throws Exception{
 		T retval=null;
 		if(params.isEmpty())
-			throw new BlownException("parameters not set for retriving one record");
+			throw new BlownException(EX.M5);
 		String qId=calculateQryId(retOne);
 		String querry=null;
 		if(QueryBuilder.getQuerryCache().containsKey(qId)){
@@ -146,7 +148,7 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	@Override
 	public Basis<T, U> fetchMode(BlowParam param) throws BlownException {
 		if(!(param.equals(BlowParam.EAGER)||param.equals(BlowParam.LAZY)))
-			throw new BlownException("Invalid fetch mode : Valid modes are LAZY or EAGER");
+			throw new BlownException(EX.M6);
 		blowParam=param;
 		return this;
 	}
@@ -168,7 +170,6 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 				id.append(key+"+");
 				id.append(((PropParam)params.get(key)).getParam().toString()+"+");
 			}
-			System.out.println(id);
 			return id.toString();
 		}
 		return null;
@@ -194,8 +195,11 @@ public class BLowBasisImpl<T, U> implements Basis<T, U> {
 	public void remove(Object obj) throws Exception {
 		
 		if(obj==null)
-			throw new BlownException("trying to delete null object");
-		queryBuilder.deleteEntity(mappings,mappings.getMapForClass(obj.getClass().getCanonicalName()),params,container,true);
+			throw new BlownException(EX.M7);
+		List<String> queries=new ArrayList<String>();
+		queryBuilder.deleteEntity(mappings,mappings.getMapForClass(obj.getClass().getCanonicalName()),params,queries,container,true);
+		for(String s:queries){
+			System.out.println(s);
+		}
 	}
-
 }

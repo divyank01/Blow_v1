@@ -1,2 +1,2 @@
-java -cp .:/home/divyank/workspace9/Blow_testv2/src/BLOW-ORM-CONFIG.xml:/home/divyank/Desktop/Blow-core.jar:/home/divyank/Desktop/ojdbc14.jar com.sales.file.generator.BlowGenSrc /home/divyank/divyank/
+java -cp .:/home/divyank/workspace9/Blow_testv2/src/BLOW-ORM-CONFIG.xml:/home/divyank/Desktop/Blow-core.jar com.sales.file.generator.BlowGenSrc /home/divyank/divyank/
 # java -cp .:path_to_BLOW-ORM-CONFIG.xml:path_to_ojdbc14.jar:path_to_Blow-core.jar com.sales.file.generator.BlowGenSrc package_location

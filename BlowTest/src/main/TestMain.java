@@ -1,5 +1,6 @@
 package main;
 
+import com.sale.util.BlowUtils;
 import com.sales.core.BlowCore;
 import com.thoughtworks.xstream.XStream;
 
@@ -19,8 +20,10 @@ public class TestMain {
 		try {
 			//Class.forName(ORM_QUERY_Parser.class.getCanonicalName());
 			//System.out.println(new XStream().toXML(ORM_QUERY_Parser.getInstance()));
+			BlowUtils.getContext().openSession();
 			System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getAllProducts", null)));
 			System.out.println(new XStream().toXML(BlowCore.getInstance().getContext().getSQLResult("getProducts", null)));
+			BlowUtils.getContext().closeSession();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

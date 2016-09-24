@@ -39,6 +39,7 @@ import java.util.Map;
 
 import com.sales.blow.comparator.DependencyMapComparator;
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.constants.BlowConstatnts;
 import com.sales.constants.BlowParam;
 import com.sales.core.helper.SessionContainer;
@@ -96,6 +97,7 @@ public class QueryExecutor {
 		Connection con=ConnectionPool.getInstance().borrowObject();
 		Statement stmt=null;
 		try{
+			log(query);
 			stmt=con.createStatement();
 			stmt.execute(query);
 		}finally{
@@ -226,7 +228,7 @@ public class QueryExecutor {
 				}
 			}
 		}catch(Exception ex){
-			log("rolling back current session, session_id:"+container.getSessionId());
+			log(EX.M9+container.getSessionId());
 			container.getConnection().rollback();
 			throw new BlownException(ex);
 		}finally{
@@ -261,29 +263,33 @@ public class QueryExecutor {
 			con=session.getConnection();
 			log(sql.toString());
 			//System.out.println(sql.toString());
-			session.getQueries().put(sql, session.getSessionId());
-			ps=con.prepareStatement(sql.toString());
-			ps=QueryProcessor.processQuery(ps, params);
-			rs=ps.executeQuery();
-			int counter=0;
-			while(rs.next()){
-				if(counter>0 && retval!=null){
-					retval=coreMapper.processObjectForCordinality(retval, mappings, rs,params);
-				}if(retval==null)
-					retval=extractResltSet(rs,true,null,blowParam,mappings,t);
-				else
-					retval=extractResltSet(rs,false,retval,blowParam,mappings,t);
-				counter++;
-			}
-			if(counter>1){
-				rs.close();
-				//throw new BlownException("multiple records found");
+			if(con!=null){
+				session.getQueries().put(sql, session.getSessionId());
+				ps=con.prepareStatement(sql.toString());
+				ps=QueryProcessor.processQuery(ps, params);
+				rs=ps.executeQuery();
+				int counter=0;
+				while(rs.next()){
+					if(counter>0 && retval!=null){
+						retval=coreMapper.processObjectForCordinality(retval, mappings, rs,params);
+					}if(retval==null)
+						retval=extractResltSet(rs,true,null,blowParam,mappings,t);
+					else
+						retval=extractResltSet(rs,false,retval,blowParam,mappings,t);
+					counter++;
+				}
+				if(counter>1){
+					rs.close();
+					//throw new BlownException("multiple records found");
+				}
 			}
 		}catch(Exception ex){
-			session.getConnection().rollback();
+			if(session.getConnection()!=null)
+				session.getConnection().rollback();
 			throw new BlownException(ex);
 		}finally{
-			ps.close();
+			if(ps!=null)
+				ps.close();
 			if(rs!=null)
 				rs.close();
 		}

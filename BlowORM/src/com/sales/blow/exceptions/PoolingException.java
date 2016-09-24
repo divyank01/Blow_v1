@@ -21,44 +21,22 @@
   *  I appreciate any suggestions to improve it.
   *  @mailto: divyank01@gmail.com
   */
-package com.sales.core.helper;
+package com.sales.blow.exceptions;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+public class PoolingException extends Exception {
+	public PoolingException() {
+		super();
+	}
 
-public class SessionContainer{
-	
-	private long sessionId;
-	private Connection connection;
-	private Map<String, Object> queries=new HashMap<String, Object>();
-	
-	public long getSessionId() {
-		return sessionId;
+	public PoolingException(String message, Throwable cause) {
+		super(message, cause);
 	}
-	public void setSessionId(long sessionId) {
-		this.sessionId = sessionId;
+
+	public PoolingException(String message) {
+		super(message);
 	}
-	public Connection getConnection() {
-		return connection;
+
+	public PoolingException(Throwable cause) {
+		super(cause);
 	}
-	public void setConnection(Connection connection) {
-		this.connection = connection;
-	}
-	public Map<String, Object> getQueries() {
-		return queries;
-	}
-	public void setQueries(Map<String, Object> queries) {
-		this.queries = queries;
-	}
-	
-	public void rollback(){
-		try {
-			this.connection.rollback();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
 }

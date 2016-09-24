@@ -26,6 +26,7 @@ package com.sales.core;
 import java.util.Map;
 
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.core.helper.SessionContainer;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser;
 import com.sales.poolable.parsers.ORM_QUERY_Parser;
@@ -51,7 +52,7 @@ public class StoredQueryHandler {
 			if(q!=null){
 				return executor.runSql(q, input,session);
 			}else
-				throw new BlownException("Query id not found in the mappings");
+				throw new BlownException(EX.M8);
 		}catch(Exception e){
 			e.printStackTrace();
 			throw new BlownException(e.getLocalizedMessage());

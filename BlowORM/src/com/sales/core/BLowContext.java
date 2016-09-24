@@ -26,6 +26,8 @@ package com.sales.core;
 import java.sql.SQLException;
 import java.util.Map;
 
+import com.sales.blow.exceptions.BlownException;
+
 
 public interface BLowContext<T> {
 
@@ -35,6 +37,8 @@ public interface BLowContext<T> {
 	public void rollback()throws Exception;
 	public boolean saveOrUpdateEntity(T t)throws Exception;
 	public Object getSQLResult(String id,Map map)throws Exception;
+	public void delete(T t)throws Exception;
 	public long getSessionId()throws Exception;
+	void rollback(long sessionId) throws Exception;
 	
 }

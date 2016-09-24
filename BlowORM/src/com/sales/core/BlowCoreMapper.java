@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.constants.BlowConstatnts;
 import com.sales.constants.BlowParam;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS;
@@ -400,7 +401,7 @@ public class BlowCoreMapper {
 			}
 			i++;
 		}
-		throw new BlownException("Failed to map list properly");
+		throw new BlownException(EX.M14);
 	}
 	
 	

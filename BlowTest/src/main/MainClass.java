@@ -16,6 +16,7 @@ import com.customer.pojo.Customer;
 import com.sale.util.BlowUtils;
 import com.sales.constants.BlowParam;
 import com.sales.constants.SQLTypes;
+import com.sales.core.BLowBasisImpl;
 import com.sales.core.BlowContextImpl;
 import com.sales.core.BlowCore;
 import com.sales.pojo.ElectronicProductDetails;
@@ -36,7 +37,7 @@ public class MainClass {
 		try {
 			Date d=new Date();
 			long l=d.getTime();
-			
+			//System.out.close();
 			/*BlowUtils.getContext().openSession();
 			Object p=(Object) BlowUtils
 					.getBasis(Prodcty.class)
@@ -107,29 +108,32 @@ public class MainClass {
 			//System.out.println(new XStream().toXML(p3));
 			System.out.println(new XStream().toXML(p4));*/
 
-
+			
 			BlowUtils.getContext().openSession();
 			Object o=BlowUtils
 			.getBasis(Prodcty.class)
-			.propEquals("id",1008)
+			.propEquals("id",26)
 			.retrieveOne();
 			Prodcty p=(Prodcty)o;
-			p.setId(10230);
+			//p.setId(10230);
 			//BlowUtils.getContext().saveOrUpdateEntity(o);
 			Map m= new HashMap();
 			m.put("product", o);
-			BlowUtils.getBasis(Prodcty.class).prop(BlowParam.GT, "id", 24).prop(BlowParam.LT, "id", 23).remove(o);
+			BlowUtils.getBasis(Prodcty.class).prop(BlowParam.GT, "id", 24).prop(BlowParam.LT, "name", 23).remove(o);
+			
 			System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
-			//System.out.println(new XStream().toXML(o));
-			for(int i=0;i<10;i++){
-				Student s= new Student();
+			BlowUtils.getContext().delete(o);
+			System.out.println(new XStream().toXML(o));
+			for(int i=0;i<1;i++){
+				/*Student s= new Student();
 				//s.setId(i);
 				s.setFirstName("fhg"+i);
 				s.setLastName("ghdhh"+i);
-				s.setAge(i);
+				s.setAge(i);*/
+				//BlowUtils.getContext().getSQLResult("getProducts", m);
 				//System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
 				//BlowUtils.getContext().saveOrUpdateEntity(s);
-			}
+			
 			//BlowUtils.getContext().rollback();
 			Prodcty p3=new Prodcty();
 			List list = new ArrayList();
@@ -206,8 +210,11 @@ public class MainClass {
 			((Prodcty)p4).getEpd().setMaterial("COTTON");
 			((Prodcty)p4).getEpd().setPrice(1230);
 			((Prodcty)p4).getEpd().setProductSize("M");
-			list.add(p4);
-			//}
+			//list.add(p4);
+			//BlowUtils.getContext().saveOrUpdateEntity(p4);
+			System.out.println(new XStream().toXML(p4));
+			}
+			
 			//BlowUtils.getContext().saveOrUpdateEntity(list);
 			System.out.println(new Date().getTime()-l);
 			//BlowUtils.getContext().saveOrUpdateEntity(p4);

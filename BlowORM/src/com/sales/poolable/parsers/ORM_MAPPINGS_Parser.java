@@ -24,7 +24,6 @@
 package com.sales.poolable.parsers;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -48,15 +47,16 @@ import com.sales.blow.annotations.BlowSchema;
 import com.sales.blow.annotations.One2Many;
 import com.sales.blow.annotations.One2One;
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.blow.exceptions.MappingsException;
 import com.sales.constants.ConfigConstants;
 import com.sales.core.DatabaseStateManager;
-import com.sales.file.generator.ClassFileGenerator;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.DataBaseInfo.Table.Column;
 import com.sales.poolable.parsers.ORM_MAPPINGS_Parser.ORM_MAPPINGS.Maps;
 import com.sales.pools.ConnectionPool;
 import com.sales.pools.OrmConfigParserPool;
 
+import static com.sales.core.helper.LoggingHelper.log;
 /**
  * 
  * @author Divyank Sharma
@@ -88,13 +88,14 @@ public class ORM_MAPPINGS_Parser {
 	}
 
 	static {
+		log("Loading BLOW-ORM");
 		if(config==null){
 			config=new ORM_MAPPINGS_Parser();
 			try {
 				config.loadConfig();
 			} catch (Exception e) {
 				e.printStackTrace();
-				BlownException ex=new BlownException("failed to initailize Blow  :"+e.getMessage());
+				BlownException ex=new BlownException(EX.M16+e.getMessage());
 				ex.setStackTrace(e.getStackTrace());
 				ex.printStackTrace();
 			}
@@ -164,7 +165,7 @@ public class ORM_MAPPINGS_Parser {
 		if(clzz.getSuperclass()!=null)
 			doMapFieldsForAnnotations(clzz.getSuperclass(),orm_maps);
 		if(orm_maps.getPkAttr()==null)
-			throw new MappingsException("PK Required for "+orm_maps.className);
+			throw new MappingsException(EX.M17+orm_maps.className);
 
 		orm_maps.setIndex(mappingIndex);
 		orm_mapping.getMaps().put(orm_maps.getClassName(), orm_maps);
@@ -211,7 +212,7 @@ public class ORM_MAPPINGS_Parser {
 				attr.setClassName(field.getType().getCanonicalName());
 				attr.setSupplimentryClass(orm_maps.getClassName());
 				if(one2OneProp.fk()==null){
-					throw new MappingsException("Fk required for one-2-one mappings in class "+orm_maps.className);
+					throw new MappingsException(EX.M18+orm_maps.className);
 				}
 				attr.setReferenced(one2OneProp.isReferenced());
 				orm_maps.getAttributeMap().put(propName,attr);
@@ -232,7 +233,7 @@ public class ORM_MAPPINGS_Parser {
 				attr.setSupplimentryClass(orm_maps.getClassName());
 				attr.setRelation('M');
 				if(one2Many.fk()==null){
-					throw new MappingsException("Fk required for one-2-one mappings in class "+orm_maps.className);
+					throw new MappingsException(EX.M19+orm_maps.className);
 				}
 
 				orm_maps.getAttributeMap().put(propName,attr);
@@ -336,7 +337,7 @@ public class ORM_MAPPINGS_Parser {
 				attr.setClassName(nodeMap.getNamedItem(ConfigConstants.REF_CLASS).getNodeValue());
 				attr.setSupplimentryClass(ormMaps.getClassName());
 				if(nodeMap.getNamedItem(ConfigConstants.FK)==null){
-					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
+					throw new MappingsException(EX.M18+ormMaps.className);
 				}
 				if(nodeMap.getNamedItem(ConfigConstants.CASCADE)!=null){
 					attr.setCascade(nodeMap.getNamedItem(ConfigConstants.CASCADE).getNodeValue());
@@ -359,7 +360,7 @@ public class ORM_MAPPINGS_Parser {
 				attr.setSupplimentryClass(ormMaps.getClassName());
 				attr.setRelation('M');
 				if(nodeMap.getNamedItem(ConfigConstants.FK)==null){
-					throw new MappingsException("Fk required for one-2-one mappings in class "+ormMaps.className);
+					throw new MappingsException(EX.M19+ormMaps.className);
 				}
 				if(nodeMap.getNamedItem(ConfigConstants.CASCADE)!=null){
 					attr.setCascade(nodeMap.getNamedItem(ConfigConstants.CASCADE).getNodeValue());
@@ -376,7 +377,7 @@ public class ORM_MAPPINGS_Parser {
 			}
 		}
 		if(!isPkSet)
-			throw new MappingsException("PK Required for "+ormMaps.className);
+			throw new MappingsException(EX.M17+ormMaps.className);
 	}
 
 	/**

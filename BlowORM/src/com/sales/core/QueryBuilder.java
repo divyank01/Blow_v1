@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.constants.BlowConstatnts;
 import com.sales.constants.BlowParam;
 import com.sales.constants.BlowParams;
@@ -233,7 +234,7 @@ public class QueryBuilder {
 			retval= getUpdateQuerry(obj, mappings,1);
 			break;
 		default:
-			throw new BlownException("invalid querry type");
+			throw new BlownException(EX.M10);
 		}
 		return retval;
 	}
@@ -243,7 +244,7 @@ public class QueryBuilder {
 		String sql=null;
 		if(obj instanceof List){
 			List items=(List)obj;
-			Object dummy=items.get(0);
+			//Object dummy=items.get(0);
 			sql=getQuerry(obj, mappings, 1);
 			stmt=con.prepareStatement(sql);
 			for(Object ob:items){
@@ -315,7 +316,7 @@ public class QueryBuilder {
 		sql.append(BlowConstatnts.SELECT);
 		StringBuilder build=new StringBuilder();
 		if(mappings.getMaps().get(t)==null){
-			throw new BlownException("Mapping not found for class: "+t);
+			throw new BlownException(EX.M11+t);
 		}
 		if(blowParam!=null && blowParam.equals(BlowParam.LAZY))
 			makeMapForAlieses(mappings.getMaps().get(t).getqMap(),build,true,mappings,t,null);
@@ -361,7 +362,7 @@ public class QueryBuilder {
 									processParam(propParam, sql);
 								}
 							}else{
-								throw new BlownException("Either propety not present or not complex type");
+								throw new BlownException(EX.M12);
 							}
 						}
 					}else{
@@ -499,7 +500,7 @@ public class QueryBuilder {
 							makeMapForAlieses(dependentMap.getqMap(),build,true,mappings,dependentMap.getClassName(),t);
 					}
 				}else
-					throw new BlownException("Mappings not found for referred class :"+str);
+					throw new BlownException(EX.M11+str);
 			}
 		}
 		return build;
@@ -677,7 +678,7 @@ public class QueryBuilder {
 					}
 			}
 		}catch(Exception e){
-			throw new BlownException("invalid attribute value for condition");
+			throw new BlownException(EX.M13);
 		}
 		return false;
 	}
@@ -745,21 +746,20 @@ public class QueryBuilder {
 			((PropParam)newMap.get(key)).setIndex(((PropParam)oldMap.get(key)).getIndex());
 		}
 	}
-	protected List<String> deleteEntity(ORM_MAPPINGS mappings, Maps map,Map<String, Object> params, SessionContainer container,boolean processParam) throws BlownException {
-		List<String> queries=new ArrayList<String>();
+	protected void deleteEntity(ORM_MAPPINGS mappings, Maps map,Map<String, Object> params,List<String> queries, SessionContainer container,boolean processParam) throws BlownException {
 		if(map.getCascades().isEmpty())
 			delete(map, queries,params,processParam);
 		else{
 			for(String cascade:map.getCascades()){
 				String type=map.getAttributeMap().get(cascade).getClassName();
-				deleteEntity(mappings,mappings.getMapForClass(type),params,container,false);
+				deleteEntity(mappings,mappings.getMapForClass(type),params,queries,container,false);
 				delete(map, queries,params,processParam);
 			}
 		}
-		return queries;
+		//return queries;
 	}
 	
-	private List<String> delete(Maps map,List<String> queries,Map<String, Object> params,boolean processParam) throws BlownException{
+	private void delete(Maps map,List<String> queries,Map<String, Object> params,boolean processParam) throws BlownException{
 		StringBuffer sb=new StringBuffer("delete from ");
 		sb.append(map.getSchemaName()+" where ");
 		if(params.isEmpty() || !processParam){
@@ -776,9 +776,8 @@ public class QueryBuilder {
 					sb.append(" AND ");
 			}
 		}
-		System.out.println(sb.toString());
 		if(!queries.contains(sb.toString()))
 			queries.add(sb.toString());
-		return queries;
+		//return queries;
 	}
 }

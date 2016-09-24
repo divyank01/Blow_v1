@@ -34,6 +34,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.constants.ConfigConstants;
 
 
@@ -131,7 +132,7 @@ public final class ORM_CONFIG_Parser {
 			}
 		}
 		if(userName==null||pwd==null||url==null||driver==null){
-			throw new BlownException("Not enough information to connect to databse");
+			throw new BlownException(EX.M15);
 		}
 		orm_config=new ORM_CONFIG(userName, pwd, url,useAnnotations,packagesToScan,mappings,schemas,queries);
 		orm_config.setGenSchema(genSchema);

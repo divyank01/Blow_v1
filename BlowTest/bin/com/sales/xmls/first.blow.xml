@@ -10,7 +10,7 @@
 				primary-key="true" length="5" generated="true" seq="product_seq" />
 			<Property name="name" type="String" colName="name"
 				length="50" />
-			<Property name="catId" type="long" colName="cat_id" />
+			<Property name="catId" type="long" colName="cat_id" length="5"/>
 			<one-2-one name="details" ref-class="com.sales.pojo.ProductDetails"
 				foreign-key="PROD_ID" foreign-key-ref="true" />
 			<one-2-one name="stock" ref-class="com.sales.pojo.Stock"
@@ -27,15 +27,15 @@
 		<Class>com.sales.pojo.ProductDetails</Class>
 		<RDBSchema>product_details</RDBSchema>
 		<Map>
-			<Property name="id" type="int" colName="id"
+			<Property name="id" type="int" colName="id" length="5"
 				primary-key="true" generated="true" seq="PD_SEQ" />
-			<!-- <Property name="prodId" type="int" colName="PROD_ID"/> -->
+			<!-- <Property name="prodId" type="int" length="5" colName="PROD_ID"/> -->
 			<Property name="brand" type="String" colName="BRAND"
 				length="100" />
-			<Property name="color" type="String" colName="COLOR" />
-			<Property name="productSize" type="String" colName="PROD_SIZE" />
-			<Property name="price" type="int" colName="PRICE" />
-			<Property name="material" type="String" colName="MATERIAL" />
+			<Property name="color" type="String" colName="COLOR" length="50"/>
+			<Property name="productSize" type="String" colName="PROD_SIZE" length="50"/>
+			<Property name="price" type="int" colName="PRICE" length="10"/>
+			<Property name="material" type="String" colName="MATERIAL" length="50"/>
 			<one-2-one name="product" ref-class="com.sales.pojo.Prodcty" cascade="delete"
 				foreign-key="PROD_ID" />
 		</Map>
@@ -45,14 +45,14 @@
 		<RDBSchema>ELECTRONIC_PRODUCT_DETAILS</RDBSchema>
 		<Map>
 			<Property name="id" type="int" colName="id"
-				primary-key="true" generated="true" seq="EPD_SEQ" />
-			<Property name="description" type="String" colName="ELE_DESCRIPTION" />
-			<Property name="techDetails" type="String" colName="TECH_DETAILS" />
-			<!-- <Property name="prodId" type="int" colName="PROD_ID"/> -->
-			<Property name="brand" type="String" colName="BRAND" />
-			<Property name="color" type="String" colName="COLOR" />
-			<Property name="price" type="int" colName="PRICE" />
-			<Property name="material" type="String" colName="MATERIAL" />
+				primary-key="true" generated="true" seq="EPD_SEQ" length="5"/>
+			<Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/>
+			<Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/>
+			<!-- <Property name="prodId" type="int" colName="PROD_ID" length="5"/> -->
+			<Property name="brand" type="String" colName="BRAND" length="50"/>
+			<Property name="color" type="String" colName="COLOR" length="50"/>
+			<Property name="price" type="int" colName="PRICE" length="10"/>
+			<Property name="material" type="String" colName="MATERIAL" length="50"/>
 			<one-2-one name="product" ref-class="com.sales.pojo.Prodcty"
 				foreign-key="PROD_ID" />
 		</Map>
@@ -60,17 +60,17 @@
 
 	<Mapping>
 		<Class>com.sales.pojos.ElectronicProductDetails</Class>
-		<RDBSchema>ELECTRONIC_PRODUCT_DETAILS</RDBSchema>
+		<RDBSchema>ELECTRONIC_PRODUCT_DETAILS_NEW</RDBSchema>
 		<Map>
 			<Property name="id" type="int" colName="id"
-				primary-key="true" generated="true" seq="EPD_SEQ_NEW" />
-			<Property name="description" type="String" colName="ELE_DESCRIPTION" />
-			<Property name="techDetails" type="String" colName="TECH_DETAILS" />
-			<!-- <Property name="prodId" type="int" colName="PROD_ID"/> -->
-			<Property name="brand" type="String" colName="BRAND" />
-			<Property name="color" type="String" colName="COLOR" />
-			<Property name="price" type="int" colName="PRICE" />
-			<Property name="material" type="String" colName="MATERIAL" />
+				primary-key="true" generated="true" seq="EPD_SEQ_NEW" length="5"/>
+			<Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/>
+			<Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/>
+			<!-- <Property name="prodId" type="int" colName="PROD_ID" length="5"/> -->
+			<Property name="brand" type="String" colName="BRAND" length="50"/>
+			<Property name="color" type="String" colName="COLOR" length="50"/>
+			<Property name="price" type="int" colName="PRICE" length="10"/>
+			<Property name="material" type="String" colName="MATERIAL" length="50"/>
 			<one-2-one name="product" ref-class="com.sales.pojo.Prodcty"
 				foreign-key="ID" />
 		</Map>

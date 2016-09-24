@@ -24,6 +24,7 @@
 package com.sales.blow.logging;
 
 import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 public class LoggingFormatter extends Formatter {
@@ -35,6 +36,11 @@ public class LoggingFormatter extends Formatter {
         sb.append(record.getMessage()).append('\n');
         record=null;
         return sb.toString();
+	}
+	
+	@Override
+	public String getHead(Handler h) {
+		return super.getHead(h);
 	}
 
 }

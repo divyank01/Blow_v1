@@ -39,6 +39,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.sales.blow.exceptions.BlownException;
+import com.sales.blow.exceptions.EX;
 import com.sales.constants.ConfigConstants;
 import com.sales.poolable.parsers.ORM_QUERY_Parser.Queries.Query.Condition;
 import com.sales.pools.OrmConfigParserPool;
@@ -172,7 +173,7 @@ public class ORM_QUERY_Parser {
 				object.setProperties(new HashMap<String, String>());
 				String classname=nodes.getAttributes().getNamedItem("className").getNodeValue();
 				if(classname.isEmpty())
-					throw new BlownException("Class name is not mapped for mapping objects.");
+					throw new BlownException(EX.M20);
 				object.setClassName(classname);
 				for(int j=0;j<nList.getLength();j++){
 					if(nList.item(j).getNodeName().equalsIgnoreCase(ConfigConstants.Q_PROP)){						

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <JDBCConnection xmlns="http://www.BlowORM.org/BlowConf"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.BlowORM.org/BlowConf ../../BlowORM/src/com/sales/xmls/BlowConf.xsd ">
+	xsi:schemaLocation="http://www.BlowORM.org/BlowConf ../../BlowORM/src/com/sales/xmls/BlowConf.xsd">
 
 	<!-- basic configs -->
-	<URL>jdbc:oracle:thin:@192.168.0.7:1521:xe</URL>
+	<URL>jdbc:oracle:thin:@localhost:1521:xe</URL>
 	<PASSWORD>divyank99</PASSWORD>
 	<USER>divyank</USER>
-	<JDBCDriver>oracle.jdbc.driver.OracleDriver</JDBCDriver>
+	<!-- Oracle10g driver class -->
+	<!-- <JDBCDriver>oracle.jdbc.driver.OracleDriver</JDBCDriver> -->
+	
+	<!-- Oracle11g driver class -->
+	<JDBCDriver>oracle.jdbc.OracleDriver</JDBCDriver>
 	
 	<QUERIES>
 		<Query file="com/sales/xmls/some.blow.query.xml"/>
@@ -28,6 +32,6 @@
 	<!-- multiple schema can be mentioned for loading tables separated by comma -->
 	<Schema>DIVYANK</Schema>
 	<!-- generate schema -->
-	<GenerateSchema>true</GenerateSchema>
+	<GenerateSchema>false</GenerateSchema>
 	<SqlLogging>true</SqlLogging>
 </JDBCConnection>

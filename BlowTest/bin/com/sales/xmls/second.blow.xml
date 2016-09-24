@@ -4,7 +4,7 @@
     <Class>com.sales.pojo.Stock</Class>
     <RDBSchema>STOCK</RDBSchema>
     <Map>
-    	<Property name="id" type="int" colName="id" primary-key="true" generated="true" seq="STOCK_SEQ"/>
+    	<Property name="id" type="int" colName="id" primary-key="true" generated="true" seq="STOCK_SEQ" length="5"/>
     	<!-- <Property name="productId" type="int" colName="prod_id" length="6"/> -->
     	<Property name="liveStockCount" type="double" colName="live_stock" length="5"/>
     	<Property name="locId" type="int" colName="loc_id" length="5"/>

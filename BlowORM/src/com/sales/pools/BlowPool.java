@@ -27,6 +27,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.sales.blow.exceptions.EX;
+import com.sales.blow.exceptions.PoolingException;
 import com.sales.poolable.parsers.ORM_CONFIG_Parser;
 
 public class BlowPool<T> {
@@ -63,7 +65,10 @@ public class BlowPool<T> {
 			}
 		}
 		T t=factory.spawn();
-		locked.put(t, current);
+		if(t!=null)
+			locked.put(t, current);
+		else
+			throw new PoolingException(EX.M21);
 		//printPools(2);
 		return t;
 	}
