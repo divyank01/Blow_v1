@@ -1,13 +1,1 @@
-com.sales.blow.annotations
-com.sales.blow.comparator
-com.sales.blow.exceptions
-com.sales.blow.logging
-com.sales.constants
-com.sales.core
-com.sales.core.helper
-com.sales.file.generator
 com.sales.poolable.parsers
-com.sales.poolables.factories
-com.sales.pools
-com.sales.processes
-com.sales.utils
