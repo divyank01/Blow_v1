@@ -61,11 +61,13 @@
 <h3>
 <a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
 
-<p>First create a configuration xml file named as  BLOW-ORM-CONFIG.xml with following content.
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-</p>
+<p>First create a configuration xml file named as  BLOW-ORM-CONFIG.xml with following content.</p>
 
-<pre><code>&lt;!-- basic configs --&gt;
+<pre><code>&lt;JDBCConnection xmlns="http://www.BlowORM.org/BlowConf"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.BlowORM.org/BlowConf ../../BlowORM/src/com/sales/xmls/BlowConf.xsd"&gt;
+
+&lt;!-- basic configs --&gt;
 &lt;URL&gt;jdbc:oracle:thin:@localhost:1521:xe&lt;/URL&gt;
 &lt;PASSWORD&gt;pwd&lt;/PASSWORD&gt;
 &lt;USER&gt;username&lt;/USER&gt;
@@ -96,29 +98,37 @@
 &lt;!-- generate schema --&gt;
 &lt;GenerateSchema&gt;false&lt;/GenerateSchema&gt;
 &lt;SqlLogging&gt;true&lt;/SqlLogging&gt;
+&lt;/JDBCConnection&gt;
 </code></pre>
-
-<p></p>
 
 <p>After this we need to create mappings for pojos to be mapped with database tables this can be done
 by two means either you can annotate the pojos or can create xml mappings with following content</p>
 
-<p>
-    
-        com.sales.pojo.Product
-        product
-        
-            
-            
-            
-            
-            
-            
-            
-        
-    </p>
+<pre><code>&lt;Mappings xmlns="http://www.blow.org/Mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.blow.org/Mapping ../../../../../BlowORM/src/com/sales/xmls/Mapping.xsd"&gt;
+&lt;Mapping&gt;
+    &lt;Class&gt;com.sales.pojo.Product&lt;/Class&gt;
+    &lt;RDBSchema&gt;product&lt;/RDBSchema&gt;
+    &lt;Map&gt;
+        &lt;Property name="id" type="int" colName="id"
+            primary-key="true" length="5" generated="true" seq="product_seq" /&gt;
+        &lt;Property name="name" type="String" colName="name"
+            length="50" /&gt;
+        &lt;Property name="catId" type="long" colName="cat_id" length="5"/&gt;
+        &lt;one-2-one name="details" ref-class="com.sales.pojo.ProductDetails"
+            foreign-key="PROD_ID" foreign-key-ref="true" /&gt;
+        &lt;one-2-one name="stock" ref-class="com.sales.pojo.Stock"
+            foreign-key="PROD_ID" foreign-key-ref="true" /&gt;
+        &lt;one-2-one name="epd"
+            ref-class="com.sales.pojo.ElectronicProductDetails" foreign-key="PROD_ID"
+            foreign-key-ref="true" cascade="delete"/&gt;
+        &lt;one-2-many ref-class="com.sales.pojo.Stock" name="stocks"
+            foreign-key="PROD_ID" collectionType="list" foreign-key-ref="true" cascade="delete"/&gt;
+    &lt;/Map&gt;
+&lt;/Mapping&gt;
 
-<pre><code>&lt;Mapping&gt;
+&lt;Mapping&gt;
     &lt;Class&gt;com.sales.pojo.ProductDetails&lt;/Class&gt;
     &lt;RDBSchema&gt;product_details&lt;/RDBSchema&gt;
     &lt;Map&gt;
@@ -170,84 +180,77 @@ by two means either you can annotate the pojos or can create xml mappings with f
             foreign-key="ID" /&gt;
     &lt;/Map&gt;
 &lt;/Mapping&gt;
+&lt;/Mappings&gt;
 </code></pre>
 
-<p></p>
+<p>for the same Pojo for class Product</p>
 
-<p>for the same Pojo for class Product
-package com.sales.pojo;</p>
-
-<p>import java.util.List;</p>
-
-<p>import com.sales.blow.annotations.BlowId;
+<pre><code>import com.sales.blow.annotations.BlowId;
 import com.sales.blow.annotations.BlowProperty;
 import com.sales.blow.annotations.BlowSchema;
 import com.sales.blow.annotations.One2Many;
-import com.sales.blow.annotations.One2One;</p>
-
-<p>@BlowSchema(schemaName="PRODUCT")
-public class Prodcty {</p>
-
-<pre><code>@BlowId(generated=true,seq="product_seq")
-@BlowProperty(columnName="ID")
-public int id;
-@BlowProperty(columnName="NAME",length=50)
-private String name;
-@BlowProperty(columnName="CAT_ID")
-private long catId;
-@One2One(fk="PROD_ID",isReferenced=true)
-private ProductDetails details;
-@One2One(fk="PROD_ID",isReferenced=true)
-private ElectronicProductDetails epd;
-@One2One(fk="PROD_ID",isReferenced=true)
-private Stock stock;
-@One2Many(collectionType="java.util.List",fk="PROD_ID",type="com.sales.pojo.Stock")
-private List&lt;Stock&gt; stocks;
-public int getId() {
+import com.sales.blow.annotations.One2One;
+@BlowSchema(schemaName="PRODUCT")
+public class Prodcty {  
+    @BlowId(generated=true,seq="product_seq")
+    @BlowProperty(columnName="ID")
+    public int id;
+    @BlowProperty(columnName="NAME",length=50)
+    private String name;
+    @BlowProperty(columnName="CAT_ID")
+    private long catId;
+    @One2One(fk="PROD_ID",isReferenced=true)
+    private ProductDetails details;
+    @One2One(fk="PROD_ID",isReferenced=true)
+    private ElectronicProductDetails epd;
+    @One2One(fk="PROD_ID",isReferenced=true)
+    private Stock stock;
+    @One2Many(collectionType="java.util.List",fk="PROD_ID",type="com.sales.pojo.Stock")
+    private List&lt;Stock&gt; stocks;
+    public int getId() {
     return id;
-}
-public void setId(int id) {
+    }
+    public void setId(int id) {
     this.id = id;
-}
-public String getName() {
+    }
+    public String getName() {
     return name;
-}
-public void setName(String name) {
+    }
+    public void setName(String name) {
     this.name = name;
-}
-public long getCatId() {
+    }
+    public long getCatId() {
     return catId;
-}
-public void setCatId(long price) {
+    }
+    public void setCatId(long price) {
     this.catId = price;
-}
-public ProductDetails getDetails() {
-    return details;
-}
-public void setDetails(ProductDetails details) {
+    }
+    public ProductDetails getDetails() {
+        return details;
+    }
+    public void setDetails(ProductDetails details) {
     this.details = details;
-}
-public ElectronicProductDetails getEpd() {
+    }
+    public ElectronicProductDetails getEpd() {
     return epd;
-}
-public void setEpd(ElectronicProductDetails epd) {
+    }
+    public void setEpd(ElectronicProductDetails epd) {
     this.epd = epd;
-}
-public Stock getStock() {
+    }
+    public Stock getStock() {
     return stock;
-}
-public void setStock(Stock stock) {
+    }
+    public void setStock(Stock stock) {
     this.stock = stock;
-}
-public List&lt;Stock&gt; getStocks() {
+    }
+    public List&lt;Stock&gt; getStocks() {
     return stocks;
-}
-public void setStocks(List&lt;Stock&gt; stocks) {
+    }
+    public void setStocks(List&lt;Stock&gt; stocks) {
     this.stocks = stocks;
+    }
 }
 </code></pre>
-
-<p>}</p>
 
 <h3>
 <a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h3>
