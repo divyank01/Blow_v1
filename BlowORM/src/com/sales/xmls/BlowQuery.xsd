@@ -76,7 +76,7 @@
 
 	<ns:complexType name="Property" mixed="true">
 		<ns:attribute name="attr" type="ns:string" use="required"></ns:attribute>
-		<ns:attribute name="column" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="column" type="ns:string" use="optional"></ns:attribute>
 		<ns:attribute name="mapping-object" type="ns:string"></ns:attribute>
 	</ns:complexType>
 

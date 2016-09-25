@@ -39,7 +39,7 @@ import com.sales.pools.ObjectPool;
  * @author black
  *
  */
-public final class BlowContextImpl<T> implements BLowContext<T>{
+public final class BlowContextImpl<T> implements BlowContext<T>{
 	
 	private SessionContainer session=null;
 	
@@ -52,7 +52,7 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 		try{
 			if(session==null)
 				throw new BlownException(EX.M1);
-			return new BLowBasisImpl((T) ((Class)clazz).getCanonicalName(),this.session);
+			return new BlowBasisImpl((T) ((Class)clazz).getCanonicalName(),this.session);
 		}catch (Exception e) {
 			throw new BlownException(e.getMessage());
 		}
@@ -78,13 +78,13 @@ public final class BlowContextImpl<T> implements BLowContext<T>{
 				if(t instanceof List){
 					List entities =(List)t;
 					if(!entities.isEmpty()){
-						return new BLowBasisImpl(entities.get(0).getClass(),this.session).saveEntity(t);
+						return new BlowBasisImpl(entities.get(0).getClass(),this.session).saveEntity(t);
 					}else
 						throw new BlownException(EX.M3+entities.size());
 				}else
 					throw new BlownException(EX.M4+t.getClass());
 			}else{
-				return new BLowBasisImpl(t.getClass(),this.session).saveEntity(t);
+				return new BlowBasisImpl(t.getClass(),this.session).saveEntity(t);
 			}
 	}
 	

@@ -42,7 +42,7 @@ import com.sales.pools.ObjectPool;
 import com.sales.pools.OrmMappingPool;
 
 @SuppressWarnings("unchecked")
-public class BLowBasisImpl<T, U extends SessionContainer> implements Basis<T, U> {
+public class BlowBasisImpl<T, U extends SessionContainer> implements Basis<T, U> {
 
 	private T t;
 	private StringBuffer sql;
@@ -59,7 +59,7 @@ public class BLowBasisImpl<T, U extends SessionContainer> implements Basis<T, U>
 	private static final String del="D";
 	private static final String update="U";
 	
-	protected BLowBasisImpl(T claz,U container)throws Exception{
+	protected BlowBasisImpl(T claz,U container)throws Exception{
 		t=claz;
 		this.container=container;
 		sql=new StringBuffer();

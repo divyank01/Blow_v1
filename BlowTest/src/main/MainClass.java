@@ -16,7 +16,7 @@ import com.customer.pojo.Customer;
 import com.sale.util.BlowUtils;
 import com.sales.constants.BlowParam;
 import com.sales.constants.SQLTypes;
-import com.sales.core.BLowBasisImpl;
+import com.sales.core.BlowBasisImpl;
 import com.sales.core.BlowContextImpl;
 import com.sales.core.BlowCore;
 import com.sales.pojo.ElectronicProductDetails;

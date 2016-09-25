@@ -29,7 +29,7 @@ import java.util.Map;
 import com.sales.blow.exceptions.BlownException;
 
 
-public interface BLowContext<T> {
+public interface BlowContext<T> {
 
 	public Basis<T, T> getBasis(Class<T> clazz)throws Exception;
 	public void closeSession()throws Exception;

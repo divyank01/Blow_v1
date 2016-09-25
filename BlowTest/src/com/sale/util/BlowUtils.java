@@ -1,12 +1,12 @@
 package com.sale.util;
 
-import com.sales.core.BLowContext;
+import com.sales.core.BlowContext;
 import com.sales.core.Basis;
 import com.sales.core.BlowCore;
 
 public class BlowUtils {
 
-	private static BLowContext context;
+	private static BlowContext context;
 	static{
 		context=BlowCore.getInstance().getContext();
 	}
@@ -20,7 +20,7 @@ public class BlowUtils {
 			return null;
 		}
 	}
-	public static BLowContext getContext(){
+	public static BlowContext getContext(){
 		return context;
 	}
 	

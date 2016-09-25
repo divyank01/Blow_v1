@@ -27,7 +27,7 @@ public final class BlowCore<T> {
 
 	private static BlowCore core;
 	
-	private BLowContext context=null;
+	private BlowContext context=null;
 	
 	static{
 		if(core==null){
@@ -42,7 +42,7 @@ public final class BlowCore<T> {
 	
 	private BlowCore(){}
 
-	public BLowContext<T> getContext() {
+	public BlowContext<T> getContext() {
 		return context;
 	}
 }
