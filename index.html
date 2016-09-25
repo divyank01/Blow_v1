@@ -1,44 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Blow v1 by divyank01</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-dark.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
     <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <title>Blow v1 by divyank01</title>
   </head>
+
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/divyank01/Blow_v1">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/divyank01/Blow_v1/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/divyank01/Blow_v1/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+    <div id="container">
+      <div class="inner">
 
-    <div class="wrapper">
-
-      <section>
-        <div id="title">
+        <header>
           <h1>Blow v1</h1>
-          <p>It&#39;s a JAVA based ORM.</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/divyank01">divyank01</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
+          <h2>It&#39;s a JAVA based ORM.</h2>
+        </header>
 
-        <h1>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/divyank01/Blow_v1/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/divyank01/Blow_v1/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/divyank01/Blow_v1" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
 <a id="blow" class="anchor" href="#blow" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Blow</h1>
 
 <h2>
@@ -66,16 +59,207 @@
 <a id="usages" class="anchor" href="#usages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usages</h2>
 
 <h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>First create a configuration xml file named as  BLOW-ORM-CONFIG.xml with following content.
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+</p>
+
+<pre><code>&lt;!-- basic configs --&gt;
+&lt;URL&gt;jdbc:oracle:thin:@localhost:1521:xe&lt;/URL&gt;
+&lt;PASSWORD&gt;pwd&lt;/PASSWORD&gt;
+&lt;USER&gt;username&lt;/USER&gt;
+&lt;!-- Oracle10g driver class --&gt;
+&lt;!-- &lt;JDBCDriver&gt;oracle.jdbc.driver.OracleDriver&lt;/JDBCDriver&gt; --&gt;
+
+&lt;!-- Oracle11g driver class --&gt;
+&lt;JDBCDriver&gt;oracle.jdbc.OracleDriver&lt;/JDBCDriver&gt;
+
+&lt;QUERIES&gt;
+    &lt;Query file="com/sales/xmls/some.blow.query.xml"/&gt;
+    &lt;Query file="com/sales/xmls/some.blow.query.xml"/&gt;
+&lt;/QUERIES&gt;
+
+&lt;!-- mappings --&gt;
+&lt;MAPPINGS file="com/sales/xmls/first.blow.xml" /&gt;
+&lt;MAPPINGS file="com/sales/xmls/second.blow.xml" /&gt;
+&lt;!-- &lt;MAPPINGS file="com/sales/xmls/three.blow.xml"/&gt; --&gt;
+
+&lt;!-- config annotation --&gt;
+&lt;ANNOTATIONS use="false"&gt;
+    &lt;package-scan&gt;com.sales.pojo&lt;/package-scan&gt;
+    &lt;package-scan&gt;com.customer.pojo&lt;/package-scan&gt;
+&lt;/ANNOTATIONS&gt;
+
+&lt;!-- multiple schema can be mentioned for loading tables separated by comma --&gt;
+&lt;Schema&gt;DIVYANK&lt;/Schema&gt;
+&lt;!-- generate schema --&gt;
+&lt;GenerateSchema&gt;false&lt;/GenerateSchema&gt;
+&lt;SqlLogging&gt;true&lt;/SqlLogging&gt;
+</code></pre>
+
+<p></p>
+
+<p>After this we need to create mappings for pojos to be mapped with database tables this can be done
+by two means either you can annotate the pojos or can create xml mappings with following content</p>
+
+<p>
+    
+        com.sales.pojo.Product
+        product
+        
+            
+            
+            
+            
+            
+            
+            
+        
+    </p>
+
+<pre><code>&lt;Mapping&gt;
+    &lt;Class&gt;com.sales.pojo.ProductDetails&lt;/Class&gt;
+    &lt;RDBSchema&gt;product_details&lt;/RDBSchema&gt;
+    &lt;Map&gt;
+        &lt;Property name="id" type="int" colName="id" length="5"
+            primary-key="true" generated="true" seq="PD_SEQ" /&gt;
+        &lt;!-- &lt;Property name="prodId" type="int" length="5" colName="PROD_ID"/&gt; --&gt;
+        &lt;Property name="brand" type="String" colName="BRAND"
+            length="100" /&gt;
+        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
+        &lt;Property name="productSize" type="String" colName="PROD_SIZE" length="50"/&gt;
+        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
+        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
+        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product" cascade="delete"
+            foreign-key="PROD_ID" /&gt;
+    &lt;/Map&gt;
+&lt;/Mapping&gt;
+&lt;Mapping&gt;
+    &lt;Class&gt;com.sales.pojo.ElectronicProductDetails&lt;/Class&gt;
+    &lt;RDBSchema&gt;ELECTRONIC_PRODUCT_DETAILS&lt;/RDBSchema&gt;
+    &lt;Map&gt;
+        &lt;Property name="id" type="int" colName="id"
+            primary-key="true" generated="true" seq="EPD_SEQ" length="5"/&gt;
+        &lt;Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/&gt;
+        &lt;Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/&gt;
+        &lt;!-- &lt;Property name="prodId" type="int" colName="PROD_ID" length="5"/&gt; --&gt;
+        &lt;Property name="brand" type="String" colName="BRAND" length="50"/&gt;
+        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
+        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
+        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
+        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product"
+            foreign-key="PROD_ID" /&gt;
+    &lt;/Map&gt;
+&lt;/Mapping&gt;
+
+&lt;Mapping&gt;
+    &lt;Class&gt;com.sales.pojos.ElectronicProductDetails&lt;/Class&gt;
+    &lt;RDBSchema&gt;ELECTRONIC_PRODUCT_DETAILS_NEW&lt;/RDBSchema&gt;
+    &lt;Map&gt;
+        &lt;Property name="id" type="int" colName="id"
+            primary-key="true" generated="true" seq="EPD_SEQ_NEW" length="5"/&gt;
+        &lt;Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/&gt;
+        &lt;Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/&gt;
+        &lt;!-- &lt;Property name="prodId" type="int" colName="PROD_ID" length="5"/&gt; --&gt;
+        &lt;Property name="brand" type="String" colName="BRAND" length="50"/&gt;
+        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
+        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
+        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
+        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product"
+            foreign-key="ID" /&gt;
+    &lt;/Map&gt;
+&lt;/Mapping&gt;
+</code></pre>
+
+<p></p>
+
+<p>for the same Pojo for class Product
+package com.sales.pojo;</p>
+
+<p>import java.util.List;</p>
+
+<p>import com.sales.blow.annotations.BlowId;
+import com.sales.blow.annotations.BlowProperty;
+import com.sales.blow.annotations.BlowSchema;
+import com.sales.blow.annotations.One2Many;
+import com.sales.blow.annotations.One2One;</p>
+
+<p>@BlowSchema(schemaName="PRODUCT")
+public class Prodcty {</p>
+
+<pre><code>@BlowId(generated=true,seq="product_seq")
+@BlowProperty(columnName="ID")
+public int id;
+@BlowProperty(columnName="NAME",length=50)
+private String name;
+@BlowProperty(columnName="CAT_ID")
+private long catId;
+@One2One(fk="PROD_ID",isReferenced=true)
+private ProductDetails details;
+@One2One(fk="PROD_ID",isReferenced=true)
+private ElectronicProductDetails epd;
+@One2One(fk="PROD_ID",isReferenced=true)
+private Stock stock;
+@One2Many(collectionType="java.util.List",fk="PROD_ID",type="com.sales.pojo.Stock")
+private List&lt;Stock&gt; stocks;
+public int getId() {
+    return id;
+}
+public void setId(int id) {
+    this.id = id;
+}
+public String getName() {
+    return name;
+}
+public void setName(String name) {
+    this.name = name;
+}
+public long getCatId() {
+    return catId;
+}
+public void setCatId(long price) {
+    this.catId = price;
+}
+public ProductDetails getDetails() {
+    return details;
+}
+public void setDetails(ProductDetails details) {
+    this.details = details;
+}
+public ElectronicProductDetails getEpd() {
+    return epd;
+}
+public void setEpd(ElectronicProductDetails epd) {
+    this.epd = epd;
+}
+public Stock getStock() {
+    return stock;
+}
+public void setStock(Stock stock) {
+    this.stock = stock;
+}
+public List&lt;Stock&gt; getStocks() {
+    return stocks;
+}
+public void setStocks(List&lt;Stock&gt; stocks) {
+    this.stocks = stocks;
+}
+</code></pre>
+
+<p>}</p>
+
+<h3>
 <a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h3>
 
 <p>Get context from core</p>
 
-<pre><code>    `BlowContext context=BlowCore.getInstance().getContext();`
+<pre><code>    BlowContext context=BlowCore.getInstance().getContext();
 </code></pre>
 
 <p>For fetching data from data base you will need basis as in on what basis you wants to fetch data</p>
 
-<pre><code>            `Product prod=context.BlowUtils.getBasis(Product.class).propEquals("id",26).retrieveOne();`
+<pre><code>            Product prod=context.BlowUtils.getBasis(Product.class).propEquals("id",26).retrieveOne();
 </code></pre>
 
 <p>Although above line is self explanatory we need basis on a class and then put property values to
@@ -84,17 +268,22 @@ get one or many records.</p>
 <p>For deleting a record, it can be done in one of two ways as in you have the object which you want
 to delete or you can set on what basis the record should be deleted.</p>
 
-<pre><code>            `context.delete(prod);`
+<pre><code>             context.delete(prod);
 </code></pre>
 
 <h3>
 <a id="note" class="anchor" href="#note" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Note</h3>
 
 <p>Currently tested for Oracle and will expand for other databases soon.</p>
-      </section>
+        </section>
 
+        <footer>
+          Blow v1 is maintained by <a href="https://github.com/divyank01">divyank01</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
   </body>
 </html>
