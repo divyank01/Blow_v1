@@ -1,209 +1,373 @@
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<!-- Note there is no responsive meta tag here -->
+
+<link rel="icon" href="../../favicon.ico">
+
+<title>Non-responsive Template for Bootstrap</title>
+
+<!-- Bootstrap core CSS -->
+<link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<link href="stylesheets//ie10-viewport-bug-workaround.css"
+	rel="stylesheet">
+<link href="stylesheets/sticky-footer-navbar.css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<!-- <link href="stylesheets/non-responsive.css" rel="stylesheet"> -->
+
+<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+<script src="javascripts/ie-emulation-modes-warning.js"></script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+<script type="text/javascript">
+	function doYourThing() {
+		document.getElementById("main").style.display = "none";
+		document.getElementById("docs").style.display = "block";
+	}
+	function undo() {
+		document.getElementById("main").style.display = "block";
+		document.getElementById("docs").style.display = "none";
+	}
+</script>
+</head>
 
-    <title>Blow v1 by divyank01</title>
-  </head>
+<body>
 
-  <body>
-    <header>
-      <div class="inner">
-        <h1>Blow v1</h1>
-        <h2>It&#39;s a JAVA based ORM.</h2>
-        <a href="https://github.com/divyank01/Blow_v1" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+	<!-- Fixed navbar -->
+	<nav class="navbar navbar-default" style="max-height: 40px;">
+		<div class="container ">
+			<div class="navbar-header">
+				<!-- The mobile navbar-toggle button can be safely removed since you do not need it in a non-responsive implementation -->
+				<a class="navbar-brand" href="index.html">Blow</a>
+			</div>
+			<!-- Note that the .navbar-collapse and .collapse classes have been removed from the #navbar -->
+			<div id="navbar">
+				<ul class="nav navbar-nav">
+					<li><a href="#" onclick="undo();">Home</a></li>
+					<li><a href="#about">About</a></li>
+					<li><a href="#contact">Contact</a></li>
+					<li class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown" role="button" aria-haspopup="true"
+						aria-expanded="false">Download <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a
+								href="https://github.com/divyank01/Blow_v1/zipball/master">zip</a></li>
+							<li><a
+								href="https://github.com/divyank01/Blow_v1/tarball/master">tar.gz</a></li>
+							<li role="separator" class="divider"></li>
+							<li class="dropdown-header">View</li>
+							<li><a href="#" onclick="doYourThing();">Javadocs</a></li>
+							<!-- <li><a href="#">One more separated link</a></li> -->
+						</ul></li>
+				</ul>
+				<!-- <form class="navbar-form navbar-left">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="Search">
+					</div>
+					<button type="submit" class="btn btn-default">Submit</button>
+				</form> -->
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="https://github.com/divyank01/Blow_v1"
+						style="padding: 0;"><img alt="" src="images/github_logo.png"
+							style="height: 40px; margin-right: 50px; margin-top: 10px;"></a></li>
+				</ul>
+			</div>
+			<!--/.nav-collapse -->
+		</div>
+	</nav>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>
-<a id="blow" class="anchor" href="#blow" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Blow</h1>
+	<div class="container" id="main">
+		<div class="page-header">
+			<h1>BLOW-ORM</h1>
+			<p class="lead">Java based ORM designed for simplicity of use.</p>
+		</div>
 
-<h2>
-<a id="a-java-based-orm" class="anchor" href="#a-java-based-orm" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A JAVA based ORM</h2>
+		<h3>Features</h3>
+		<p>Some of the important features of the ORM are are mentioned
+			below:
+		<ul>
+			<li>Generates efficient queries.</li>
+			<li>Understands relationships between classes.</li>
+			<li>Supports both annotation based as well as xml based
+				mappings.</li>
+			<li>Given the XML mappings can generate POJOs.</li>
+			<li>Fetch data based on relationship and can be modified.</li>
+			<li>Generate queries for basic insert update delete and select
+				operations.</li>
+			<li>No dependency on any other external library.</li>
+			<li>Provides query logging.</li>
+			<li>Able to sync in database structure with mapping.</li>
+			<li>Pooling heavy objects for faster run times.</li>
+			<li>Able to run queries saved in XMLs with logical operations.</li>
+			<li>Partial query caching.</li>
+		</ul>
+		</p>
 
-<p>Blow is a java based orm, which is designed keeping in mind the simplicity of use for the end users.</p>
+		<!-- <h3>Regarding navbars</h3>
+		<p>As a heads up, the navbar component is rather tricky here in
+			that the styles for displaying it are rather specific and detailed.
+			Overrides to ensure desktop styles display are not as performant or
+			sleek as one would like. Just be aware there may be potential gotchas
+			as you build on top of this example when using the navbar.</p>
 
-<h2>
-<a id="some-features" class="anchor" href="#some-features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Some Features:</h2>
+		<h3>Browsers, scrolling, and fixed elements</h3>
+		<p>
+			Non-responsive layouts highlight a key drawback to fixed elements. <strong
+				class="text-danger">Any fixed component, such as a fixed
+				navbar, will not be scrollable when the viewport becomes narrower
+				than the page content.</strong> In other words, given the non-responsive
+			container width of 970px and a viewport of 800px, you'll potentially
+			hide 170px of content.
+		</p> -->
+		<p>There is no way around this as it's default browser behavior.
+			The only solution is a responsive layout or using a non-fixed
+			element.</p>
 
-<ul>
-<li>Able to find out relations between classes.</li>
-<li>Fetch data based on relationship and can be modified.</li>
-<li>Able to generate queries for basic insert update delete and select operations.</li>
-<li>Supports annotation based as well as XML based mappings.</li>
-<li>No dependency on any other external library.</li>
-<li>Able to sync in database structure.</li>
-<li>Able to generate POJOs based on XML mappings.</li>
-<li>Pooling heavy objects for faster run times.</li>
-<li>Able to run queries saved in XMLs with logical operations.</li>
-<li>Partial query pooling.</li>
-</ul>
+		<h3>Configuration</h3>
+		<p>Configuration of ORM is simple and verbose in order to
+			configure first create a configuration xml file named as
+			BLOW-ORM-CONFIG.xml and place it in the classpath BLOW will look up
+			this file in classpath only it can not be placed anywhere else
+			currently.</p>
+		<p>A sample configuration file is posted below.</p>
 
-<h2>
-<a id="usages" class="anchor" href="#usages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usages</h2>
 
-<h3>
-<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h3>
-
-<p>First create a configuration xml file named as  BLOW-ORM-CONFIG.xml with following content.</p>
-
-<pre><code>&lt;JDBCConnection xmlns="http://www.BlowORM.org/BlowConf"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.BlowORM.org/BlowConf ../../BlowORM/src/com/sales/xmls/BlowConf.xsd"&gt;
-
-&lt;!-- basic configs --&gt;
-&lt;URL&gt;jdbc:oracle:thin:@localhost:1521:xe&lt;/URL&gt;
-&lt;PASSWORD&gt;pwd&lt;/PASSWORD&gt;
-&lt;USER&gt;username&lt;/USER&gt;
-&lt;!-- Oracle10g driver class --&gt;
-&lt;!-- &lt;JDBCDriver&gt;oracle.jdbc.driver.OracleDriver&lt;/JDBCDriver&gt; --&gt;
-
-&lt;!-- Oracle11g driver class --&gt;
-&lt;JDBCDriver&gt;oracle.jdbc.OracleDriver&lt;/JDBCDriver&gt;
-
-&lt;QUERIES&gt;
-    &lt;Query file="com/sales/xmls/some.blow.query.xml"/&gt;
-    &lt;Query file="com/sales/xmls/some.blow.query.xml"/&gt;
-&lt;/QUERIES&gt;
-
-&lt;!-- mappings --&gt;
-&lt;MAPPINGS file="com/sales/xmls/first.blow.xml" /&gt;
-&lt;MAPPINGS file="com/sales/xmls/second.blow.xml" /&gt;
-&lt;!-- &lt;MAPPINGS file="com/sales/xmls/three.blow.xml"/&gt; --&gt;
-
-&lt;!-- config annotation --&gt;
-&lt;ANNOTATIONS use="false"&gt;
-    &lt;package-scan&gt;com.sales.pojo&lt;/package-scan&gt;
-    &lt;package-scan&gt;com.customer.pojo&lt;/package-scan&gt;
-&lt;/ANNOTATIONS&gt;
-
-&lt;!-- multiple schema can be mentioned for loading tables separated by comma --&gt;
-&lt;Schema&gt;DIVYANK&lt;/Schema&gt;
-&lt;!-- generate schema --&gt;
-&lt;GenerateSchema&gt;false&lt;/GenerateSchema&gt;
-&lt;SqlLogging&gt;true&lt;/SqlLogging&gt;
+		<pre>
+			<code>
+&lt;JDBCConnection 
+	xmlns="http://www.BlowORM.org/BlowConf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.BlowORM.org/BlowConf ../../BlowORM/src/com/sales/xmls/BlowConf.xsd"&gt;
+	
+	&lt;!-- basic configs --&gt;
+	&lt;URL&gt;jdbc:oracle:thin:@localhost:1521:xe&lt;/URL&gt;
+	&lt;PASSWORD&gt;pwd&lt;/PASSWORD&gt;
+	&lt;USER&gt;username&lt;/USER&gt;
+	
+	&lt;!-- Oracle10g driver class --&gt;
+	&lt;!-- &lt;JDBCDriver&gt;oracle.jdbc.driver.OracleDriver&lt;/JDBCDriver&gt; --&gt;
+	
+	&lt;!-- Oracle11g driver class --&gt;
+	&lt;JDBCDriver&gt;oracle.jdbc.OracleDriver&lt;/JDBCDriver&gt;
+	
+	&lt;QUERIES&gt;
+	    &lt;Query file="com/sales/xmls/some.blow.query.xml"/&gt;
+	    &lt;Query file="com/sales/xmls/some.blow.query.xml"/&gt;
+	&lt;/QUERIES&gt;
+	
+	&lt;!-- mappings --&gt;
+	&lt;MAPPINGS file="com/sales/xmls/first.blow.xml" /&gt;
+	&lt;MAPPINGS file="com/sales/xmls/second.blow.xml" /&gt;
+	&lt;!-- &lt;MAPPINGS file="com/sales/xmls/three.blow.xml"/&gt; --&gt;
+	
+	&lt;!-- config annotation --&gt;
+	&lt;ANNOTATIONS use="false"&gt;
+	    &lt;package-scan&gt;com.sales.pojo&lt;/package-scan&gt;
+	    &lt;package-scan&gt;com.customer.pojo&lt;/package-scan&gt;
+	&lt;/ANNOTATIONS&gt;
+	
+	&lt;!-- multiple schema can be mentioned for loading tables separated by comma --&gt;
+	&lt;Schema&gt;DIVYANK&lt;/Schema&gt;
+	
+	&lt;!-- generate schema --&gt;
+	&lt;GenerateSchema&gt;false&lt;/GenerateSchema&gt;
+	
+	&lt;SqlLogging&gt;true&lt;/SqlLogging&gt;
 &lt;/JDBCConnection&gt;
-</code></pre>
+</code>
+		</pre>
+		<p>
+			<strong>JDBCConnection:</strong>Its the root element for
+			configuration file and contains details to make JDBC connections and
+		</p>
+		<p>
+			<strong >URL:</strong>Connection url for the
+			database
+		</p>
+		<p>
+			<strong>PASSWORD:</strong>login credentials
+		</p>
+		<p>
+			<strong>USER:</strong>login credentials.
+		</p>
+		<p>
+			<strong>JDBCDriver:</strong>Represents the jdbc
+			driver class given the different drivers different database
+			connections can be made.
+		</p>
+		<p>
+			<strong>QUERIES:</strong>It will take query xml
+			location. for more info <a href="#queries">goto queries</a>.
+		</p>
+		<p>
+			<strong>MAPPINGS:</strong>It will take mapping
+			xml location. for more info <a href="#mapping">goto mapping</a>.
+		</p>
+		<p>
+			<strong>ANNOTATIONS:</strong>Boolean field that
+			will will enable annotation mapping mode this will override XML
+			mapping.
+		</p>
+		<p>
+			<strong>GenerateSchema:</strong>Boolean field
+			that will sync the tables and sequence to pojos or create database
+			component if not present.
+		</p>
+		<p>
+			<strong>SqlLogging:</strong>It will turn on the
+			query logging on console currently it can not output queries to
+			external log file.
+		</p>
 
-<p>After this we need to create mappings for pojos to be mapped with database tables this can be done
-by two means either you can annotate the pojos or can create xml mappings with following content</p>
-
-<pre><code>&lt;Mappings xmlns="http://www.blow.org/Mapping"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.blow.org/Mapping ../../../../../BlowORM/src/com/sales/xmls/Mapping.xsd"&gt;
-&lt;Mapping&gt;
-    &lt;Class&gt;com.sales.pojo.Product&lt;/Class&gt;
-    &lt;RDBSchema&gt;product&lt;/RDBSchema&gt;
-    &lt;Map&gt;
-        &lt;Property name="id" type="int" colName="id"
-            primary-key="true" length="5" generated="true" seq="product_seq" /&gt;
-        &lt;Property name="name" type="String" colName="name"
-            length="50" /&gt;
-        &lt;Property name="catId" type="long" colName="cat_id" length="5"/&gt;
-        &lt;one-2-one name="details" ref-class="com.sales.pojo.ProductDetails"
-            foreign-key="PROD_ID" foreign-key-ref="true" /&gt;
-        &lt;one-2-one name="stock" ref-class="com.sales.pojo.Stock"
-            foreign-key="PROD_ID" foreign-key-ref="true" /&gt;
-        &lt;one-2-one name="epd"
-            ref-class="com.sales.pojo.ElectronicProductDetails" foreign-key="PROD_ID"
-            foreign-key-ref="true" cascade="delete"/&gt;
-        &lt;one-2-many ref-class="com.sales.pojo.Stock" name="stocks"
-            foreign-key="PROD_ID" collectionType="list" foreign-key-ref="true" cascade="delete"/&gt;
-    &lt;/Map&gt;
-&lt;/Mapping&gt;
-
-&lt;Mapping&gt;
-    &lt;Class&gt;com.sales.pojo.ProductDetails&lt;/Class&gt;
-    &lt;RDBSchema&gt;product_details&lt;/RDBSchema&gt;
-    &lt;Map&gt;
-        &lt;Property name="id" type="int" colName="id" length="5"
-            primary-key="true" generated="true" seq="PD_SEQ" /&gt;
-        &lt;!-- &lt;Property name="prodId" type="int" length="5" colName="PROD_ID"/&gt; --&gt;
-        &lt;Property name="brand" type="String" colName="BRAND"
-            length="100" /&gt;
-        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
-        &lt;Property name="productSize" type="String" colName="PROD_SIZE" length="50"/&gt;
-        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
-        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
-        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product" cascade="delete"
-            foreign-key="PROD_ID" /&gt;
-    &lt;/Map&gt;
-&lt;/Mapping&gt;
-&lt;Mapping&gt;
-    &lt;Class&gt;com.sales.pojo.ElectronicProductDetails&lt;/Class&gt;
-    &lt;RDBSchema&gt;ELECTRONIC_PRODUCT_DETAILS&lt;/RDBSchema&gt;
-    &lt;Map&gt;
-        &lt;Property name="id" type="int" colName="id"
-            primary-key="true" generated="true" seq="EPD_SEQ" length="5"/&gt;
-        &lt;Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/&gt;
-        &lt;Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/&gt;
-        &lt;!-- &lt;Property name="prodId" type="int" colName="PROD_ID" length="5"/&gt; --&gt;
-        &lt;Property name="brand" type="String" colName="BRAND" length="50"/&gt;
-        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
-        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
-        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
-        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product"
-            foreign-key="PROD_ID" /&gt;
-    &lt;/Map&gt;
-&lt;/Mapping&gt;
-
-&lt;Mapping&gt;
-    &lt;Class&gt;com.sales.pojos.ElectronicProductDetails&lt;/Class&gt;
-    &lt;RDBSchema&gt;ELECTRONIC_PRODUCT_DETAILS_NEW&lt;/RDBSchema&gt;
-    &lt;Map&gt;
-        &lt;Property name="id" type="int" colName="id"
-            primary-key="true" generated="true" seq="EPD_SEQ_NEW" length="5"/&gt;
-        &lt;Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/&gt;
-        &lt;Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/&gt;
-        &lt;!-- &lt;Property name="prodId" type="int" colName="PROD_ID" length="5"/&gt; --&gt;
-        &lt;Property name="brand" type="String" colName="BRAND" length="50"/&gt;
-        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
-        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
-        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
-        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product"
-            foreign-key="ID" /&gt;
-    &lt;/Map&gt;
-&lt;/Mapping&gt;
+		<h3 id="mapping">Mappings</h3>
+		<p>Supports following two types of mapping:
+		<ul>
+			<li>XML mapping</li>
+			<li>Annotaion mapping</li>
+		</ul>
+		<p>
+			XML based mapping is the default way of mapping java classes with
+			database tables. To achieve this first you need to create a xml file
+			like
+			<code>*.blow.xml</code>
+			. For creating this XML file standard is to use
+			<code>com.sales.xmls.Mapping.xsd</code>
+			schema file. A sample mapping xml is given below.
+		</p>
+		<pre>
+			<code>
+&lt;Mappings xmlns="http://www.blow.org/Mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blow.org/Mapping ../../../../../BlowORM/src/com/sales/xmls/Mapping.xsd"&gt;
+	&lt;Mapping&gt;
+	    &lt;Class&gt;com.sales.pojo.Product&lt;/Class&gt;
+	    &lt;RDBSchema&gt;product&lt;/RDBSchema&gt;
+	    &lt;Map&gt;
+	        &lt;Property name="id" type="int" colName="id"
+	            primary-key="true" length="5" generated="true" seq="product_seq" /&gt;
+	        &lt;Property name="name" type="String" colName="name"
+	            length="50" /&gt;
+	        &lt;Property name="catId" type="long" colName="cat_id" length="5"/&gt;
+	        &lt;one-2-one name="details" ref-class="com.sales.pojo.ProductDetails"
+	            foreign-key="PROD_ID" foreign-key-ref="true" /&gt;
+	        &lt;one-2-one name="stock" ref-class="com.sales.pojo.Stock"
+	            foreign-key="PROD_ID" foreign-key-ref="true" /&gt;
+	        &lt;one-2-one name="epd"
+	            ref-class="com.sales.pojo.ElectronicProductDetails" foreign-key="PROD_ID"
+	            foreign-key-ref="true" cascade="delete"/&gt;
+	        &lt;one-2-many ref-class="com.sales.pojo.Stock" name="stocks"
+	            foreign-key="PROD_ID" collectionType="list" foreign-key-ref="true" cascade="delete"/&gt;
+	    &lt;/Map&gt;
+	&lt;/Mapping&gt;
+	
+	&lt;Mapping&gt;
+	    &lt;Class&gt;com.sales.pojo.ProductDetails&lt;/Class&gt;
+	    &lt;RDBSchema&gt;product_details&lt;/RDBSchema&gt;
+	    &lt;Map&gt;
+	        &lt;Property name="id" type="int" colName="id" length="5"
+	            primary-key="true" generated="true" seq="PD_SEQ" /&gt;
+	        &lt;!-- &lt;Property name="prodId" type="int" length="5" colName="PROD_ID"/&gt; --&gt;
+	        &lt;Property name="brand" type="String" colName="BRAND"
+	            length="100" /&gt;
+	        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
+	        &lt;Property name="productSize" type="String" colName="PROD_SIZE" length="50"/&gt;
+	        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
+	        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
+	        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product" cascade="delete"
+	            foreign-key="PROD_ID" /&gt;
+	    &lt;/Map&gt;
+	&lt;/Mapping&gt;
+	&lt;Mapping&gt;
+	    &lt;Class&gt;com.sales.pojo.ElectronicProductDetails&lt;/Class&gt;
+	    &lt;RDBSchema&gt;ELECTRONIC_PRODUCT_DETAILS&lt;/RDBSchema&gt;
+	    &lt;Map&gt;
+	        &lt;Property name="id" type="int" colName="id"
+	            primary-key="true" generated="true" seq="EPD_SEQ" length="5"/&gt;
+	        &lt;Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/&gt;
+	        &lt;Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/&gt;
+	        &lt;!-- &lt;Property name="prodId" type="int" colName="PROD_ID" length="5"/&gt; --&gt;
+	        &lt;Property name="brand" type="String" colName="BRAND" length="50"/&gt;
+	        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
+	        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
+	        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
+	        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product"
+	            foreign-key="PROD_ID" /&gt;
+	    &lt;/Map&gt;
+	&lt;/Mapping&gt;
+	
+	&lt;Mapping&gt;
+	    &lt;Class&gt;com.sales.pojos.ElectronicProductDetails&lt;/Class&gt;
+	    &lt;RDBSchema&gt;ELECTRONIC_PRODUCT_DETAILS_NEW&lt;/RDBSchema&gt;
+	    &lt;Map&gt;
+	        &lt;Property name="id" type="int" colName="id"
+	            primary-key="true" generated="true" seq="EPD_SEQ_NEW" length="5"/&gt;
+	        &lt;Property name="description" type="String" colName="ELE_DESCRIPTION" length="500"/&gt;
+	        &lt;Property name="techDetails" type="String" colName="TECH_DETAILS" length="500"/&gt;
+	        &lt;!-- &lt;Property name="prodId" type="int" colName="PROD_ID" length="5"/&gt; --&gt;
+	        &lt;Property name="brand" type="String" colName="BRAND" length="50"/&gt;
+	        &lt;Property name="color" type="String" colName="COLOR" length="50"/&gt;
+	        &lt;Property name="price" type="int" colName="PRICE" length="10"/&gt;
+	        &lt;Property name="material" type="String" colName="MATERIAL" length="50"/&gt;
+	        &lt;one-2-one name="product" ref-class="com.sales.pojo.Product"
+	            foreign-key="ID" /&gt;
+	    &lt;/Map&gt;
+	&lt;/Mapping&gt;
 &lt;/Mappings&gt;
-</code></pre>
+			</code>
+			</pre>
+		</p>
 
-<p>for the same Pojo for class Product</p>
-
-<pre><code>import com.sales.blow.annotations.BlowId;
+		<p>Annotation based mapping can be used in the following way.
+			Currently blow does not support JPA annotation it has its own
+			annotation to use. Annotations only works on class and fields and not
+			on methods.
+		<pre>
+			<code>
+import com.sales.blow.annotations.BlowId;
 import com.sales.blow.annotations.BlowProperty;
 import com.sales.blow.annotations.BlowSchema;
 import com.sales.blow.annotations.One2Many;
 import com.sales.blow.annotations.One2One;
+
 @BlowSchema(schemaName="PRODUCT")
 public class Prodcty {  
+    
     @BlowId(generated=true,seq="product_seq")
     @BlowProperty(columnName="ID")
     public int id;
+    
     @BlowProperty(columnName="NAME",length=50)
     private String name;
+    
     @BlowProperty(columnName="CAT_ID")
     private long catId;
+    
     @One2One(fk="PROD_ID",isReferenced=true)
     private ProductDetails details;
+    
     @One2One(fk="PROD_ID",isReferenced=true)
     private ElectronicProductDetails epd;
+    
     @One2One(fk="PROD_ID",isReferenced=true)
     private Stock stock;
+    
     @One2Many(collectionType="java.util.List",fk="PROD_ID",type="com.sales.pojo.Stock")
     private List&lt;Stock&gt; stocks;
+    
     public int getId() {
     return id;
     }
@@ -246,54 +410,56 @@ public class Prodcty {
     public void setStocks(List&lt;Stock&gt; stocks) {
     this.stocks = stocks;
     }
-}
-</code></pre>
+}</code>
+		</pre>
+		</p>
 
-<h3>
-<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h3>
 
-<p>Get context from core</p>
+		<!-- <h3>Non-responsive grid system</h3>
+		<div class="row">
+			<div class="col-xs-4">One third</div>
+			<div class="col-xs-4">One third</div>
+			<div class="col-xs-4">One third</div>
+		</div> -->
 
-<pre><code>    BlowContext context=BlowCore.getInstance().getContext();
-</code></pre>
 
-<p>For fetching data from data base you will need basis as in on what basis you wants to fetch data</p>
 
-<pre><code>            Product prod=context.BlowUtils.getBasis(Product.class).propEquals("id",26).retrieveOne();
-</code></pre>
+	</div>
+	<div class="container" id="docs" style="display: none; height: 800px;">
+		<div class="row" style="height: inherit;">
+			<div class="col-sm-12" style="height: inherit;">
+				<p>
+					<a href="#" onclick="undo();">&lt;-Back</a>
+				</p>
+				<iframe src="doc/index.html" class="container col-sm-12"
+					style="height: inherit;"></iframe>
+			</div>
+		</div>
+	</div>
+	<!-- /container -->
 
-<p>Although above line is self explanatory we need basis on a class and then put property values to
-get one or many records.</p>
-
-<p>For deleting a record, it can be done in one of two ways as in you have the object which you want
-to delete or you can set on what basis the record should be deleted.</p>
-
-<pre><code>             context.delete(prod);
-</code></pre>
-
-<h3>
-<a id="note" class="anchor" href="#note" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Note</h3>
-
-<p>Currently tested for Oracle and will expand for other databases soon.</p>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/divyank01/Blow_v1/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/divyank01/Blow_v1/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/divyank01/Blow_v1"></a> is maintained by <a href="https://github.com/divyank01">divyank01</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
-    </div>
-
-  
-  </body>
+	<footer class="footer">
+		<div class="container">
+			<center>
+				<p class="text-muted">
+					Maintained by Divyank Sharma(<a
+						href="https://github.com/divyank01/">divyank01</a>)
+				</p>
+			</center>
+		</div>
+	</footer>
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script>
+		window.jQuery
+				|| document
+						.write('<script src="javascripts/jquery.min.js"><\/script>')
+	</script>
+	<script src="javascripts/bootstrap.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script src="javascripts/ie10-viewport-bug-workaround.js"></script>
+</body>
 </html>
