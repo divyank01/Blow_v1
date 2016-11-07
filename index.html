@@ -46,7 +46,7 @@
 </head>
 
 <body>
-  
+
 	<!-- Fixed navbar -->
 	<nav class="navbar navbar-default" style="max-height: 40px;">
 		<div class="container ">
@@ -91,9 +91,24 @@
 	</nav>
 
 	<div class="container" id="main">
-		<div class="page-header">
-			<h1>BLOW-ORM</h1>
-			<p class="lead">Java based ORM designed for simplicity of use.</p>
+		<div class="page-header container">
+			<div class="row">
+				<div class="col-sm-3">
+					<svg height="100" width="200">
+	  							<polygon points="100,0,200,50,100,100,0,50"
+							style="fill:#16A085;" />
+								<!-- <path d="M0 0 H 200 V 100 H 0 Z" fill="transparent" stroke="black"/> -->
+								<text fill="#ffffff" font-size="45" font-family="monospace"
+							x="50" y="65">
+	  									blow
+								</text>
+							</svg>
+				</div>
+				<div class="col-sm-5">
+					<h1>BLOW-ORM</h1>
+					<p class="lead">Java based ORM designed for simplicity of use.</p>
+				</div>
+			</div>
 		</div>
 
 		<h3>Features</h3>
@@ -132,10 +147,10 @@
 				than the page content.</strong> In other words, given the non-responsive
 			container width of 970px and a viewport of 800px, you'll potentially
 			hide 170px of content.
-		</p> -->
-		<p>There is no way around this as it's default browser behavior.
-			The only solution is a responsive layout or using a non-fixed
-			element.</p>
+		</p>
+				<p>There is no way around this as it's default browser behavior.
+					The only solution is a responsive layout or using a non-fixed
+					element.</p> -->
 
 		<h3>Configuration</h3>
 		<p>Configuration of ORM is simple and verbose in order to
@@ -195,8 +210,7 @@
 			configuration file and contains details to make JDBC connections and
 		</p>
 		<p>
-			<strong >URL:</strong>Connection url for the
-			database
+			<strong>URL:</strong>Connection url for the database
 		</p>
 		<p>
 			<strong>PASSWORD:</strong>login credentials
@@ -205,32 +219,29 @@
 			<strong>USER:</strong>login credentials.
 		</p>
 		<p>
-			<strong>JDBCDriver:</strong>Represents the jdbc
-			driver class given the different drivers different database
-			connections can be made.
+			<strong>JDBCDriver:</strong>Represents the jdbc driver class given
+			the different drivers different database connections can be made.
 		</p>
 		<p>
-			<strong>QUERIES:</strong>It will take query xml
-			location. for more info <a href="#queries">goto queries</a>.
+			<strong>QUERIES:</strong>It will take query xml location. for more
+			info <a href="#queries">goto queries</a>.
 		</p>
 		<p>
-			<strong>MAPPINGS:</strong>It will take mapping
-			xml location. for more info <a href="#mapping">goto mapping</a>.
+			<strong>MAPPINGS:</strong>It will take mapping xml location. for more
+			info <a href="#mapping">goto mapping</a>.
 		</p>
 		<p>
-			<strong>ANNOTATIONS:</strong>Boolean field that
-			will will enable annotation mapping mode this will override XML
-			mapping.
+			<strong>ANNOTATIONS:</strong>Boolean field that will will enable
+			annotation mapping mode this will override XML mapping.
 		</p>
 		<p>
-			<strong>GenerateSchema:</strong>Boolean field
-			that will sync the tables and sequence to pojos or create database
-			component if not present.
+			<strong>GenerateSchema:</strong>Boolean field that will sync the
+			tables and sequence to pojos or create database component if not
+			present.
 		</p>
 		<p>
-			<strong>SqlLogging:</strong>It will turn on the
-			query logging on console currently it can not output queries to
-			external log file.
+			<strong>SqlLogging:</strong>It will turn on the query logging on
+			console currently it can not output queries to external log file.
 		</p>
 
 		<h3 id="mapping">Mappings</h3>
@@ -413,15 +424,162 @@ public class Prodcty {
 }</code>
 		</pre>
 		</p>
+		
+		<h3 id="usage">Usage</h3>
+		<p>
+			<strong>Initiating transaction:</strong> Before we can perform any interaction with orm first we need to begin transaction this will associate a available connection to this transaction.
+			<pre>
+			<code>	
+BlowContext context=BlowCore.getInstance().getContext();
+context.openSession();</code>
+			</pre>
+		</p>
+		
+		<p>
+			<strong>Commiting transaction:</strong> Closing the opened transaction will try to commit the associated connection.
+			<pre>
+			<code>
+context.closeSession();	</code>
+			</pre>
+		</p>
+		
+		<p>
+			<strong>Save/Update object:</strong> In order to save/update object call <code>saveOrUpdateEntity()</code> on the context and pass the desired object.
+			 Update will work if the object's primary key matches the object from database.
+			  Even if primary key is generated if the object is supposed to be updated set primary key to object before saving it.
+			If the object is a new object and need to be added in database and
+			 if the key is generated then it will be overriden by sequence (See <a href="#seq">sequence</a>).
+			<pre>
+			<code>
+Product product = someService.getProduct();
+context.saveOrUpdateEntity(product);	</code>
+			</pre>
+		</p>
+		
+		<p>
+			<strong>Fetch object:</strong> To get the data from database user need to provide the basis on which he wants the data. If the mapped class have relations with other mapped classes by default we will retrieve all the data associated data. If you need data only for the class provided and not the related classes set the fetch mode to lazy.
+			If the desired output is to be an list call <code>retriveMany()</code> otherwise <code>retirveOne()</code>.
+			<pre>
+			<code>
+/*
+ *retrieve object based on given property values
+ */
+Object output=context.getBasis(clazz)
+		.prop(BlowParam.EQ, "id", 24)
+		.prop(BlowParam.EQ, "name", "foo")
+		.propEquals("product.details.id",254)
+		.retrieveOne();
+
+/*
+ *retrieve multiple values based on given property values
+ */
+Object output=context.getBasis(clazz)
+		.prop(BlowParam.GT, "id", 24)
+		.prop(BlowParam.LT, "catId", 23)
+		.propEquals("product.details.name","foo")
+		.retrieveMany();</code>
+			</pre>
+		</p>
+		<h3 id="queries">Saved queries</h3>
+		<p>
+			ORM can run queries provided in the xml file name must follow <code>*.blow.query.xml</code> naming convention in this xml mapping objects and queries will be defined. Queries can be modeled so such that smaller queries can be imported in other queries.
+			basic logical operation on the query is possible based on the data provided. Sample query is given below.
+			<pre>
+			<code>	
+&ltQueries xmlns ="http://www.blocore.org/BlowQuery"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blocore.org/BlowQuery ../../../../../BlowORM/src/com/sales/xmls/BlowQuery.xsd "&gt
+
+	&ltObject className="com.sales.pojo.Prodcty" name="product1"&gt
+		&ltproperty attr="name" column="name" /&gt
+		&ltproperty attr="id" column="id" /&gt
+	&lt/Object&gt
+
+	&ltObject className="com.sales.pojo.Product" name="product2"&gt
+		&ltproperty attr="fhj" column="gd" /&gt
+	&lt/Object&gt
+
+	&ltInclude name="product"&gt
+		select * from product
+	&lt/Include&gt
 
 
+	&ltQuery name="getAllProducts" type="select"
+		mapping-object="product"&gt
+		select * from product
+	&lt/Query&gt
+
+	&ltQuery name="getProducts" type="select"
+		mapping-object="product"&gt
+		select * from product where id in(
+		&ltcondition&gt
+			&ltwhen operator="GT" value="240000" prop="product.id"&gt
+				1006,
+			&lt/when&gt
+			&ltotherwise&gt
+				1007,
+			&lt/otherwise&gt
+		&lt/condition&gt
+		2003,121,
+		&ltcondition&gt
+			&ltNotNull prop="product"&gt
+				1009,
+			&lt/NotNull&gt
+		&lt/condition&gt
+
+		&ltcondition&gt
+			&ltif operator="GT" value="270" prop="product.id"&gt
+				1010,
+			&lt/if&gt
+		&lt/condition&gt
+		(
+		&ltInclude ref="product_details" /&gt
+		)
+		)
+	&lt/Query&gt
+
+	&ltInclude name="product_details"&gt
+		select prod_id from product_details
+		where id=#product.details.id#
+	&lt/Include&gt
+
+	&ltObject className="com.sales.pojo.Prodcty" name="product"&gt
+		&ltproperty attr="id" column="id" /&gt
+		&ltproperty attr="name" column="name" /&gt
+		&ltproperty attr="catId" column="cat_id" /&gt
+		&ltproperty attr="epd" mapping-object="epd1" /&gt
+		&ltproperty attr="stocks" mapping-object="stock1" /&gt
+	&lt/Object&gt
+	&ltObject className="com.sales.pojo.ElectronicProductDetails" name="epd1"&gt
+		&ltproperty attr="id" column="id" /&gt
+		&ltproperty attr="techDetails" column="name" /&gt&lt!-- 
+		&ltproperty attr="catId" column="cat_id" /&gt --&gt
+	&lt/Object&gt
+	&ltObject className="com.sales.pojo.Stock" name="stock1"&gt
+		&ltproperty attr="id" column="id" /&gt
+		&lt!-- &ltproperty attr="name" column="name" /&gt
+		&ltproperty attr="catId" column="cat_id" /&gt --&gt
+	&lt/Object&gt
+
+
+&lt/Queries&gt
+</code>
+			</pre>
+		</p>
+	<p>To call these quries you can just use context and call queries using their name and providing properties in the map as input.</p>
+	<pre>
+	<code>
+Map m= new HashMap();
+m.put("product", o);			
+Object obj=context.getSQLResult("getProducts", m);
+	</code>
+	</pre>
 		<!-- <h3>Non-responsive grid system</h3>
 		<div class="row">
 			<div class="col-xs-4">One third</div>
 			<div class="col-xs-4">One third</div>
 			<div class="col-xs-4">One third</div>
 		</div> -->
-
 
 
 	</div>
