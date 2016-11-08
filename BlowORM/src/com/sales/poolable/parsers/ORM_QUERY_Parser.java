@@ -161,7 +161,7 @@ public class ORM_QUERY_Parser {
 					}
 				}
 				qry.setContent(builder.toString());
-				qry.setClassName(nodes.getAttributes().getNamedItem("class").getNodeValue());
+				//qry.setClassName(nodes.getAttributes().getNamedItem("class").getNodeValue());
 				qry.setMappingObjName(nodes.getAttributes().getNamedItem("mapping-object").getNodeValue());
 				queries.getQueries().put(nodes.getAttributes().getNamedItem("name").getNodeValue(), qry);
 			}

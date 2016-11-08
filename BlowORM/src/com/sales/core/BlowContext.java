@@ -23,22 +23,45 @@
   */
 package com.sales.core;
 
-import java.sql.SQLException;
 import java.util.Map;
-
-import com.sales.blow.exceptions.BlownException;
 
 
 public interface BlowContext<T> {
 
+	/**
+	 * Basis for data modification.
+	 * @param clazz
+	 * @return
+	 * @throws Exception
+	 */
 	public Basis<T, T> getBasis(Class<T> clazz)throws Exception;
+	
+	/**
+	 * This will close the session and commit underlying connection and finish session's life.
+	 * @throws Exception
+	 */
 	public void closeSession()throws Exception;
-	public void openSession()throws Exception;
+	/**
+	 * Open new session 
+	 * @return session id of the new session created.
+	 * @throws Exception
+	 */
+	public long openSession()throws Exception;
 	public void rollback()throws Exception;
 	public boolean saveOrUpdateEntity(T t)throws Exception;
 	public Object getSQLResult(String id,Map map)throws Exception;
 	public void delete(T t)throws Exception;
 	public long getSessionId()throws Exception;
-	void rollback(long sessionId) throws Exception;
-	
+	/**
+	 * rollback the session with given session id
+	 * @param sessionId
+	 * @throws Exception
+	 */
+	public void rollback(long sessionId) throws Exception;
+	/**
+	 * Commit the session with given session id
+	 * @param sessionId
+	 * @throws Exception
+	 */
+	public void commit(long sessionId)throws Exception;
 }

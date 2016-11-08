@@ -108,22 +108,28 @@ public class MainClass {
 			//System.out.println(new XStream().toXML(p3));
 			System.out.println(new XStream().toXML(p4));*/
 
-			
-			BlowUtils.getContext().openSession();
+			int a=Character.getNumericValue('A');
+			double b=Math.random()*10;
+			Double.toHexString(10);
+			System.out.println(Double.toHexString(b*31)+b);
+			long id=BlowUtils.getContext().openSession();
 			Object o=BlowUtils
 			.getBasis(Prodcty.class)
-			.propEquals("id",26)
+			.prop(BlowParam.EQ, "id", 24)
 			.retrieveOne();
 			Prodcty p=(Prodcty)o;
 			//p.setId(10230);
 			//BlowUtils.getContext().saveOrUpdateEntity(o);
 			Map m= new HashMap();
 			m.put("product", o);
-			BlowUtils.getBasis(Prodcty.class).prop(BlowParam.GT, "id", 24).prop(BlowParam.LT, "name", 23).remove(o);
+			BlowUtils.getBasis(Prodcty.class)
+					.prop(BlowParam.GT, "id", 24)
+					.prop(BlowParam.LT, "name", 23)
+					.remove(o);
 			
 			System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
 			BlowUtils.getContext().delete(o);
-			System.out.println(new XStream().toXML(o));
+			System.out.println("---"+new XStream().toXML(o));
 			for(int i=0;i<1;i++){
 				/*Student s= new Student();
 				//s.setId(i);
@@ -219,6 +225,7 @@ public class MainClass {
 			System.out.println(new Date().getTime()-l);
 			//BlowUtils.getContext().saveOrUpdateEntity(p4);
 			BlowUtils.getContext().closeSession();
+			//BlowUtils.getContext().commit(id);
 			/*System.out.println(new XStream().toXML( BlowUtils
 					.getBasis(Prodcty.class)
 					.propEquals("id", p2.getProduct().getId())

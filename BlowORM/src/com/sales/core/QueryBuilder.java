@@ -759,7 +759,6 @@ public class QueryBuilder {
 				delete(map, queries,params,processParam);
 			}
 		}
-		//return queries;
 	}
 	
 	private void delete(Maps map,List<String> queries,Map<String, Object> params,boolean processParam) throws BlownException{
@@ -781,6 +780,5 @@ public class QueryBuilder {
 		}
 		if(!queries.contains(sb.toString()))
 			queries.add(sb.toString());
-		//return queries;
 	}
 }

@@ -3,11 +3,13 @@ package com.sale.util;
 import com.sales.core.BlowContext;
 import com.sales.core.Basis;
 import com.sales.core.BlowCore;
+import com.sales.pojo.Prodcty;
 
 public class BlowUtils {
 
 	private static BlowContext context;
 	static{
+		Prodcty p=new Prodcty();
 		context=BlowCore.getInstance().getContext();
 	}
 	
@@ -15,7 +17,6 @@ public class BlowUtils {
 		try {
 			return context.getBasis(clazz);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

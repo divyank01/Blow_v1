@@ -48,8 +48,8 @@ public interface EX {
 	String M21="Cannot pool null value object";
 	String M22="Input map is null to retrieve data.";
 	String M23="Unable to find mapping object named : ";
-	/*String M24="Session already closed";
-	String M25="Session already closed";
+	String M24="Session does not exist or already commited";
+	/*String M25="Session already closed";
 	String M26="Session already closed";
 	String M27="Session already closed";
 	String M28="Session already closed";*/

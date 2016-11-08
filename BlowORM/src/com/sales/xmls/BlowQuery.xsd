@@ -41,7 +41,7 @@
 			</ns:simpleType>
 		</ns:attribute>
 		<ns:attribute name="name" type="ns:string" use="required"></ns:attribute>
-		<ns:attribute name="class" type="ns:string" use="required"></ns:attribute>
+		<ns:attribute name="class" type="ns:string" use="optional"></ns:attribute>
 		<ns:attribute name="mapping-object" type="ns:string" use="required"></ns:attribute>
 	</ns:complexType>
 

@@ -17,12 +17,12 @@
 	</Include>
 
 
-	<Query name="getAllProducts" type="select" class=""
+	<Query name="getAllProducts" type="select"
 		mapping-object="product">
 		select * from product
 	</Query>
 
-	<Query name="getProducts" type="select" class=""
+	<Query name="getProducts" type="select"
 		mapping-object="product">
 		select * from product where id in(
 		<condition>

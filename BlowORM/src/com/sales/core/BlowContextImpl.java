@@ -32,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.sales.blow.exceptions.BlownException;
 import com.sales.blow.exceptions.EX;
 import com.sales.core.helper.SessionContainer;
-import com.sales.pools.ConnectionPool;
 import com.sales.pools.ObjectPool;
 
 /**
@@ -101,7 +100,7 @@ public final class BlowContextImpl<T> implements BlowContext<T>{
 		}
 	}
 	@Override
-	public void openSession() throws SQLException {
+	public long openSession() throws SQLException {
 		this.session=new SessionContainer();
 		try {
 			this.session.setSessionId(Math.round(Math.random()*100000000000L));
@@ -110,6 +109,7 @@ public final class BlowContextImpl<T> implements BlowContext<T>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return this.session.getSessionId();
 	}
 	@Override
 	public void rollback() throws BlownException,SQLException {
@@ -123,9 +123,9 @@ public final class BlowContextImpl<T> implements BlowContext<T>{
 	public void rollback(long sessionId) throws BlownException,SQLException {
 		SessionContainer ses=activeSessions.get(sessionId);
 		if(ses==null)
-			throw new BlownException(EX.M1);
+			throw new BlownException(EX.M24);
 		ses.getConnection().rollback();
-		ses.getConnection().commit();
+		//ses.getConnection().commit();
 	}
 	
 	@Override
@@ -139,6 +139,14 @@ public final class BlowContextImpl<T> implements BlowContext<T>{
 	public void delete(T t) throws Exception{
 		getBasis((Class<T>)t.getClass()).remove(t);;
 		
+	}
+
+	@Override
+	public void commit(long sessionId) throws Exception {
+		if(activeSessions.get(sessionId)!=null)
+		activeSessions.get(sessionId).getConnection().commit();
+		else 
+			throw new BlownException(EX.M24);
 	}	
 
 }
