@@ -7,7 +7,7 @@ import com.sales.blow.annotations.BlowSchema;
 
 @BlowSchema(schemaName="PersonalDetails")
 public class PersonalDetails {
-	@BlowId
+	@BlowId(generated=true,seq="person_det_seq")
 	@BlowProperty(columnName="ID",length=5)
 	private int id;
 	@BlowProperty(columnName="nationality",length=20)

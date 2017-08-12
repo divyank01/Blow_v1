@@ -236,7 +236,7 @@ public class ORM_MAPPINGS_Parser {
 				if(one2Many.fk()==null){
 					throw new MappingsException(EX.M19+orm_maps.className);
 				}
-
+				attr.setReferenced(one2Many.isReferenced());
 				orm_maps.getAttributeMap().put(propName,attr);
 				orm_maps.getFkAttr().put(attr.getClassName(), attr);
 				if(!orm_maps.getDependentClasses().contains(one2Many.type()))

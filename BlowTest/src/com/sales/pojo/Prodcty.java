@@ -24,7 +24,7 @@ public class Prodcty {
 	private ElectronicProductDetails epd;
 	@One2One(fk="PROD_ID",isReferenced=true)
 	private Stock stock;
-	@One2Many(collectionType="java.util.List",fk="PROD_ID",type="com.sales.pojo.Stock")
+	@One2Many(collectionType="java.util.List",isReferenced=true,fk="PROD_ID",type="com.sales.pojo.Stock")
 	private List<Stock> stocks;
 	public int getId() {
 		return id;

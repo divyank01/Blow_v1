@@ -10,7 +10,7 @@ import com.sales.blow.annotations.One2One;
 
 @BlowSchema(schemaName="CUSTOMER")
 public class Customer {
-	@BlowId
+	@BlowId(generated=true,seq="cust_seq")
 	@BlowProperty(columnName="ID",length=5)
 	private int id;
 	@BlowProperty(columnName="first_name",length=50)
@@ -21,9 +21,9 @@ public class Customer {
 	private String middleName;
 	@BlowProperty(columnName="gender",length=5)
 	private String gender;
-	@One2Many(collectionType="java.util.List",fk="cust_id",type="com.customer.pojo.Address")
+	@One2Many(collectionType="java.util.List",isReferenced=true,fk="cust_id",type="com.customer.pojo.Address")
 	private List<Address> address;
-	@One2Many(collectionType="java.util.List",fk="customer_id",type="com.customer.pojo.Contact")
+	@One2Many(collectionType="java.util.List",isReferenced=true,fk="customer_id",type="com.customer.pojo.Contact")
 	private List<Contact> contacts;
 	@One2One(fk="CUSTomer_ID",isReferenced=true)
 	private Occupation occupation;

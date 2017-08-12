@@ -8,16 +8,16 @@ import com.sales.blow.annotations.One2One;
 @BlowSchema(schemaName="STOCK")
 public class Stock {
 
-	@BlowId
+	@BlowId(generated=true,seq="STOCK_SEQ")
 	@BlowProperty(columnName="ID")
 	private int id;
-	@BlowProperty(columnName="PROD_ID")
+	//@BlowProperty(columnName="PROD_ID")
 	private int productId;
 	@BlowProperty(columnName="LIVE_STOCK")
 	private double liveStockCount;
 	@BlowProperty(columnName="LOC_ID")
 	private int locId;
-	@One2One(fk="ID",isReferenced=false)
+	@One2One(fk="PROD_ID",isReferenced=false)
 	private Prodcty product;
 	@One2One(fk="STOCK_ID",isReferenced=true)
 	private StockMappings mappings;

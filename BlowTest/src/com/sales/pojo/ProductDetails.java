@@ -8,7 +8,7 @@ import com.sales.blow.annotations.One2One;
 @BlowSchema(schemaName="PRODUCT_DETAILS")
 public class ProductDetails {
 
-	@BlowId
+	@BlowId(generated=true,seq="PD_SEQ")
 	@BlowProperty(columnName="ID")
 	private Integer id;
 	//@BlowProperty(columnName="PROD_ID")
@@ -23,7 +23,7 @@ public class ProductDetails {
 	private String material;
 	@BlowProperty(columnName="PRICE")
 	private Integer price;
-	@One2One(fk="ID",isReferenced=false)
+	@One2One(fk="PROD_ID",isReferenced=false)
 	private Prodcty product;
 	public Integer getId() {
 		return id;

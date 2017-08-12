@@ -9,10 +9,11 @@ import com.sales.blow.annotations.BlowSchema;
 @BlowSchema(schemaName="ELECTRONIC_PRODUCT_DETAILS")
 public class ElectronicProductDetails{
 
-	@One2One(fk="ID",isReferenced=false)
+	@One2One(fk="PROD_ID",isReferenced=false)
 	private Prodcty product;
 
-	@BlowId
+	@BlowId(generated=true,seq="EPD_SEQ")
+	@BlowProperty(columnName="ID")
 	private int id;
 
 	@BlowProperty(columnName="TECH_DETAILS")
@@ -27,7 +28,7 @@ public class ElectronicProductDetails{
 	@BlowProperty(columnName="ELE_DESCRIPTION")
 	private String description;
 
-	@BlowProperty(columnName="PROD_ID")
+	//@BlowProperty(columnName="PROD_ID")
 	private int prodId;
 
 	@BlowProperty(columnName="BRAND")

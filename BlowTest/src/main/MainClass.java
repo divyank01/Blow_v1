@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 import org.school.Student;
 
 import com.customer.pojo.Customer;
+import com.customer.pojo.Occupation;
+import com.customer.pojo.PersonalDetails;
 import com.sale.util.BlowUtils;
 import com.sales.constants.BlowParam;
 import com.sales.constants.SQLTypes;
@@ -115,20 +117,20 @@ public class MainClass {
 			long id=BlowUtils.getContext().openSession();
 			Object o=BlowUtils
 			.getBasis(Prodcty.class)
-			.prop(BlowParam.EQ, "id", 24)
+			.prop(BlowParam.EQ, "id", 10)
 			.retrieveOne();
 			Prodcty p=(Prodcty)o;
 			//p.setId(10230);
 			//BlowUtils.getContext().saveOrUpdateEntity(o);
 			Map m= new HashMap();
 			m.put("product", o);
-			BlowUtils.getBasis(Prodcty.class)
+			/*BlowUtils.getBasis(Prodcty.class)
 					.prop(BlowParam.GT, "id", 24)
 					.prop(BlowParam.LT, "name", 23)
-					.remove(o);
+					.remove(o);*/
 			
 			System.out.println(new XStream().toXML(BlowUtils.getContext().getSQLResult("getProducts", m)));
-			BlowUtils.getContext().delete(o);
+			//BlowUtils.getContext().delete(o);
 			System.out.println("---"+new XStream().toXML(o));
 			for(int i=0;i<1;i++){
 				/*Student s= new Student();
@@ -218,12 +220,30 @@ public class MainClass {
 			((Prodcty)p4).getEpd().setProductSize("M");
 			//list.add(p4);
 			//BlowUtils.getContext().saveOrUpdateEntity(p4);
-			System.out.println(new XStream().toXML(p4));
+			//System.out.println(new XStream().toXML(p4));
 			}
 			
 			//BlowUtils.getContext().saveOrUpdateEntity(list);
 			System.out.println(new Date().getTime()-l);
 			//BlowUtils.getContext().saveOrUpdateEntity(p4);
+			
+			
+			Customer c=new Customer();
+			c.setFirstName("divyank");
+			c.setGender("male");
+			c.setLastName("sharma");
+			Occupation occupation=new Occupation();
+			c.setOccupation(occupation);
+			occupation.setDepartment("CSE");
+			occupation.setDesignation("student");
+			PersonalDetails pd=new PersonalDetails();
+			pd.setMotherTongue("hindi");
+			pd.setNationality("india");
+			BlowUtils.getContext().saveOrUpdateEntity(c);
+			
+			
+			
+			
 			BlowUtils.getContext().closeSession();
 			//BlowUtils.getContext().commit(id);
 			/*System.out.println(new XStream().toXML( BlowUtils

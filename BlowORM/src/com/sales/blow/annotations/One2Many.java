@@ -34,4 +34,5 @@ public @interface One2Many {
 	String collectionType();
 	String type();
 	String fk();
+	boolean isReferenced();
 }

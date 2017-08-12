@@ -7,7 +7,7 @@ import com.sales.blow.annotations.BlowSchema;
 
 @BlowSchema(schemaName="OCCUPATION")
 public class Occupation {
-	@BlowId
+	@BlowId(generated=true,seq="occ_seq")
 	@BlowProperty(columnName="ID" , length=5)
 	private int id;
 	@BlowProperty(columnName="designation" , length=50)
