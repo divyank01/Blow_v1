@@ -317,21 +317,21 @@ public class BlowCoreMapper {
 				if(cls.getName().equalsIgnoreCase(int.class.getName()))
 					retval[0]=0;
 				if(cls.getName().equalsIgnoreCase(long.class.getName()))
-					retval[0]=0;
+					retval[0]=0L;
 				if(cls.getName().equalsIgnoreCase(float.class.getName()))
-					retval[0]=0;
+					retval[0]=0.0;
 				if(cls.getName().equalsIgnoreCase(double.class.getName()))
-					retval[0]=0;
+					retval[0]=0.0;
 			}
 			if(!cls.isPrimitive()){
 				if(cls.getName().equalsIgnoreCase(Integer.class.getName()))
 					retval[0]=0;
 				if(cls.getName().equalsIgnoreCase(Long.class.getName()))
-					retval[0]=0;
+					retval[0]=0L;
 				if(cls.getName().equalsIgnoreCase(Float.class.getName()))
-					retval[0]=0;
+					retval[0]=0.0;
 				if(cls.getName().equalsIgnoreCase(Double.class.getName()))
-					retval[0]=0;
+					retval[0]=0.0;
 				if(cls.getName().equalsIgnoreCase(String.class.getName())||cls.getName().equalsIgnoreCase(Blob.class.getName())){
 					retval[0]=null;
 				}

@@ -19,6 +19,7 @@ import com.sale.util.BlowUtils;
 import com.sales.constants.BlowParam;
 import com.sales.constants.SQLTypes;
 import com.sales.core.BlowBasisImpl;
+import com.sales.core.BlowContext;
 import com.sales.core.BlowContextImpl;
 import com.sales.core.BlowCore;
 import com.sales.pojo.ElectronicProductDetails;
@@ -227,8 +228,11 @@ public class MainClass {
 			System.out.println(new Date().getTime()-l);
 			//BlowUtils.getContext().saveOrUpdateEntity(p4);
 			
-			
+			BlowContext ctx=BlowUtils.getContext();
+			Customer cust=(Customer)ctx.getBasis(Customer.class).propEquals("id",8).retrieveOne();
+			System.out.println(new XStream().toXML(cust));
 			Customer c=new Customer();
+			//c.setId(8);
 			c.setFirstName("divyank");
 			c.setGender("male");
 			c.setLastName("sharma");
@@ -237,10 +241,14 @@ public class MainClass {
 			occupation.setDepartment("CSE");
 			occupation.setDesignation("student");
 			PersonalDetails pd=new PersonalDetails();
-			pd.setMotherTongue("hindi");
+			pd.setId(cust.getDetails().getId());
+			pd.setMotherTongue("hindiya");
 			pd.setNationality("india");
+			c.setDetails(pd);
 			BlowUtils.getContext().saveOrUpdateEntity(c);
-			
+			//BlowContext ctx=BlowUtils.getContext();
+			Object ob=ctx.getBasis(Customer.class).propEquals("id",8).retrieveOne();
+			System.out.println(new XStream().toXML(ob));
 			
 			
 			

@@ -34,7 +34,7 @@ public interface BlowContext<T> {
 	 * @return
 	 * @throws Exception
 	 */
-	public Basis<T, T> getBasis(Class<T> clazz)throws Exception;
+	public Basis<T> getBasis(Class<T> clazz)throws Exception;
 	
 	/**
 	 * This will close the session and commit underlying connection and finish session's life.

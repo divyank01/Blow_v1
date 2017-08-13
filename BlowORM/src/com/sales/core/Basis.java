@@ -28,17 +28,17 @@ import java.util.List;
 import com.sales.blow.exceptions.BlownException;
 import com.sales.constants.BlowParam;
 
-public interface Basis<T,U> {
+public interface Basis<T> {
 
-	public Basis<T, U> propEquals(String prop,Object value)throws Exception;
+	public Basis<T> propEquals(String prop,Object value)throws Exception;
 	
 	//public Basis<T, U> whereClause(String prop,String value)throws Exception;
 	
-	public Basis<T, U> order(String prop,BlowParam blowParam)throws Exception;
+	public Basis<T> order(String prop,BlowParam blowParam)throws Exception;
 	
-	public Basis<T, U> groupBy(String prop,BlowParam blowParam)throws Exception;
+	public Basis<T> groupBy(String prop,BlowParam blowParam)throws Exception;
 	
-	public Basis<T, U> having(String prop,BlowParam blowParam)throws Exception;
+	public Basis<T> having(String prop,BlowParam blowParam)throws Exception;
 	
 	//public Basis<T, U> setAlias(String prop)throws Exception;
 	
@@ -48,11 +48,11 @@ public interface Basis<T,U> {
 	
 	public T retrieveOne()throws Exception;
 	
-	public List<T> retrieveMany(U u)throws Exception;
+	public List<T> retrieveMany()throws Exception;
 	
-	public Basis<T, U> prop(BlowParam param,String prop,Object value)throws Exception;
+	public Basis<T> prop(BlowParam param,String prop,Object value)throws Exception;
 	
-	public Basis<T, U> fetchMode(BlowParam param)throws Exception;
+	public Basis<T> fetchMode(BlowParam param)throws Exception;
 	
 	public void remove(Object obj)throws Exception;
 }

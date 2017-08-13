@@ -42,7 +42,7 @@ import com.sales.pools.ObjectPool;
 import com.sales.pools.OrmMappingPool;
 
 @SuppressWarnings("unchecked")
-public class BlowBasisImpl<T, U extends SessionContainer> implements Basis<T, U> {
+public class BlowBasisImpl<T, U extends SessionContainer> implements Basis<T> {
 
 	private T t;
 	private StringBuffer sql;
@@ -78,14 +78,14 @@ public class BlowBasisImpl<T, U extends SessionContainer> implements Basis<T, U>
 	}
 
 	@Override
-	public Basis<T, U> propEquals(String prop, Object value) throws Exception{
+	public Basis<T> propEquals(String prop, Object value) throws Exception{
 		if(prop!=null&&!prop.equals(""))
 			params.put(prop, new PropParam(prop, BlowParam.EQ, value));
 		return this;
 	}
 
 	@Override
-	public List<T> retrieveMany(U u) throws Exception{
+	public List<T> retrieveMany() throws Exception{
 		List<T> retval=null;
 		String qId=calculateQryId(retMany);
 		String querry=null;
@@ -140,14 +140,14 @@ public class BlowBasisImpl<T, U extends SessionContainer> implements Basis<T, U>
 	}
 
 	@Override
-	public Basis<T, U> prop(BlowParam param,String prop, Object value) {
+	public Basis<T> prop(BlowParam param,String prop, Object value) {
 		this.params.put(prop, new PropParam(prop, param, value));
 		return this;
 	}
 
 
 	@Override
-	public Basis<T, U> fetchMode(BlowParam param) throws BlownException {
+	public Basis<T> fetchMode(BlowParam param) throws BlownException {
 		if(!(param.equals(BlowParam.EAGER)||param.equals(BlowParam.LAZY)))
 			throw new BlownException(EX.M6);
 		blowParam=param;
@@ -177,18 +177,18 @@ public class BlowBasisImpl<T, U extends SessionContainer> implements Basis<T, U>
 	}
 
 	@Override
-	public Basis<T, U> order(String prop, BlowParam blowParam) throws Exception {
+	public Basis<T> order(String prop, BlowParam blowParam) throws Exception {
 		return null;
 	}
 
 	@Override
-	public Basis<T, U> groupBy(String prop, BlowParam blowParam)
+	public Basis<T> groupBy(String prop, BlowParam blowParam)
 			throws Exception {
 		return null;
 	}
 
 	@Override
-	public Basis<T, U> having(String prop, BlowParam blowParam)throws Exception {
+	public Basis<T> having(String prop, BlowParam blowParam)throws Exception {
 		return null;
 	}
 

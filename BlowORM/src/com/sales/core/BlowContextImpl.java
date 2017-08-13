@@ -47,7 +47,7 @@ public final class BlowContextImpl<T> implements BlowContext<T>{
 	protected BlowContextImpl(){}
 	
 	@Override
-	public Basis<T, T> getBasis(Class<T> clazz) throws Exception{
+	public Basis<T> getBasis(Class<T> clazz) throws Exception{
 		try{
 			if(session==null)
 				throw new BlownException(EX.M1);

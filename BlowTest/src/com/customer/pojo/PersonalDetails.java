@@ -3,6 +3,7 @@ package com.customer.pojo;
 import com.sales.blow.annotations.BlowId;
 import com.sales.blow.annotations.BlowProperty;
 import com.sales.blow.annotations.BlowSchema;
+import com.sales.blow.annotations.One2One;
 
 
 @BlowSchema(schemaName="PersonalDetails")
@@ -14,8 +15,17 @@ public class PersonalDetails {
 	private String nationality;
 	@BlowProperty(columnName="motherTongue",length=20)
 	private String motherTongue;
-	@BlowProperty(columnName="CUST_ID",length=5)
+	//@BlowProperty(columnName="CUST_ID",length=5)
 	private int custId;
+	@One2One(fk="CUST_ID",isReferenced=false)
+	private Customer customer;
+	
+	public Customer getCustomer() {
+		return customer;
+	}
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 	public int getId() {
 		return id;
 	}
