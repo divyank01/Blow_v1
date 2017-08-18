@@ -34,6 +34,8 @@ import com.sales.blow.exceptions.EX;
 import com.sales.core.helper.SessionContainer;
 import com.sales.pools.ObjectPool;
 
+import static com.sales.core.helper.LoggingHelper.log;
+
 /**
  * @author black
  *
@@ -117,6 +119,7 @@ public final class BlowContextImpl<T> implements BlowContext<T>{
 			throw new BlownException(EX.M1);
 		this.session.getConnection().rollback();
 		this.session.getConnection().commit();
+		log(EX.M9+session.getSessionId());
 	}
 	
 	@Override

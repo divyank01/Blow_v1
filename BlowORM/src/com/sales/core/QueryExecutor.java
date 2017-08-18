@@ -25,6 +25,7 @@ package com.sales.core;
 
 import static com.sales.core.helper.LoggingHelper.log;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -195,7 +196,10 @@ public class QueryExecutor {
 		querryBuilder=QueryBuilder.newInstance();
 		PreparedStatement stmt=null;
 		try{
-			if(countOfRecord(con, mappings, obj)==0){
+			int count=0;
+			if(hasPKValue(obj, mappings))
+				count=countOfRecord(con, mappings, obj);
+			if(count==0){
 				/*
 				 * insert code will go here
 				 */
@@ -248,6 +252,15 @@ public class QueryExecutor {
 		rs.close();
 		ps.close();
 		return retVal;
+	}
+	
+	private boolean hasPKValue(Object obj,ORM_MAPPINGS mappings) throws Exception {
+		Maps map=mappings.getMapForClass(obj.getClass().getCanonicalName());
+		Field f=obj.getClass().getField(map.getPkAttr().getName());
+		f.setAccessible(true);
+		Object val=f.get(obj);
+		f.setAccessible(false);
+		return !coreMapper.isZero(obj,f.getType());
 	}
 	
 	private String getterForField(String field) {

@@ -8,7 +8,7 @@
 	<PASSWORD>divyank99</PASSWORD>
 	<USER>divyank</USER>
 	<!-- Oracle10g driver class -->
-	 <JDBCDriver>oracle.jdbc.driver.OracleDriver</JDBCDriver>
+	<JDBCDriver>oracle.jdbc.driver.OracleDriver</JDBCDriver> 
 	
 	<!-- Oracle11g driver class -->
 	<!-- <JDBCDriver>oracle.jdbc.OracleDriver</JDBCDriver> -->
@@ -24,7 +24,7 @@
 	<!-- <MAPPINGS file="com/sales/xmls/three.blow.xml"/> -->
 	
 	<!-- config annotation -->
-	<ANNOTATIONS use="true">
+	<ANNOTATIONS use="false">
 		<package-scan>com.sales.pojo</package-scan>
 		<package-scan>com.customer.pojo</package-scan>
 	</ANNOTATIONS>
@@ -32,6 +32,6 @@
 	<!-- multiple schema can be mentioned for loading tables separated by comma -->
 	<Schema>DIVYANK</Schema>
 	<!-- generate schema -->
-	<GenerateSchema>true</GenerateSchema>
+	<GenerateSchema>false</GenerateSchema>
 	<SqlLogging>true</SqlLogging>
 </JDBCConnection>

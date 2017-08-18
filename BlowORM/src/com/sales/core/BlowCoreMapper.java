@@ -343,6 +343,40 @@ public class BlowCoreMapper {
 		return retval;
 	}
 
+	@SuppressWarnings("unchecked")
+	protected boolean isZero(Object object, Class cls){
+		boolean retval=false;
+		if(object==null){
+			return object==null;
+		}
+		if(object instanceof Number){
+			if(cls.isPrimitive()){
+				if(cls.getName().equalsIgnoreCase(int.class.getName()))
+					return ((BigDecimal)object).intValue()==0;
+				if(cls.getName().equalsIgnoreCase(long.class.getName()))
+					return ((BigDecimal)object).longValue()==0l;
+				if(cls.getName().equalsIgnoreCase(float.class.getName()))
+					return ((BigDecimal)object).floatValue()==0.0;
+				if(cls.getName().equalsIgnoreCase(double.class.getName()))
+					return ((BigDecimal)object).doubleValue()==0.0;
+			}
+			if(!cls.isPrimitive()){
+				if(cls.getName().equalsIgnoreCase(Integer.class.getName()))
+					return ((BigDecimal)object).intValue()==0;
+				if(cls.getName().equalsIgnoreCase(Long.class.getName()))
+					return ((BigDecimal)object).longValue()==0L;
+				if(cls.getName().equalsIgnoreCase(Float.class.getName()))
+					return ((BigDecimal)object).floatValue()==0.0;
+				if(cls.getName().equalsIgnoreCase(Double.class.getName()))
+					return ((BigDecimal)object).doubleValue()==0.0;
+			}
+		}
+		if(object instanceof String || object instanceof Blob){
+			return object==null;
+		}
+		return retval;
+	}
+	
 	private boolean equals(Object obj1, Object obj2){
 		boolean retval=false;
 		if(obj1.getClass().getName().equalsIgnoreCase(int.class.getName()))
