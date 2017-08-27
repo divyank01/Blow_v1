@@ -55,8 +55,7 @@ public class BlowPool<T> {
 					unLocked.remove(t);
 					factory.kill(t);
 					t=null;
-				}
-				if(current-unLocked.get(t)<expire){
+				}else if(current-unLocked.get(t)<expire){
 					//printPools(1);
 					unLocked.remove(t);
 					locked.put(t, current);

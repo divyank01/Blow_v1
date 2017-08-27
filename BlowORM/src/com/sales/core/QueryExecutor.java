@@ -256,7 +256,7 @@ public class QueryExecutor {
 	
 	private boolean hasPKValue(Object obj,ORM_MAPPINGS mappings) throws Exception {
 		Maps map=mappings.getMapForClass(obj.getClass().getCanonicalName());
-		Field f=obj.getClass().getField(map.getPkAttr().getName());
+		Field f=obj.getClass().getDeclaredField(map.getPkAttr().getName());
 		f.setAccessible(true);
 		Object val=f.get(obj);
 		f.setAccessible(false);
